@@ -1,0 +1,148 @@
+<!-- EXEMPLE D'INTÉGRATION SIMPLIFIÉE -->
+<!-- Copiez et collez cette structure dans vos pages HTML -->
+
+<!DOCTYPE html>
+<html lang="fr">
+    <!--<< Header Area >>-->
+    <head>
+        <!-- ========== Meta Tags ========== -->
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="author" content="COOP CA HEZOUWE">
+        <meta name="description" content="COOP CA HEZOUWE - Coopérative de Transformation et Commercialisation du Riz Local du TOGO. Riz blanc naturellement parfumé et riz étuvé, certifiés ITRA.">
+        <!-- ======== Page title ============ -->
+        <title>COOP CA HEZOUWE</title>
+        <!--<< Favicon >>-->
+        <link rel="shortcut icon" href="assets/img/favicon.svg">
+        <!--<< Bootstrap min.css >>-->
+        <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+        <!--<< Font Awesome.css >>-->
+        <link rel="stylesheet" href="assets/css/font-awesome.css">
+        <!--<< Animate.css >>-->
+        <link rel="stylesheet" href="assets/css/animate.css">
+        <!--<< Magnific Popup.css >>-->
+        <link rel="stylesheet" href="assets/css/magnific-popup.css">
+        <!--<< MeanMenu.css >>-->
+        <link rel="stylesheet" href="assets/css/meanmenu.css">
+        <!--<< Odometer.css >>-->
+        <link rel="stylesheet" href="assets/css/odometer.css">
+        <!--<< Swiper Bundle.css >>-->
+        <link rel="stylesheet" href="assets/css/swiper-bundle.min.css">
+        <!--<< Nice Select.css >>-->
+        <link rel="stylesheet" href="assets/css/nice-select.css">
+        <!--<< Main.css >>-->
+        <link rel="stylesheet" href="assets/css/main.css">
+    </head>
+    <body>
+
+        <!-- Preloader Start -->
+        <div id="preloader" class="preloader">
+            <!-- ... votre code du preloader ... -->
+        </div>
+
+        <!-- Back To Top Start -->
+        <button id="back-top" class="back-to-top">
+             <i class="far fa-arrow-up"></i>
+        </button>
+
+        <!-- MouseCursor Start -->
+        <div class="mouseCursor cursor-outer"></div>
+        <div class="mouseCursor cursor-inner"></div>
+
+        <!-- Offcanvas Area Start -->
+        <div class="fix-area">
+            <div class="offcanvas__info">
+                <!-- ... votre code du offcanvas ... -->
+            </div>
+        </div>
+        <div class="offcanvas__overlay"></div>
+
+        <!-- ========== NAVBAR CENTRALISÉE ========== -->
+        <!-- Le contenu sera injecté ici automatiquement -->
+        <header class="header-section-4"></header>
+
+        <!-- ========== VOTRE CONTENU PRINCIPAL ========== -->
+        
+        <!-- Hero Section, Features, etc. -->
+        <main>
+            <!-- Contenu spécifique à chaque page -->
+        </main>
+
+        <!-- Footer -->
+        <footer>
+            <!-- Votre footer -->
+        </footer>
+
+        <!-- ========== SCRIPTS ========== -->
+        <!-- jQuery -->
+        <script src="assets/js/jquery-3.7.1.min.js"></script>
+        
+        <!-- Bootstrap-->
+        <script src="assets/js/bootstrap.bundle.min.js"></script>
+        
+        <!-- Autres scripts... -->
+        <script src="assets/js/wow.min.js"></script>
+        <script src="assets/js/gsap.min.js"></script>
+        <!-- ... etc ... -->
+        
+        <!-- ⭐ IMPORTANT: CHARGER NAVBAR APRÈS LES AUTRES SCRIPTS ⭐ -->
+        <script src="assets/js/navbar.js"></script>
+        
+        <!-- Main Script (doit être après navbar.js) -->
+        <script src="assets/js/main.js"></script>
+
+    </body>
+</html>
+
+<!--
+================================================================================
+INSTRUCTIONS D'INTÉGRATION
+================================================================================
+
+1. REMPLACER LA NAVBAR EXISTANTE
+   - Supprimez tout le code <!-- Header Section Start --> jusqu'à </header>
+   - Remplacez-le par: <header class="header-section-4"></header>
+
+2. AJOUTER LE SCRIPT
+   - Avant </body>, ajoutez: <script src="assets/js/navbar.js"></script>
+   - IMPORTANT: Doit être APRÈS les autres scripts
+
+3. TESTER
+   - La navbar devrait se charger automatiquement
+   - Vérifiez la console du navigateur (F12) pour les erreurs
+
+4. UTILISER AVEC TOUTES LES PAGES
+   - Répétez pour: about.html, shop.html, service.html, contact.html, etc.
+   - Garder la même structure pour chaque page
+
+================================================================================
+AVANTAGES IMMÉDIATS
+================================================================================
+
+✅ Mettre à jour le menu une fois = toutes les pages mises à jour
+✅ Ajouter un nouveau lien = change partout automatiquement
+✅ Modifier les infos de contact = change partout en même temps
+✅ Pas besoin de copier-coller la navbar sur chaque page
+✅ Maintenance future simplifiée
+
+================================================================================
+EXEMPLE: AJOUTER UN NOUVEAU MENU
+================================================================================
+
+Pour ajouter un nouveau lien au menu, éditez simplement:
+assets/components/navbar.html
+
+Trouvez:
+    <nav id="mobile-menu">
+        <ul>
+            <li><a href="index.html">Accueil</a></li>
+            <li><a href="about.html">À Propos</a></li>
+            <!-- Ajoutez ici -->
+        </ul>
+    </nav>
+
+Et c'est automatiquement appliqué à TOUTES les pages! 🎉
+
+================================================================================
+-->

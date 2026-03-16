@@ -1,0 +1,99 @@
+{
+  "navbar": {
+    "company": {
+      "name": "COOP CA HEZOUWE",
+      "logo": "assets/img/logo/black-logo.svg",
+      "favicon": "assets/img/favicon.svg"
+    },
+    "topInfo": {
+      "tagline": "Riz Local Premium du TOGO - Qualité Certifiée ITRA",
+      "taglineIcon": "assets/img/fi.png"
+    },
+    "contact": {
+      "phone": "+228 70 67 94 48",
+      "email": "contact@hezouwe.tg",
+      "location": "Tagbega, Wahala, Région Plateaux, TOGO",
+      "hours": "Lun - Sam: 08.00 to 18.00"
+    },
+    "menu": [
+      {
+        "label": "Accueil",
+        "href": "index.html",
+        "icon": null,
+        "active": false
+      },
+      {
+        "label": "À Propos",
+        "href": "about.html",
+        "icon": null,
+        "active": false
+      },
+      {
+        "label": "Nos Produits",
+        "href": "shop.html",
+        "icon": null,
+        "active": false
+      },
+      {
+        "label": "Services",
+        "href": "service.html",
+        "icon": null,
+        "active": false
+      },
+      {
+        "label": "Contact",
+        "href": "contact.html",
+        "icon": null,
+        "active": false
+      }
+    ],
+    "ctaButton": {
+      "label": "Nous Contacter",
+      "href": "contact.html",
+      "icon": "far fa-arrow-right"
+    },
+    "socialLinks": {
+      "facebook": {
+        "url": "#",
+        "icon": "fab fa-facebook-f",
+        "title": "Facebook"
+      },
+      "twitter": {
+        "url": "#",
+        "icon": "fab fa-twitter",
+        "title": "Twitter"
+      },
+      "youtube": {
+        "url": "#",
+        "icon": "fab fa-youtube",
+        "title": "YouTube"
+      },
+      "linkedin": {
+        "url": "#",
+        "icon": "fab fa-linkedin-in",
+        "title": "LinkedIn"
+      }
+    },
+    "search": {
+      "enabled": true,
+      "placeholder": "Recherchez un produit...",
+      "action": "#"
+    },
+    "cart": {
+      "enabled": true,
+      "initialCount": 2
+    },
+    "language": {
+      "default": "FR",
+      "options": ["FR", "EN"]
+    },
+    "icons": {
+      "location": "assets/img/icon/icon11.svg",
+      "email": "assets/img/icon/icon22.svg",
+      "phone": "assets/img/icon/icon33.svg",
+      "hours": "assets/img/icon/icon44.svg"
+    }
+  },
+  "version": "1.0",
+  "lastUpdated": "2024-03-16"
+}
