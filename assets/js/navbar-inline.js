@@ -62,7 +62,7 @@
          <div class="mega-menu-wrapper">
             <div class="header-main">
                  <a href="index.html" class="header-logo">
-                    <img src="assets/img/logo/black-logo.svg" alt="img">
+                    <img src="assets/img/logo/logo_hezouwe.jpeg" alt="img">
                 </a>
                 <div class="header-right d-flex justify-content-end align-items-center">
                     <div class="mean__menu-wrapper">
@@ -86,13 +86,6 @@
                     <a href="contact.html" class="theme-btn">Nous Contacter
                         <i class="far fa-arrow-right"></i>
                     </a>
-                    <div class="header__hamburger my-auto">
-                        <div class="sidebar__toggle">
-                            <div class="header-bar">
-                                <span></span><span></span><span></span>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -266,7 +259,7 @@
         const closeButton = document.getElementById('closeButton');
         const sideBar = document.getElementById('targetElement');
         
-        if (openButton) {
+        if (openButton && sideBar) {
             openButton.addEventListener('click', function(e) {
                 e.preventDefault();
                 sideBar.classList.remove('side_bar_hidden');
@@ -274,7 +267,7 @@
             });
         }
 
-        if (closeButton) {
+        if (closeButton && sideBar) {
             closeButton.addEventListener('click', function(e) {
                 e.preventDefault();
                 sideBar.classList.add('side_bar_hidden');
@@ -365,6 +358,10 @@
      */
     window.toggleCart = function(show) {
         const sideBar = document.getElementById('targetElement');
+        if (!sideBar) {
+            console.warn('⚠️ Élément panier non trouvé');
+            return;
+        }
         if (show === undefined) {
             sideBar.classList.toggle('side_bar_hidden');
         } else if (show) {
@@ -379,6 +376,10 @@
      */
     window.toggleMobileMenu = function(show) {
         const sideBar = document.getElementById('targetElement');
+        if (!sideBar) {
+            console.warn('⚠️ Élément menu mobile non trouvé');
+            return;
+        }
         if (show === undefined) {
             sideBar.classList.toggle('side_bar_hidden');
         } else if (show) {

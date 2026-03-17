@@ -43,7 +43,7 @@
 /* --------------------------------------------------------------
    01. Basic
 -------------------------------------------------------------- */
-@import url("../../../css2");
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap');
 :root {
   --body: #fff;
   --black: #000;
@@ -114,7 +114,7 @@
   color: var(--theme-color);
   text-transform: capitalize;
   display: inline-block;
-  font-family: "DM Sans";
+  font-family: "Montserrat", sans-serif;
   margin-top: 10px;
 }
 .link-btn:hover {
@@ -128,7 +128,7 @@
     Template Default Fonts & Fonts Styles
  ---------------------------------------------- */
 body {
-  font-family: "Nunito", sans-serif;
+  font-family: "Montserrat", sans-serif;
   font-size: 16px;
   font-weight: normal;
   line-height: 30px;
@@ -167,7 +167,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: "Nunito", sans-serif;
+  font-family: "Montserrat", sans-serif;
   margin: 0px;
   padding: 0;
   color: var(--header);
@@ -303,7 +303,7 @@ p {
   }
 }
 .preloader .animation-preloader .txt-loading {
-  font: bold 5em "Nunito", sans-serif, "Nunito", sans-serif;
+  font: bold 5em "Montserrat", sans-serif, "Montserrat", sans-serif;
   text-align: center;
   user-select: none;
 }
@@ -343,7 +343,7 @@ p {
   content: attr(data-text-preloader);
   left: 0;
   opacity: 0;
-  font-family: "Nunito", sans-serif;
+  font-family: "Montserrat", sans-serif;
   position: absolute;
   top: -3px;
   transform: rotateY(-90deg);
@@ -773,7 +773,7 @@ p {
   transition: all 0.4s ease-in-out;
   font-weight: 800;
   font-size: 16px;
-  font-family: "Nunito", sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 .link-btn i {
   margin-left: 5px;
@@ -1304,7 +1304,7 @@ p {
   font-size: 16px;
   font-weight: 700;
   color: #404A3D;
-  font-family: "Nunito", sans-serif;
+  font-family: "Montserrat", sans-serif;
   padding: 20px 0;
   text-align: left;
   position: relative;
@@ -1527,7 +1527,7 @@ p {
 .header-top-section .header-top-wrapper .header-contact-list li {
   font-size: 16px;
   font-weight: 600;
-  font-family: "Nunito", sans-serif;
+  font-family: "Montserrat", sans-serif;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -2063,6 +2063,22 @@ p {
   display: flex;
   align-items: center;
   gap: 40px;
+}
+
+.header-section-4 .header-4 .header-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 100px;
+  height: auto;
+}
+
+.header-section-4 .header-4 .header-logo img {
+  width: 100%;
+  height: auto;
+  max-width: 100px;
+  object-fit: contain;
+}
   margin-left: 30px;
 }
 @media (max-width: 1399px) {
@@ -2805,8 +2821,36 @@ p {
   transform: translateX(0);
 }
 
+.offcanvas__logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 80px;
+}
+
+.offcanvas__logo a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
 .offcanvas__logo a img {
-  width: 150px;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 5px;
+}
+
+.footer-logo img {
+  width: 100%;
+  height: auto;
+  max-width: 140px;
+  display: block;
+  object-fit: contain;
+  margin-bottom: 15px;
 }
 
 .offcanvas__wrapper {
@@ -2892,7 +2936,7 @@ p {
   color: var(--header);
   font-size: 18px;
   font-weight: 600;
-  font-family: "Nunito", sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 .offcanvas__wrapper .offcanvas__content .offcanvas__contact .contact-list li .content h4 a {
   color: var(--header);
@@ -3433,7 +3477,7 @@ p {
   text-transform: capitalize;
   border-bottom: 1px solid #E5E5E5 !important;
   border: none;
-  font-family: "Nunito", sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 .mean-container .mean-nav ul li a:hover {
   color: var(--theme-color);
@@ -5426,7 +5470,7 @@ p {
   transition: all 0.4s ease-in-out;
   font-weight: 800;
   font-size: 16px;
-  font-family: "Nunito", sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 .achievments-wrapper-4 .achievments-content .link-btn i {
   margin-left: 5px;
@@ -5763,8 +5807,11 @@ p {
   }
 }
 .choose-us-wrapper-4 .choose-us-left-img .sm-thumb img {
-  width: initial;
-  height: initial;
+  width: 250px;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
 }
 .choose-us-wrapper-4 .choose-us-left-img .sm-thumb-2 {
   position: absolute;
@@ -5834,7 +5881,7 @@ p {
   font-size: 12px;
   font-weight: 500;
   color: var(--white);
-  font-family: "Nunito", sans-serif;
+  font-family: "Montserrat", sans-serif;
   background-color: var(--theme-color);
   padding: 5px 10px;
   line-height: 1;
@@ -7977,7 +8024,7 @@ p {
   transition: all 0.4s ease-in-out;
   font-weight: 800;
   font-size: 16px;
-  font-family: "Nunito", sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 .service-box-items-3 .service-content .link-btn i {
   margin-left: 5px;
@@ -8021,6 +8068,9 @@ p {
 }
 .service-wrapper-4 .service-box-items-4 .thumb {
   padding-right: 25px;
+  height: 300px;
+  overflow: hidden;
+  border-radius: 28px;
 }
 @media (max-width: 575px) {
   .service-wrapper-4 .service-box-items-4 .thumb {
@@ -8030,7 +8080,9 @@ p {
 .service-wrapper-4 .service-box-items-4 .thumb img {
   width: 100%;
   height: 100%;
+  object-fit: cover;
   border-radius: 28px;
+  display: block;
 }
 .service-wrapper-4 .service-box-items-4 .service-content-area {
   background: #f9f7f7;
@@ -8091,6 +8143,9 @@ p {
   position: relative;
   z-index: 9;
   overflow: hidden;
+  height: 400px;
+  display: flex;
+  flex-direction: column;
 }
 @media (max-width: 1199px) {
   .service-feature-thumb-items-4 {
@@ -8102,8 +8157,10 @@ p {
 }
 .service-feature-thumb-items-4 img {
   width: 100%;
-  height: 100%;
+  height: 280px;
+  object-fit: cover;
   border-radius: 8px;
+  display: block;
 }
 .service-feature-thumb-items-4 .text-title {
   font-size: 22px;
@@ -8491,6 +8548,17 @@ p {
   z-index: 9;
   padding-top: 50px;
   transition: all 0.4s ease-in-out;
+  overflow: hidden;
+  background: #f5f5f5;
+}
+
+.shop-box-items .shop-image img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+  object-fit: cover;
+  object-position: center;
+  display: block;
 }
 .shop-box-items .shop-image .sale-icon {
   border-radius: 4px;
@@ -8595,6 +8663,18 @@ p {
 }
 .shop-box-items.style-inner .shop-image {
   text-align: center;
+  background: #f5f5f5;
+  padding: 30px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.shop-box-items.style-inner .shop-image img {
+  width: 100%;
+  height: auto;
+  max-width: 200px;
+  object-fit: contain;
+  display: inline-block;
 }
 .shop-box-items.style-inner .shop-image .sale-icon {
   top: -35px;
@@ -9350,6 +9430,15 @@ p {
   margin-right: 20px;
   border-radius: 8px;
 }
+
+.shop-main-sidebar .single-sidebar-widget .popular-posts .single-post-item .thumb img,
+.shop-main-sidebar .single-sidebar-widget .popular_posts .single-post-item .thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
 .shop-main-sidebar .single-sidebar-widget .popular-posts .single-post-item .post-content, .shop-main-sidebar .single-sidebar-widget .popular_posts .single-post-item .post-content {
   overflow: hidden;
 }
@@ -9412,7 +9501,7 @@ p {
   padding: 17px 20px;
   line-height: 1;
   font-size: 16px;
-  font-family: "Nunito", sans-serif;
+  font-family: "Montserrat", sans-serif;
   display: block;
   margin-bottom: 12px;
   font-weight: 600;
@@ -9623,7 +9712,7 @@ p {
   color: var(--header);
   font-size: 20px;
   text-transform: capitalize;
-  font-family: "Nunito", sans-serif;
+  font-family: "Montserrat", sans-serif;
   font-weight: 400;
 }
 .common-table .price-usd {
@@ -9984,7 +10073,7 @@ p {
 .shop-details-wrapper .product-details-content .price-list ul li {
   font-size: 40px;
   color: var(--header);
-  font-family: "Nunito", sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 .shop-details-wrapper .product-details-content .price-list ul li del {
   color: var(--theme-color);
@@ -11636,7 +11725,7 @@ p {
   font-size: 18px;
   color: var(--header);
   font-weight: 700;
-  font-family: "Nunito", sans-serif;
+  font-family: "Montserrat", sans-serif;
   cursor: pointer;
   -webkit-transition: all 500ms ease;
   transition: all 500ms ease;
@@ -12632,10 +12721,20 @@ p {
   top: 40px;
   left: 60px;
 }
+.testimonial-wrapper-4 .shape-1 img {
+  max-width: 150px;
+  height: auto;
+  object-fit: contain;
+}
 .testimonial-wrapper-4 .shape-2 {
   position: absolute;
   bottom: 0px;
   right: 30px;
+}
+.testimonial-wrapper-4 .shape-2 img {
+  max-width: 150px;
+  height: auto;
+  object-fit: contain;
 }
 .testimonial-wrapper-4 .testimonial-img {
   margin-right: 60px;
@@ -12647,7 +12746,11 @@ p {
 }
 .testimonial-wrapper-4 .testimonial-img img {
   width: 100%;
-  height: 100%;
+  height: auto;
+  max-width: 500px;
+  object-fit: cover;
+  display: block;
+  aspect-ratio: 4 / 5;
 }
 .testimonial-wrapper-4 .testimonial-content .section-title h2 {
   font-weight: 700;
@@ -12710,6 +12813,18 @@ p {
 .testimonial-wrapper-4 .testimonial-content .client-info-area .client-info .content h5 {
   font-size: 18px;
   font-weight: 700;
+}
+.testimonial-wrapper-4 .testimonial-content .client-info-area .client-info .client-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.testimonial-wrapper-4 .testimonial-content .client-info-area .client-info .client-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 .testimonial-wrapper-4 .testimonial-content .client-info-area .icon {
   font-size: 60px;
@@ -12787,7 +12902,7 @@ p {
 .testimonial-wrapper-5 .testi-content-5 .info-content span {
   font-size: 16px;
   font-weight: 600;
-  font-family: "Nunito", sans-serif;
+  font-family: "Montserrat", sans-serif;
   color: var(--white);
 }
 .testimonial-wrapper-5 .testi-content-5 .info-content h4 {
@@ -13198,7 +13313,7 @@ p {
   transition: all 0.4s ease-in-out;
   font-weight: 800;
   font-size: 16px;
-  font-family: "Nunito", sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 .news-box-items .news-content .link-btn i {
   margin-left: 5px;
@@ -13270,7 +13385,7 @@ p {
   transition: all 0.4s ease-in-out;
   font-weight: 800;
   font-size: 16px;
-  font-family: "Nunito", sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 .news-box-items-2 .news-content .link-btn i {
   margin-left: 5px;
@@ -13389,7 +13504,7 @@ p {
   transition: all 0.4s ease-in-out;
   font-weight: 800;
   font-size: 16px;
-  font-family: "Nunito", sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 .news-wrapper-3 .news-left-items .content .link-btn i {
   margin-left: 5px;
@@ -13499,7 +13614,7 @@ p {
   transition: all 0.4s ease-in-out;
   font-weight: 800;
   font-size: 16px;
-  font-family: "Nunito", sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 .news-wrapper-3 .news-right-box .content .link-btn i {
   margin-left: 5px;
@@ -13879,7 +13994,7 @@ p {
   color: var(--white);
   font-size: 26px;
   line-height: 1.4;
-  font-family: "Nunito", sans-serif;
+  font-family: "Montserrat", sans-serif;
   font-weight: 400;
   padding: 60px;
   text-align: center;
@@ -14413,7 +14528,7 @@ p {
   padding: 17px 20px;
   line-height: 1;
   font-size: 16px;
-  font-family: "Nunito", sans-serif;
+  font-family: "Montserrat", sans-serif;
   display: block;
   margin-bottom: 12px;
   font-weight: 600;
