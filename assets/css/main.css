@@ -5003,13 +5003,24 @@ p {
   border-radius: 28px;
   overflow: hidden;
   margin-top: 30px;
+  height: 550px;
 }
 @media (max-width: 1199px) {
   .gallery-wrapper-3 .gallery-image-box-3 {
-    height: 500px;
+    height: 450px;
   }
   .gallery-wrapper-3 .gallery-image-box-3 img {
     object-fit: cover;
+  }
+}
+@media (max-width: 768px) {
+  .gallery-wrapper-3 .gallery-image-box-3 {
+    height: 350px;
+  }
+}
+@media (max-width: 576px) {
+  .gallery-wrapper-3 .gallery-image-box-3 {
+    height: 300px;
   }
 }
 .gallery-wrapper-3 .gallery-image-box-3 img {
@@ -5021,6 +5032,7 @@ p {
   transition-duration: 0.7s;
   transition-property: all;
   object-fit: cover;
+  display: block;
 }
 .gallery-wrapper-3 .gallery-image-box-3 .content {
   border-radius: 4px;
