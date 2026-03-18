@@ -978,6 +978,32 @@
     // circle-progress
         $(".circle-bar").loading();
 
+        /* ================================
+           HAMBURGER MENU TOGGLE
+        ================================ */
+        const hamburger = $('#hamburger-toggle');
+        const mobileMenu = $('#mobile-menu');
+
+        hamburger.on('click', function(e) {
+            e.preventDefault();
+            hamburger.toggleClass('active');
+            mobileMenu.toggleClass('active');
+        });
+
+        // Close menu when a link is clicked
+        mobileMenu.find('a').on('click', function() {
+            hamburger.removeClass('active');
+            mobileMenu.removeClass('active');
+        });
+
+        // Close menu when clicking outside
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('.hamburger-menu, #mobile-menu').length) {
+                hamburger.removeClass('active');
+                mobileMenu.removeClass('active');
+            }
+        });
+
     }); // End Document Ready Function
 
      /* ================================

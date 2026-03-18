@@ -79,8 +79,17 @@
                     </div>
                 </div>
                     <div class="header-right-icon">
+                        <form action="#" class="search-form">
+                            <input type="text" placeholder="Recherchez un produit...">
+                            <button type="submit"><i class="fal fa-search"></i></button>
+                        </form>
                         <button id="openButton" class="cart-icon"><i class="far fa-shopping-bag"></i>
                             <span id="cart-count">2</span>
+                        </button>
+                        <button class="hamburger-menu" id="hamburger-toggle" aria-label="Toggle menu">
+                            <span></span>
+                            <span></span>
+                            <span></span>
                         </button>
                     </div>
                     <a href="contact.html" class="theme-btn">Nous Contacter
@@ -94,7 +103,6 @@
 
     // Charger la navbar au chargement du DOM
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('🔍 DOMContentLoaded - Injection de la navbar...');
         loadNavbar();
     });
 
@@ -102,15 +110,11 @@
      * Fonction pour injecter la barre de navigation
      */
     function loadNavbar() {
-        console.log('📍 Fonction loadNavbar appelée');
-        
         // Trouver l'élément qui accueillera la navbar
         const navbarContainer = document.querySelector('header.header-section-4');
-        console.log('🔎 Conteneur trouvé:', navbarContainer ? 'OUI' : 'NON');
         
         // Si la navbar existe déjà, ne pas la charger à nouveau
         if (navbarContainer && navbarContainer.querySelector('.header-top-4')) {
-            console.log('✅ Navbar déjà chargée');
             return;
         }
 
@@ -125,16 +129,14 @@
         try {
             if (container) {
                 container.innerHTML = NAVBAR_CONTENT;
-                console.log('✅ Navbar injectée avec succès dans le conteneur');
             } else {
-                console.error('❌ Conteneur navbar non trouvé');
                 return;
             }
             
             // Réinitialiser les scripts après l'injection
             reinitializeScripts();
         } catch (e) {
-            console.error('❌ Erreur lors de l\'injection:', e);
+            // Erreur lors de l'injection
         }
     }
 
@@ -142,8 +144,6 @@
      * Réinitialiser les scripts côté client après l'injection de la navbar
      */
     function reinitializeScripts() {
-        console.log('⚙️ Initialisation des fonctionnalités du menu...');
-        
         // Initialiser le hamburger menu
         initHamburgerMenu();
         
@@ -157,80 +157,76 @@
         if (typeof initMenuToggle === 'function') {
             try {
                 initMenuToggle();
-                console.log('✅ initMenuToggle exécuté');
             } catch (e) {
-                console.warn('⚠️ initMenuToggle non disponible');
+                // initMenuToggle non disponible
             }
         }
 
         if (typeof handleStickyHeader === 'function') {
             try {
                 handleStickyHeader();
-                console.log('✅ handleStickyHeader exécuté');
             } catch (e) {
-                console.warn('⚠️ handleStickyHeader non disponible');
+                // handleStickyHeader non disponible
             }
         }
 
         if (typeof initCart === 'function') {
             try {
                 initCart();
-                console.log('✅ initCart exécuté');
             } catch (e) {
-                console.warn('⚠️ initCart non disponible');
+                // initCart non disponible
             }
         }
-
-        console.log('✅ Tous les scripts sont initialisés');
     }
 
     /**
      * Initialiser le hamburger menu
      */
     function initHamburgerMenu() {
-        const toggleButton = document.querySelector('.sidebar__toggle');
-        const offcanvasOverlay = document.querySelector('.offcanvas__overlay');
-        const offcanvasClose = document.querySelector('.offcanvas__close button');
-        const sideBar = document.getElementById('targetElement');
+        const hamburger = document.querySelector('.hamburger-menu');
+        const mobileMenu = document.getElementById('mobile-menu');
 
-        if (!toggleButton || !sideBar) {
-            console.warn('⚠️ Éléments du hamburger menu non trouvés');
+        if (!hamburger || !mobileMenu) {
             return;
         }
 
-        // Toggle menu au clic
-        toggleButton.addEventListener('click', function(e) {
+        // Toggle menu au clic sur le hamburger
+        hamburger.addEventListener('click', function(e) {
             e.preventDefault();
-            sideBar.classList.toggle('side_bar_hidden');
-            console.log('🍔 Hamburger menu basculé');
+            e.stopPropagation();
+            
+            const isActive = hamburger.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            
+            // Forcer les styles inline pour assurer l'affichage
+            if (isActive) {
+                mobileMenu.style.display = 'block';
+            } else {
+                mobileMenu.style.display = 'none';
+            }
         });
 
-        // Fermer au clic sur l'overlay
-        if (offcanvasOverlay) {
-            offcanvasOverlay.addEventListener('click', function() {
-                sideBar.classList.add('side_bar_hidden');
-                console.log('🍔 Menu fermé (overlay)');
-            });
-        }
-
-        // Fermer au clic sur le bouton X
-        if (offcanvasClose) {
-            offcanvasClose.addEventListener('click', function() {
-                sideBar.classList.add('side_bar_hidden');
-                console.log('🍔 Menu fermé (bouton)');
-            });
-        }
-
-        // Fermer quand on clique sur un lien du menu
-        const menuLinks = document.querySelectorAll('nav#mobile-menu a');
+        // Fermer le menu quand on clique sur un lien
+        const menuLinks = mobileMenu.querySelectorAll('a');
         menuLinks.forEach(link => {
-            link.addEventListener('click', function() {
-                sideBar.classList.add('side_bar_hidden');
-                console.log('🍔 Menu fermé (lien cliqué)');
+            link.addEventListener('click', function(e) {
+                hamburger.classList.remove('active');
+                mobileMenu.classList.remove('active');
+                mobileMenu.style.display = 'none';
             });
         });
 
-        console.log('✅ Hamburger menu initialisé');
+        // Fermer le menu quand on clique en dehors
+        document.addEventListener('click', function(e) {
+            const isHamburger = e.target.closest('.hamburger-menu');
+            const isMenu = e.target.closest('#mobile-menu');
+            
+            if (!isHamburger && !isMenu && hamburger.classList.contains('active')) {
+                hamburger.classList.remove('active');
+                mobileMenu.classList.remove('active');
+                mobileMenu.style.display = 'none';
+            }
+        });
     }
 
     /**
@@ -246,7 +242,6 @@
             
             if (href === currentPage || (currentPage === '' && href === 'index.html')) {
                 link.parentElement.classList.add('active');
-                console.log('📍 Page active détectée:', currentPage);
             }
         });
     }
@@ -256,26 +251,12 @@
      */
     function initCartEvents() {
         const openButton = document.getElementById('openButton');
-        const closeButton = document.getElementById('closeButton');
-        const sideBar = document.getElementById('targetElement');
         
-        if (openButton && sideBar) {
+        if (openButton) {
             openButton.addEventListener('click', function(e) {
                 e.preventDefault();
-                sideBar.classList.remove('side_bar_hidden');
-                console.log('🛒 Panier ouvert');
             });
         }
-
-        if (closeButton && sideBar) {
-            closeButton.addEventListener('click', function(e) {
-                e.preventDefault();
-                sideBar.classList.add('side_bar_hidden');
-                console.log('🛒 Panier fermé');
-            });
-        }
-
-        console.log('✅ Événements du panier initialisés');
     }
 
     /**
