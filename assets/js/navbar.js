@@ -202,4 +202,13 @@
         });
     };
 
+    /**
+     * Initialiser le gestionnaire d'événements du bouton hamburger
+     */
+    window.initMenuToggle = function() {
+        // Ne rien faire ici - le plugin meanmenu gère automatiquement le hamburger
+        // Cette fonction est appelée par reinitializeScripts() pour compatibilité
+        console.log('✅ Menu toggle initialisé');
+    };
+
 })();

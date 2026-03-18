@@ -10,14 +10,14 @@
 
 
         /* ================================
-       Mobile Menu Js Start
+       Mobile Menu Js Start - DESACTIVÉ pour éviter conflit avec hamburger personnalisé
     ================================ */
 
-        $('#mobile-menu').meanmenu({
-            meanMenuContainer: '.mobile-menu',
-            meanScreenWidth: "1199",
-            meanExpand: ['<i class="far fa-plus"></i>'],
-        });
+        // $('#mobile-menu').meanmenu({
+        //     meanMenuContainer: '.mobile-menu',
+        //     meanScreenWidth: "1199",
+        //     meanExpand: ['<i class="far fa-plus"></i>'],
+        // });
 
         /* ================================
         Sidebar Toggle & Sticky Item Logic
