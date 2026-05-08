@@ -106,8 +106,8 @@
                             </div>
                         </div>
                         <div class="section-title wow fadeInUp" data-wow-delay=".3s">
-                            <span class="text-white"><img src="/assets/img/sub-title.svg" alt="img">Offre Spéciale</span>
-                            <h2 class="text-white text-anim">Profitez de Réductions <br> Jusqu'à 50% Actuellement!</h2>
+                            <span class="text-white font-bold"><img src="/assets/img/sub-title.svg" alt="img">Offre Spéciale</span>
+                            <h2 class="text-white text-anim font-bold">Profitez de Réductions <br> Jusqu'à 50% Actuellement!</h2>
                         </div>
                     </div>
                     <Link href="/about" class="theme-btn wow fadeInUp" data-wow-delay=".7s">

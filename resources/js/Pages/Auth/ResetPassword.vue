@@ -1,9 +1,6 @@
 <script setup>
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 
 const props = defineProps({
@@ -27,60 +24,62 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head title="Reset Password" />
+        <Head title="Nouveau mot de passe" />
 
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="email" value="Email" />
+        <div class="auth-heading">
+            <span>Securite</span>
+            <h2>Choisir un nouveau mot de passe</h2>
+            <p>Votre nouveau mot de passe protegera votre panier, vos commandes et vos informations client.</p>
+        </div>
 
-                <TextInput
+        <form class="auth-form" @submit.prevent="submit">
+            <label class="auth-field" for="email">
+                <span>Email</span>
+                <input
                     id="email"
-                    type="email"
-                    class="mt-1 block w-full"
                     v-model="form.email"
+                    type="email"
                     required
                     autofocus
                     autocomplete="username"
-                />
+                    placeholder="votre@email.com"
+                >
+                <InputError :message="form.errors.email" />
+            </label>
 
-                <InputError class="mt-2" :message="form.errors.email" />
-            </div>
-
-            <div class="mt-4">
-                <InputLabel for="password" value="Password" />
-
-                <TextInput
+            <label class="auth-field" for="password">
+                <span>Nouveau mot de passe</span>
+                <input
                     id="password"
-                    type="password"
-                    class="mt-1 block w-full"
                     v-model="form.password"
-                    required
-                    autocomplete="new-password"
-                />
-
-                <InputError class="mt-2" :message="form.errors.password" />
-            </div>
-
-            <div class="mt-4">
-                <InputLabel for="password_confirmation" value="Confirm Password" />
-
-                <TextInput
-                    id="password_confirmation"
                     type="password"
-                    class="mt-1 block w-full"
-                    v-model="form.password_confirmation"
                     required
                     autocomplete="new-password"
-                />
+                    placeholder="Nouveau mot de passe"
+                >
+                <InputError :message="form.errors.password" />
+            </label>
 
-                <InputError class="mt-2" :message="form.errors.password_confirmation" />
-            </div>
+            <label class="auth-field" for="password_confirmation">
+                <span>Confirmation</span>
+                <input
+                    id="password_confirmation"
+                    v-model="form.password_confirmation"
+                    type="password"
+                    required
+                    autocomplete="new-password"
+                    placeholder="Confirmez le mot de passe"
+                >
+                <InputError :message="form.errors.password_confirmation" />
+            </label>
 
-            <div class="flex items-center justify-end mt-4">
-                <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Reset Password
-                </PrimaryButton>
-            </div>
+            <button class="auth-submit" :class="{ loading: form.processing }" :disabled="form.processing">
+                Enregistrer le mot de passe
+            </button>
         </form>
     </GuestLayout>
 </template>
+
+<style scoped>
+@import './auth.css';
+</style>

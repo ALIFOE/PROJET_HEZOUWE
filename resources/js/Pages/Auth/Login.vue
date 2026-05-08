@@ -2,9 +2,6 @@
 import Checkbox from '@/Components/Checkbox.vue';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
 defineProps({
@@ -27,64 +24,69 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head title="Log in" />
+        <Head title="Connexion" />
 
-        <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
+        <div class="auth-heading">
+            <span>Connexion</span>
+            <h2>Bienvenue dans votre espace client</h2>
+            <p>Connectez-vous pour retrouver votre panier, vos commandes et vos informations de livraison.</p>
+        </div>
+
+        <div v-if="status" class="auth-alert success">
             {{ status }}
         </div>
 
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="email" value="Email" />
-
-                <TextInput
+        <form class="auth-form" @submit.prevent="submit">
+            <label class="auth-field" for="email">
+                <span>Email</span>
+                <input
                     id="email"
-                    type="email"
-                    class="mt-1 block w-full"
                     v-model="form.email"
+                    type="email"
                     required
                     autofocus
                     autocomplete="username"
-                />
+                    placeholder="votre@email.com"
+                >
+                <InputError :message="form.errors.email" />
+            </label>
 
-                <InputError class="mt-2" :message="form.errors.email" />
-            </div>
-
-            <div class="mt-4">
-                <InputLabel for="password" value="Password" />
-
-                <TextInput
+            <label class="auth-field" for="password">
+                <span>Mot de passe</span>
+                <input
                     id="password"
-                    type="password"
-                    class="mt-1 block w-full"
                     v-model="form.password"
+                    type="password"
                     required
                     autocomplete="current-password"
-                />
-
-                <InputError class="mt-2" :message="form.errors.password" />
-            </div>
-
-            <div class="block mt-4">
-                <label class="flex items-center">
-                    <Checkbox name="remember" v-model:checked="form.remember" />
-                    <span class="ml-2 text-sm text-gray-600">Remember me</span>
-                </label>
-            </div>
-
-            <div class="flex items-center justify-end mt-4">
-                <Link
-                    v-if="canResetPassword"
-                    :href="route('password.request')"
-                    class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    placeholder="Votre mot de passe"
                 >
-                    Forgot your password?
-                </Link>
+                <InputError :message="form.errors.password" />
+            </label>
 
-                <PrimaryButton class="ml-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Log in
-                </PrimaryButton>
+            <div class="auth-options">
+                <label class="auth-check">
+                    <Checkbox name="remember" v-model:checked="form.remember" />
+                    <span>Se souvenir de moi</span>
+                </label>
+
+                <Link v-if="canResetPassword" :href="route('password.request')" class="auth-link">
+                    Mot de passe oublie ?
+                </Link>
             </div>
+
+            <button class="auth-submit" :class="{ loading: form.processing }" :disabled="form.processing">
+                Se connecter
+            </button>
+
+            <p class="auth-switch">
+                Pas encore de compte ?
+                <Link :href="route('register')">Creer un compte</Link>
+            </p>
         </form>
     </GuestLayout>
 </template>
+
+<style scoped>
+@import './auth.css';
+</style>

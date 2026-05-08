@@ -1,9 +1,6 @@
 <script setup>
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
 const form = useForm({
@@ -23,82 +20,80 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head title="Register" />
+        <Head title="Creation de compte" />
 
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="name" value="Name" />
+        <div class="auth-heading">
+            <span>Nouveau client</span>
+            <h2>Creer votre compte HEZOUWE</h2>
+            <p>Un compte vous permet de conserver votre panier et de suivre vos commandes depuis votre dashboard.</p>
+        </div>
 
-                <TextInput
+        <form class="auth-form" @submit.prevent="submit">
+            <label class="auth-field" for="name">
+                <span>Nom complet</span>
+                <input
                     id="name"
-                    type="text"
-                    class="mt-1 block w-full"
                     v-model="form.name"
+                    type="text"
                     required
                     autofocus
                     autocomplete="name"
-                />
+                    placeholder="Votre nom"
+                >
+                <InputError :message="form.errors.name" />
+            </label>
 
-                <InputError class="mt-2" :message="form.errors.name" />
-            </div>
-
-            <div class="mt-4">
-                <InputLabel for="email" value="Email" />
-
-                <TextInput
+            <label class="auth-field" for="email">
+                <span>Email</span>
+                <input
                     id="email"
-                    type="email"
-                    class="mt-1 block w-full"
                     v-model="form.email"
+                    type="email"
                     required
                     autocomplete="username"
-                />
-
-                <InputError class="mt-2" :message="form.errors.email" />
-            </div>
-
-            <div class="mt-4">
-                <InputLabel for="password" value="Password" />
-
-                <TextInput
-                    id="password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    v-model="form.password"
-                    required
-                    autocomplete="new-password"
-                />
-
-                <InputError class="mt-2" :message="form.errors.password" />
-            </div>
-
-            <div class="mt-4">
-                <InputLabel for="password_confirmation" value="Confirm Password" />
-
-                <TextInput
-                    id="password_confirmation"
-                    type="password"
-                    class="mt-1 block w-full"
-                    v-model="form.password_confirmation"
-                    required
-                    autocomplete="new-password"
-                />
-
-                <InputError class="mt-2" :message="form.errors.password_confirmation" />
-            </div>
-
-            <div class="flex items-center justify-end mt-4">
-                <Link
-                    :href="route('login')"
-                    class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    placeholder="votre@email.com"
                 >
-                    Already registered?
-                </Link>
+                <InputError :message="form.errors.email" />
+            </label>
 
-                <PrimaryButton class="ml-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Register
-                </PrimaryButton>
-            </div>
+            <label class="auth-field" for="password">
+                <span>Mot de passe</span>
+                <input
+                    id="password"
+                    v-model="form.password"
+                    type="password"
+                    required
+                    autocomplete="new-password"
+                    placeholder="Choisissez un mot de passe"
+                >
+                <InputError :message="form.errors.password" />
+            </label>
+
+            <label class="auth-field" for="password_confirmation">
+                <span>Confirmation</span>
+                <input
+                    id="password_confirmation"
+                    v-model="form.password_confirmation"
+                    type="password"
+                    required
+                    autocomplete="new-password"
+                    placeholder="Confirmez le mot de passe"
+                >
+                <InputError :message="form.errors.password_confirmation" />
+            </label>
+
+            <button class="auth-submit" :class="{ loading: form.processing }" :disabled="form.processing">
+                Creer mon compte
+            </button>
+
+            <p class="auth-switch">
+                Vous avez deja un compte ?
+                <Link :href="route('login')">Se connecter</Link>
+            </p>
         </form>
     </GuestLayout>
 </template>
+
+<style scoped>
+@import './auth.css';
+</style>
