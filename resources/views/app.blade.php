@@ -8,7 +8,7 @@
     <title inertia>{{ $page['title'] ?? 'COOP CA HEZOUWE' }}</title>
     
     <!-- Favicon -->
-    <link rel="shortcut icon" href="{{ asset('assets/img/favicon.svg') }}">
+    <link rel="shortcut icon" href="{{ asset('assets/img/logo/logo_hezouwe.jpeg') }}">
     
     <!-- Bootstrap min.css -->
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">

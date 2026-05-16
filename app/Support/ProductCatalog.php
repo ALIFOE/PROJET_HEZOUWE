@@ -2,17 +2,33 @@
 
 namespace App\Support;
 
+use App\Models\Product;
 use Illuminate\Support\Collection;
 
 class ProductCatalog
 {
     public static function all(): Collection
     {
-        return collect(config('products_hezouwe', []));
+        // Récupère les produits de la base de données, avec fallback sur le config
+        $products = Product::all();
+        
+        if ($products->isEmpty()) {
+            return collect(config('products_hezouwe', []));
+        }
+
+        return $products->map(fn($p) => $p->toArray());
     }
 
     public static function find(string $slug): ?array
     {
+        // Cherche en base de données en priorité
+        $product = Product::where('slug', $slug)->first();
+        
+        if ($product) {
+            return $product->toArray();
+        }
+
+        // Fallback sur le fichier config
         return self::all()->firstWhere('slug', $slug);
     }
 

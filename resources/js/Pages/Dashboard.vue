@@ -1,12 +1,14 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, usePage } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import { computed, ref, onMounted } from 'vue';
+import QRCode from 'qrcode';
 
 const props = defineProps({
     cartItems: Array,
     orders: Array,
     stats: Object,
+    appUrl: String,
 });
 
 const page = usePage();
@@ -41,6 +43,25 @@ const statusClass = (status) => ({
     delivered: 'success',
     cancelled: 'danger',
 }[status] || 'warning');
+
+onMounted(() => {
+    (props.orders || []).forEach(order => {
+        if (order.status === 'shipped') {
+            const qrElement = document.getElementById(`qr-${order.id}`);
+            if (qrElement) {
+                const qrData = `${props.appUrl}/admin/orders/${order.id}/mark-delivered`;
+                QRCode.toCanvas(qrElement, qrData, {
+                    width: 128,
+                    margin: 1,
+                    color: {
+                        dark: '#1a3a1a',
+                        light: '#ffffff'
+                    }
+                });
+            }
+        }
+    });
+});
 </script>
 
 <template>
@@ -64,6 +85,10 @@ const statusClass = (status) => ({
                             <Link href="/shop-cart" class="dash-btn secondary">
                                 <i class="far fa-shopping-cart"></i>
                                 Voir mon panier
+                            </Link>
+                            <Link href="/logout" method="post" class="dash-btn logout">
+                                <i class="far fa-sign-out"></i>
+                                Déconnexion
                             </Link>
                         </div>
                     </div>
@@ -179,6 +204,17 @@ const statusClass = (status) => ({
                                             <span>{{ order.items.length }} article(s)</span>
                                         </div>
                                         <b>{{ formatPrice(order.total) }} FCFA</b>
+                                    </div>
+                                    <div class="order-products">
+                                        <div v-for="item in order.items" :key="item.slug" class="product-item">
+                                            <span class="product-name">{{ item.product_title }}</span>
+                                            <span class="product-price">{{ formatPrice(item.unit_price) }} FCFA</span>
+                                        </div>
+                                    </div>
+                                    <div v-if="order.status === 'shipped'" class="order-qr">
+                                        <strong>Code QR de livraison</strong>
+                                        <div class="qr-code" :id="`qr-${order.id}`"></div>
+                                        <span class="qr-hint">Présentez ce code au livreur</span>
                                     </div>
                                     <div class="order-meta">
                                         <span class="status-pill" :class="statusClass(order.status)">
@@ -552,6 +588,62 @@ const statusClass = (status) => ({
 .order-card strong,
 .order-card span {
     display: block;
+}
+
+.order-products {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin: 10px 0;
+    padding: 10px;
+    background: #f9faf9;
+    border-radius: 6px;
+}
+
+.product-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 0.875rem;
+}
+
+.product-name {
+    color: #1a3a1a;
+    font-weight: 600;
+}
+
+.product-price {
+    color: #2d7a2d;
+    font-weight: 700;
+}
+
+.order-qr {
+    margin-top: 12px;
+    padding: 12px;
+    background: #f4fbf4;
+    border: 1px solid #dcefdc;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.order-qr strong {
+    display: block;
+    color: #1a3a1a;
+    font-size: 0.875rem;
+    margin-bottom: 8px;
+}
+
+.qr-code {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 8px;
+}
+
+.qr-hint {
+    display: block;
+    color: #6b7280;
+    font-size: 0.75rem;
 }
 
 .order-meta {

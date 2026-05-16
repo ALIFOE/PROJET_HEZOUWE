@@ -5,6 +5,9 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
+use App\Support\ProductCatalog;
+use App\Support\ServiceCatalog;
+use App\Support\NewsCatalog;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -22,8 +25,8 @@ use Inertia\Inertia;
 // Page d'accueil
 Route::get('/', function () {
     return Inertia::render('Home', [
-        'products' => config('products_hezouwe'),
-        'services' => config('services_hezouwe'),
+        'products' => ProductCatalog::all(),
+        'services' => ServiceCatalog::all(),
     ]);
 })->name('home');
 
@@ -34,7 +37,7 @@ Route::get('/about', function () {
 
 // Page Boutique
 Route::get('/shop', function () {
-    $products = config('products_hezouwe');
+    $products = ProductCatalog::all();
     return Inertia::render('Shop', ['products' => $products]);
 })->name('shop');
 
@@ -45,12 +48,12 @@ Route::get('/shop-details', function () {
 
 // Page Détails Produit par slug
 Route::get('/shop-details/{slug}', function ($slug) {
-    $allProducts = config('products_hezouwe');
-    $product = collect($allProducts)->firstWhere('slug', $slug);
+    $allProducts = ProductCatalog::all();
+    $product = $allProducts->firstWhere('slug', $slug);
     if (!$product) {
         abort(404);
     }
-    $related = collect($allProducts)->where('slug', '!=', $slug)->take(4)->values()->all();
+    $related = $allProducts->where('slug', '!=', $slug)->take(4)->values()->all();
     return Inertia::render('ShopDetails', [
         'product'     => $product,
         'allProducts' => $allProducts,
@@ -60,7 +63,7 @@ Route::get('/shop-details/{slug}', function ($slug) {
 
 // Page Services
 Route::get('/service', function () {
-    $allServices = config('services_hezouwe');
+    $allServices = ServiceCatalog::all();
     return Inertia::render('Service', ['allServices' => $allServices]);
 })->name('service');
 
@@ -71,8 +74,8 @@ Route::get('/service-details', function () {
 
 // Page Détails Service par slug
 Route::get('/service-details/{slug}', function ($slug) {
-    $allServices = config('services_hezouwe');
-    $service = collect($allServices)->firstWhere('slug', $slug);
+    $allServices = ServiceCatalog::all();
+    $service = $allServices->firstWhere('slug', $slug);
     if (!$service) {
         abort(404);
     }
@@ -99,7 +102,7 @@ Route::get('/project-details', function () {
 
 // Page Nouvelles
 Route::get('/news', function () {
-    $allNews = config('news_hezouwe');
+    $allNews = NewsCatalog::all();
     return Inertia::render('News', ['allNews' => $allNews]);
 })->name('news');
 
@@ -110,12 +113,12 @@ Route::get('/news-details', function () {
 
 // Page Détails Actualité par slug
 Route::get('/news-details/{slug}', function ($slug) {
-    $allNews = config('news_hezouwe');
-    $article = collect($allNews)->firstWhere('slug', $slug);
+    $allNews = NewsCatalog::all();
+    $article = $allNews->firstWhere('slug', $slug);
     if (!$article) {
         abort(404);
     }
-    $recent  = collect($allNews)->where('slug', '!=', $slug)->take(3)->values()->all();
+    $recent  = $allNews->where('slug', '!=', $slug)->take(3)->values()->all();
     return Inertia::render('NewsDetails', [
         'article' => $article,
         'allNews' => $allNews,
@@ -180,5 +183,15 @@ Route::middleware('auth')->group(function () {
 Route::post('/payment/create-session', [PaymentController::class, 'createCheckoutSession'])->middleware('auth')->name('payment.create-session');
 Route::get('/payment/success', [PaymentController::class, 'success'])->middleware('auth')->name('payment.success');
 Route::get('/payment/cancel', [PaymentController::class, 'cancel'])->middleware('auth')->name('payment.cancel');
+
+// Routes Admin
+Route::middleware(['auth', 'verified', 'is.admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', [App\Http\Controllers\Admin\AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::resource('orders', \App\Http\Controllers\Admin\OrderController::class)->only(['index', 'show', 'edit', 'update']);
+    Route::post('orders/{order}/mark-delivered', [\App\Http\Controllers\Admin\OrderController::class, 'markAsDelivered'])->name('orders.mark-delivered');
+    Route::resource('products', \App\Http\Controllers\Admin\ProductController::class);
+    Route::resource('services', \App\Http\Controllers\Admin\ServiceController::class);
+    Route::resource('news', \App\Http\Controllers\Admin\NewsController::class);
+});
 
 require __DIR__.'/auth.php';

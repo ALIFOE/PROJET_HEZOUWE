@@ -27,6 +27,7 @@ class DashboardController extends Controller
                 'orders_count' => $user->orders()->count(),
                 'orders_total' => (int) $user->orders()->sum('total'),
             ],
+            'appUrl' => config('app.url'),
         ]);
     }
 }
