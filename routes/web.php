@@ -167,7 +167,7 @@ Route::get('/pricing', function () {
 // Dashboard et authentification (Breeze)
 Route::get('/dashboard', DashboardController::class)->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/shop-cart', [CartController::class, 'index'])->name('shop-cart');
     Route::post('/cart', [CartController::class, 'store'])->name('cart.store');
     Route::patch('/cart/{cartItem}', [CartController::class, 'update'])->name('cart.update');
@@ -183,9 +183,9 @@ Route::middleware('auth')->group(function () {
 });
 
 // Routes de paiement Stripe existantes
-Route::post('/payment/create-session', [PaymentController::class, 'createCheckoutSession'])->middleware('auth')->name('payment.create-session');
-Route::get('/payment/success', [PaymentController::class, 'success'])->middleware('auth')->name('payment.success');
-Route::get('/payment/cancel', [PaymentController::class, 'cancel'])->middleware('auth')->name('payment.cancel');
+Route::post('/payment/create-session', [PaymentController::class, 'createCheckoutSession'])->middleware(['auth', 'verified'])->name('payment.create-session');
+Route::get('/payment/success', [PaymentController::class, 'success'])->middleware(['auth', 'verified'])->name('payment.success');
+Route::get('/payment/cancel', [PaymentController::class, 'cancel'])->middleware(['auth', 'verified'])->name('payment.cancel');
 
 // Routes Admin
 Route::middleware(['auth', 'verified', 'is.admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -198,6 +198,7 @@ Route::middleware(['auth', 'verified', 'is.admin'])->prefix('admin')->name('admi
     Route::resource('services', \App\Http\Controllers\Admin\ServiceController::class);
     Route::post('news/upload-image', [\App\Http\Controllers\Admin\NewsController::class, 'uploadImage'])->name('news.upload-image');
     Route::resource('news', \App\Http\Controllers\Admin\NewsController::class);
+    Route::resource('users', \App\Http\Controllers\Admin\UserController::class)->only(['index', 'show', 'edit', 'update', 'destroy']);
 });
 
 require __DIR__.'/auth.php';

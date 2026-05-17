@@ -10,7 +10,7 @@ class IsAdmin
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->user()?->email !== 'admin@hezouwe.com') {
+        if ($request->user()?->role !== 'admin') {
             return redirect()->route('dashboard')->with('error', 'Accès non autorisé');
         }
 

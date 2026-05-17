@@ -26,6 +26,13 @@
                     <i class="far fa-newspaper"></i>
                     <span>Actualités</span>
                 </Link>
+
+                <div class="nav-separator"></div>
+
+                <Link href="/admin/users" class="nav-item" :class="{ active: $page.url.startsWith('/admin/users') }">
+                    <i class="far fa-users"></i>
+                    <span>Utilisateurs</span>
+                </Link>
             </nav>
             <div class="sidebar-footer">
                 <Link href="/dashboard" class="nav-item">
@@ -143,6 +150,12 @@ const title = computed(() => page.props.title || 'Dashboard');
     width: 20px;
     text-align: center;
     font-size: 1rem;
+}
+
+.nav-separator {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.08);
+    margin: 8px 0;
 }
 
 .sidebar-footer {
