@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Service;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class ServiceController extends Controller
@@ -20,12 +21,26 @@ class ServiceController extends Controller
         return Inertia::render('Admin/Services/Create');
     }
 
+    public function uploadImage(Request $request)
+    {
+        $validated = $request->validate([
+            'images' => 'required|array',
+            'images.*' => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
+        ]);
+
+        $images = collect($validated['images'])
+            ->map(fn ($image) => '/storage/' . $image->store('services', 'public'))
+            ->values();
+
+        return response()->json(['images' => $images]);
+    }
+
     public function store(Request $request)
     {
         $validated = $request->validate([
             'slug' => 'required|string|unique:services',
             'title' => 'required|string|max:255',
-            'icon' => 'required|string|max:100',
+            'icon' => 'nullable|string|max:100',
             'short' => 'required|string',
             'description' => 'required|string',
             'description2' => 'nullable|string',
@@ -52,7 +67,7 @@ class ServiceController extends Controller
         $validated = $request->validate([
             'slug' => 'required|string|unique:services,slug,' . $service->id,
             'title' => 'required|string|max:255',
-            'icon' => 'required|string|max:100',
+            'icon' => 'nullable|string|max:100',
             'short' => 'required|string',
             'description' => 'required|string',
             'description2' => 'nullable|string',

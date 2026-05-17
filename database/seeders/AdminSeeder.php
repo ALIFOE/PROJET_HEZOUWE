@@ -8,21 +8,18 @@ use Illuminate\Support\Facades\Hash;
 
 class AdminSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     *
-     * @return void
-     */
-    public function run()
+    public function run(): void
     {
         User::updateOrCreate(
             ['email' => 'admin@hezouwe.com'],
             [
-                'name' => 'Admin HEZOUWE',
-                'email' => 'admin@hezouwe.com',
-                'password' => Hash::make('admin123'),
+                'name'              => 'Admin HEZOUWE',
+                'email'             => 'admin@hezouwe.com',
+                'password'          => Hash::make('admin123'),
                 'email_verified_at' => now(),
             ]
         );
+
+        $this->command->info('  Admin créé : admin@hezouwe.com / admin123');
     }
 }

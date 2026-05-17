@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\News;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class NewsController extends Controller
@@ -18,6 +19,21 @@ class NewsController extends Controller
     public function create()
     {
         return Inertia::render('Admin/News/Create');
+    }
+
+    public function uploadImage(Request $request)
+    {
+        $request->validate([
+            'images'   => 'required|array',
+            'images.*' => 'required|image|max:4096',
+        ]);
+
+        $paths = [];
+        foreach ($request->file('images') as $image) {
+            $paths[] = '/storage/' . $image->store('news', 'public');
+        }
+
+        return response()->json(['images' => $paths]);
     }
 
     public function store(Request $request)

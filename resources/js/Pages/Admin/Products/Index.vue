@@ -1,89 +1,124 @@
 <script setup>
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 
-const props = defineProps({
+defineProps({
     products: Object,
 });
 
-const formatPrice = (n) => n?.toLocaleString('fr-FR') ?? '0';
+const formatPrice = (value) => `${Number(value || 0).toLocaleString('fr-FR')} FCFA`;
+
+const deleteProduct = (product) => {
+    if (!confirm(`Supprimer definitivement le produit "${product.title}" ?`)) {
+        return;
+    }
+
+    router.delete(`/admin/products/${product.slug}`, {
+        preserveScroll: true,
+    });
+};
 </script>
 
 <template>
-    <Head title="Gestion des Produits" />
+    <Head title="Gestion des produits" />
 
-    <AdminLayout title="Gestion des Produits">
+    <AdminLayout title="Gestion des produits">
         <div class="admin-page">
             <div class="page-header">
-                <h1>Produits</h1>
+                <div>
+                    <p class="eyebrow">Catalogue</p>
+                    <h1>Produits</h1>
+                    <p class="header-text">Gerez les produits visibles dans la boutique et les sections dynamiques du site.</p>
+                </div>
                 <Link href="/admin/products/create" class="btn-primary">
                     <i class="far fa-plus"></i>
                     Ajouter un produit
                 </Link>
             </div>
 
-            <div class="table-container">
-                <table class="data-table">
-                    <thead>
-                        <tr>
-                            <th>Image</th>
-                            <th>Titre</th>
-                            <th>Catégorie</th>
-                            <th>Prix</th>
-                            <th>Promo</th>
-                            <th>Stock</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="product in products.data" :key="product.id">
-                            <td>
-                                <img :src="product.image" :alt="product.title" class="thumb">
-                            </td>
-                            <td>
-                                <strong>{{ product.title }}</strong>
-                                <span class="slug">{{ product.slug }}</span>
-                            </td>
-                            <td>{{ product.category }}</td>
-                            <td>{{ formatPrice(product.price) }} FCFA</td>
-                            <td>
-                                <span v-if="product.price_promo" class="promo-badge">
-                                    {{ formatPrice(product.price_promo) }} FCFA
-                                </span>
-                                <span v-else class="text-muted">-</span>
-                            </td>
-                            <td>
-                                <span :class="['stock-badge', product.in_stock ? 'in-stock' : 'out-stock']">
-                                    {{ product.in_stock ? 'En stock' : 'Rupture' }}
-                                </span>
-                            </td>
-                            <td>
-                                <div class="action-buttons">
-                                    <Link :href="`/admin/products/${product.id}/edit`" class="btn-edit">
-                                        <i class="far fa-edit"></i>
-                                    </Link>
-                                    <button @click="deleteProduct(product.id)" class="btn-delete">
-                                        <i class="far fa-trash"></i>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <div class="table-card">
+                <div class="table-toolbar">
+                    <div>
+                        <strong>{{ products.total || products.data.length }}</strong>
+                        <span>produit(s)</span>
+                    </div>
+                    <span class="toolbar-note">Actions disponibles : modifier, supprimer</span>
+                </div>
+
+                <div class="table-scroll">
+                    <table class="products-table">
+                        <thead>
+                            <tr>
+                                <th>Produit</th>
+                                <th>Categorie</th>
+                                <th>Prix</th>
+                                <th>Promo</th>
+                                <th>Badge</th>
+                                <th>Stock</th>
+                                <th class="actions-col">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="product in products.data" :key="product.id">
+                                <td>
+                                    <div class="product-cell">
+                                        <img v-if="product.image" :src="product.image" :alt="product.title">
+                                        <div v-else class="thumb-placeholder">
+                                            <i class="far fa-image"></i>
+                                        </div>
+                                        <div>
+                                            <strong>{{ product.title }}</strong>
+                                            <span>{{ product.slug }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{ product.category }}</td>
+                                <td class="price-cell">{{ formatPrice(product.price) }}</td>
+                                <td>
+                                    <span v-if="product.price_promo" class="promo-pill">
+                                        {{ formatPrice(product.price_promo) }}
+                                    </span>
+                                    <span v-else class="muted">Aucune</span>
+                                </td>
+                                <td>
+                                    <span v-if="product.badge" class="badge-pill">{{ product.badge }}</span>
+                                    <span v-else class="muted">Aucun</span>
+                                </td>
+                                <td>
+                                    <span :class="['stock-pill', product.in_stock ? 'in-stock' : 'out-stock']">
+                                        {{ product.in_stock ? 'En stock' : 'Rupture' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="action-buttons">
+                                        <Link :href="`/admin/products/${product.slug}/edit`" class="btn-action btn-edit">
+                                            <i class="far fa-edit"></i>
+                                            Modifier
+                                        </Link>
+                                        <button type="button" class="btn-action btn-delete" @click="deleteProduct(product)">
+                                            <i class="far fa-trash-alt"></i>
+                                            Supprimer
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
                 <div v-if="products.data.length === 0" class="empty-state">
                     <i class="far fa-box"></i>
                     <h3>Aucun produit</h3>
-                    <p>Commencez par ajouter votre premier produit.</p>
+                    <p>Commencez par ajouter votre premier produit au catalogue.</p>
                     <Link href="/admin/products/create" class="btn-primary">Ajouter un produit</Link>
                 </div>
             </div>
 
-            <div v-if="products.links && products.links.length > 0" class="pagination">
+            <div v-if="products.links && products.links.length > 3" class="pagination">
                 <template v-for="(link, index) in products.links" :key="index">
-                    <Link 
-                        v-if="link.url" 
-                        :href="link.url" 
+                    <Link
+                        v-if="link.url"
+                        :href="link.url"
                         class="page-link"
                         :class="{ active: link.active }"
                         v-html="link.label"
@@ -95,16 +130,6 @@ const formatPrice = (n) => n?.toLocaleString('fr-FR') ?? '0';
     </AdminLayout>
 </template>
 
-<script>
-import { router } from '@inertiajs/vue3';
-
-const deleteProduct = (id) => {
-    if (confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')) {
-        router.delete(`/admin/products/${id}`);
-    }
-};
-</script>
-
 <style scoped>
 .admin-page {
     display: flex;
@@ -114,199 +139,255 @@ const deleteProduct = (id) => {
 
 .page-header {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
-    gap: 16px;
+    gap: 20px;
+}
+
+.eyebrow {
+    margin: 0 0 6px;
+    color: #5cb85c;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 0.78rem;
 }
 
 .page-header h1 {
     margin: 0;
-    color: #1a3a1a;
-    font-size: 1.75rem;
+    color: #17351a;
+    font-size: 1.85rem;
     font-weight: 900;
 }
 
-.btn-primary {
+.header-text {
+    margin: 8px 0 0;
+    color: #68746a;
+}
+
+.btn-primary,
+.btn-action {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
-    padding: 10px 20px;
+    min-height: 40px;
+    padding: 9px 14px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-weight: 850;
+    border: 1px solid transparent;
+    cursor: pointer;
+}
+
+.btn-primary {
     background: #5cb85c;
     color: #fff;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 700;
-    transition: background 0.2s;
 }
 
 .btn-primary:hover {
     background: #4a9e4a;
 }
 
-.table-container {
+.table-card {
     background: #fff;
-    border: 1px solid #e8eee3;
-    border-radius: 12px;
+    border: 1px solid #e5ece2;
+    border-radius: 8px;
+    box-shadow: 0 16px 42px rgba(23, 53, 26, 0.06);
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(27, 58, 28, 0.05);
 }
 
-.data-table {
+.table-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 20px;
+    border-bottom: 1px solid #e5ece2;
+    background: #fbfcfa;
+}
+
+.table-toolbar strong {
+    color: #17351a;
+    font-size: 1.15rem;
+}
+
+.table-toolbar span,
+.toolbar-note {
+    color: #68746a;
+    font-weight: 650;
+}
+
+.table-scroll {
+    overflow-x: auto;
+}
+
+.products-table {
     width: 100%;
+    min-width: 980px;
     border-collapse: collapse;
 }
 
-.data-table th {
+.products-table th {
     text-align: left;
-    padding: 16px;
-    color: #6b7280;
-    font-size: 0.875rem;
-    font-weight: 600;
-    border-bottom: 2px solid #e8eee3;
-    background: #f9faf9;
+    padding: 14px 16px;
+    color: #68746a;
+    font-size: 0.78rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    border-bottom: 1px solid #e5ece2;
+    background: #f8faf7;
 }
 
-.data-table td {
+.products-table td {
     padding: 16px;
-    color: #1a3a1a;
-    font-weight: 500;
-    border-bottom: 1px solid #e8eee3;
+    color: #17351a;
+    border-bottom: 1px solid #edf2ea;
     vertical-align: middle;
 }
 
-.data-table tr:last-child td {
-    border-bottom: none;
+.products-table tr:hover td {
+    background: #fbfcfa;
 }
 
-.data-table tr:hover td {
-    background: #f9faf9;
+.product-cell {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 280px;
 }
 
-.thumb {
-    width: 60px;
-    height: 60px;
-    border-radius: 8px;
+.product-cell img,
+.thumb-placeholder {
+    width: 66px;
+    height: 66px;
+    border-radius: 6px;
+    border: 1px solid #e5ece2;
+}
+
+.product-cell img {
     object-fit: cover;
 }
 
-.slug {
+.thumb-placeholder {
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    background: #f8faf7;
+    color: #9aaa95;
+}
+
+.product-cell strong {
     display: block;
-    color: #6b7280;
-    font-size: 0.8rem;
+    color: #17351a;
+    font-weight: 900;
+}
+
+.product-cell span,
+.muted {
+    display: block;
     margin-top: 4px;
+    color: #7a857c;
+    font-size: 0.84rem;
 }
 
-.text-muted {
-    color: #9ca3af;
+.price-cell {
+    font-weight: 900;
+    white-space: nowrap;
 }
 
-.promo-badge {
-    display: inline-block;
-    padding: 4px 8px;
-    background: #fef3c7;
-    color: #a97816;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    font-weight: 600;
+.promo-pill,
+.badge-pill,
+.stock-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 0.78rem;
+    font-weight: 900;
+    white-space: nowrap;
 }
 
-.stock-badge {
-    display: inline-block;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 0.8rem;
-    font-weight: 600;
+.promo-pill {
+    background: #fff5d9;
+    color: #9a6b12;
 }
 
-.stock-badge.in-stock {
+.badge-pill {
+    background: #e8f1ff;
+    color: #245ea8;
+}
+
+.stock-pill.in-stock {
     background: #e7f7e7;
     color: #24782b;
 }
 
-.stock-badge.out-stock {
-    background: #fee2e2;
-    color: #dc2626;
+.stock-pill.out-stock {
+    background: #ffe8e8;
+    color: #b42323;
+}
+
+.actions-col {
+    width: 230px;
 }
 
 .action-buttons {
     display: flex;
+    flex-wrap: wrap;
     gap: 8px;
 }
 
-.btn-edit,
-.btn-delete {
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
 .btn-edit {
-    background: #e8f4ff;
-    color: #245ea8;
-    text-decoration: none;
-}
-
-.btn-edit:hover {
-    background: #d1e9ff;
+    background: #e8f7e8;
+    color: #24782b;
 }
 
 .btn-delete {
-    background: #fee2e2;
-    color: #dc2626;
+    background: #fff;
+    color: #b42323;
+    border-color: #ffd4d4;
 }
 
-.btn-delete:hover {
-    background: #fecaca;
+.btn-action:hover {
+    transform: translateY(-1px);
 }
 
 .empty-state {
     padding: 64px 24px;
     text-align: center;
-    color: #6b7280;
+    color: #68746a;
 }
 
 .empty-state i {
-    font-size: 3rem;
-    color: #d1d5db;
+    font-size: 2.8rem;
+    color: #cdd6c9;
     margin-bottom: 16px;
 }
 
 .empty-state h3 {
     margin: 0 0 8px;
-    color: #1a3a1a;
-    font-weight: 900;
+    color: #17351a;
 }
 
 .empty-state p {
-    margin: 0 0 16px;
+    margin: 0 0 18px;
 }
 
 .pagination {
     display: flex;
+    flex-wrap: wrap;
     gap: 8px;
     justify-content: center;
-    padding: 16px;
 }
 
 .page-link {
-    padding: 8px 16px;
-    border: 1px solid #e8eee3;
+    padding: 8px 14px;
+    border: 1px solid #e5ece2;
     border-radius: 6px;
-    color: #1a3a1a;
+    background: #fff;
+    color: #17351a;
     text-decoration: none;
-    font-weight: 600;
-    transition: all 0.2s;
-}
-
-.page-link:hover {
-    background: #f9faf9;
-    border-color: #5cb85c;
+    font-weight: 800;
 }
 
 .page-link.active {
@@ -316,24 +397,14 @@ const deleteProduct = (id) => {
 }
 
 .page-link.disabled {
-    color: #9ca3af;
-    cursor: not-allowed;
+    color: #a5aea2;
 }
 
 @media (max-width: 768px) {
-    .page-header {
+    .page-header,
+    .table-toolbar {
         flex-direction: column;
         align-items: flex-start;
-    }
-
-    .data-table th,
-    .data-table td {
-        padding: 12px 8px;
-    }
-
-    .thumb {
-        width: 48px;
-        height: 48px;
     }
 }
 </style>

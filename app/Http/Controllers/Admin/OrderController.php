@@ -31,6 +31,7 @@ class OrderController extends Controller
     {
         $validated = $request->validate([
             'status' => 'required|in:pending,confirmed,preparing,shipped,delivered,cancelled',
+            'payment_status' => 'nullable|in:unpaid,paid,failed,refunded',
         ]);
 
         $order->update($validated);
@@ -47,5 +48,12 @@ class OrderController extends Controller
         $order->update(['status' => 'delivered']);
 
         return response()->json(['success' => true, 'message' => 'Commande marquée comme livrée']);
+    }
+
+    public function destroy(Order $order)
+    {
+        $order->delete();
+
+        return redirect()->route('admin.orders.index')->with('success', 'Commande supprimee avec succes');
     }
 }

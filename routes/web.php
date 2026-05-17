@@ -32,7 +32,10 @@ Route::get('/', function () {
 
 // Page À Propos
 Route::get('/about', function () {
-    return Inertia::render('About');
+    return Inertia::render('About', [
+        'products' => ProductCatalog::all(),
+        'news'     => NewsCatalog::latest(4),
+    ]);
 })->name('about');
 
 // Page Boutique
@@ -187,10 +190,13 @@ Route::get('/payment/cancel', [PaymentController::class, 'cancel'])->middleware(
 // Routes Admin
 Route::middleware(['auth', 'verified', 'is.admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [App\Http\Controllers\Admin\AdminDashboardController::class, 'index'])->name('dashboard');
-    Route::resource('orders', \App\Http\Controllers\Admin\OrderController::class)->only(['index', 'show', 'edit', 'update']);
+    Route::resource('orders', \App\Http\Controllers\Admin\OrderController::class)->only(['index', 'show', 'edit', 'update', 'destroy']);
     Route::post('orders/{order}/mark-delivered', [\App\Http\Controllers\Admin\OrderController::class, 'markAsDelivered'])->name('orders.mark-delivered');
+    Route::post('products/upload-image', [\App\Http\Controllers\Admin\ProductController::class, 'uploadImage'])->name('products.upload-image');
     Route::resource('products', \App\Http\Controllers\Admin\ProductController::class);
+    Route::post('services/upload-image', [\App\Http\Controllers\Admin\ServiceController::class, 'uploadImage'])->name('services.upload-image');
     Route::resource('services', \App\Http\Controllers\Admin\ServiceController::class);
+    Route::post('news/upload-image', [\App\Http\Controllers\Admin\NewsController::class, 'uploadImage'])->name('news.upload-image');
     Route::resource('news', \App\Http\Controllers\Admin\NewsController::class);
 });
 

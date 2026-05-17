@@ -2,7 +2,7 @@
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import { ref, onMounted, onUnmounted } from 'vue';
-import { QrcodeStream } from 'vue-qr-reader';
+import { QrcodeStream } from 'vue-qrcode-reader';
 
 const scanning = ref(true);
 const result = ref(null);

@@ -161,7 +161,7 @@
         </div>
 
         <!-- Gallery Section Start -->
-        <div class="gallery-section-4 section-padding fix pt-0 section-bg">
+        <!-- <div class="gallery-section-4 section-padding fix pt-0 section-bg">
             <div class="swiper gallery-slide">
                 <div class="swiper-wrapper">
                     <div class="swiper-slide">
@@ -196,7 +196,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
     </AppLayout>
 </template>
 

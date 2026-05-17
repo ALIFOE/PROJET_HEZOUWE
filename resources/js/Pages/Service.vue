@@ -82,7 +82,7 @@
                     <div class="col-lg-6 wow fadeInUp" data-wow-delay=".4s">
                         <div class="sv-intro-images">
                             <img src="/assets/img/riz6.jpeg" alt="Collecte HEZOUWE" class="sv-img-main">
-                            <img src="/assets/img/image4.jpg" alt="Transformation HEZOUWE" class="sv-img-float">
+                            <img src="/assets/img/riz3.jpeg" alt="Transformation HEZOUWE" class="sv-img-float">
                             <div class="sv-img-badge">
                                 <i class="flaticon-broccoli"></i>
                                 <span>Certifié<br>ITRA</span>
@@ -311,18 +311,18 @@
         <!-- ══════════════════════════════════════════
              GALERIE SLIDER
         ══════════════════════════════════════════ -->
-        <div class="gallery-section-4 section-padding fix pt-0 section-bg">
+        <!-- <div class="gallery-section-4 section-padding fix pt-0 section-bg">
             <div class="swiper gallery-slide">
                 <div class="swiper-wrapper">
-                    <div class="swiper-slide"><div class="gallery-image-4"><img src="/assets/img/image1.jpg" alt=""></div></div>
-                    <div class="swiper-slide"><div class="gallery-image-4"><img src="/assets/img/image2.jpg" alt=""></div></div>
-                    <div class="swiper-slide"><div class="gallery-image-4"><img src="/assets/img/image3.jpg" alt=""></div></div>
-                    <div class="swiper-slide"><div class="gallery-image-4"><img src="/assets/img/image4.jpg" alt=""></div></div>
-                    <div class="swiper-slide"><div class="gallery-image-4"><img src="/assets/img/image5.jpg" alt=""></div></div>
-                    <div class="swiper-slide"><div class="gallery-image-4"><img src="/assets/img/home-4/gallery/gallery-06.jpg" alt=""></div></div>
+                    <div class="swiper-slide"><div class="gallery-image-4"><img src="/assets/img/riz1.jpeg" alt=""></div></div>
+                    <div class="swiper-slide"><div class="gallery-image-4"><img src="/assets/img/riz2.jpeg" alt=""></div></div>
+                    <div class="swiper-slide"><div class="gallery-image-4"><img src="/assets/img/riz3.jpeg" alt=""></div></div>
+                    <div class="swiper-slide"><div class="gallery-image-4"><img src="/assets/img/riz4.jpeg" alt=""></div></div>
+                    <div class="swiper-slide"><div class="gallery-image-4"><img src="/assets/img/riz5.jpeg" alt=""></div></div>
+                    <div class="swiper-slide"><div class="gallery-image-4"><img src="/assets/img/riz6.jpeg" alt=""></div></div>
                 </div>
             </div>
-        </div>
+        </div> -->
 
     </AppLayout>
 </template>

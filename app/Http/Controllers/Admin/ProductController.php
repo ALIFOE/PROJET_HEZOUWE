@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 class ProductController extends Controller
@@ -18,6 +19,20 @@ class ProductController extends Controller
     public function create()
     {
         return Inertia::render('Admin/Products/Create');
+    }
+
+    public function uploadImage(Request $request)
+    {
+        $validated = $request->validate([
+            'images' => 'required|array',
+            'images.*' => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
+        ]);
+
+        $images = collect($validated['images'])
+            ->map(fn ($image) => '/storage/' . $image->store('products', 'public'))
+            ->values();
+
+        return response()->json(['images' => $images]);
     }
 
     public function store(Request $request)

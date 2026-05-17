@@ -133,35 +133,22 @@
         <!-- Product Box Section Start -->
         <section class="product-box-section-4 style-about section-padding pt-0">
             <div class="container">
+                <div class="section-title text-center mb-50">
+                    <span class="wow fadeInUp"><img src="/assets/img/sub-title.svg" alt="img">Produits en vedette</span>
+                    <h2 class="text-anim">Nos meilleures offres de riz local</h2>
+                </div>
                 <div class="row g-4">
-                    <div class="col-xl-4 col-lg-6 col-md-6 wow fadeInUp" data-wow-delay=".3s">
-                        <div class="products-box-items bg-cover" style="background-image: url('/assets/img/image10.jpg');">
+                    <div
+                        v-for="(item, i) in dynamicFeaturedProducts"
+                        :key="item.slug"
+                        class="col-xl-4 col-lg-6 col-md-6 wow fadeInUp"
+                        :data-wow-delay="`.${3 + i * 2}s`"
+                    >
+                        <div class="products-box-items bg-cover" :style="`background-image: url('${item.bg}');`">
                             <div class="product-content">
-                                <span>Premium</span>
-                                <h3>Riz Blanc Naturel</h3>
-                                <Link href="/shop-details" class="theme-btn">
-                                    Acheter <i class="fas fa-shopping-basket"></i>
-                                </Link>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-4 col-lg-6 col-md-6 wow fadeInUp" data-wow-delay=".5s">
-                        <div class="products-box-items bg-cover" style="background-image: url('/assets/img/image1.jpg');">
-                            <div class="product-content">
-                                <span>Spécialité</span>
-                                <h3>Riz Étuvé Local</h3>
-                                <Link href="/shop-details" class="theme-btn">
-                                    Acheter <i class="fas fa-shopping-basket"></i>
-                                </Link>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-4 col-lg-6 col-md-6 wow fadeInUp" data-wow-delay=".7s">
-                        <div class="products-box-items bg-cover" style="background-image: url('/assets/img/image2.jpg');">
-                            <div class="product-content">
-                                <span>Certification</span>
-                                <h3>Riz ITRA Certifié</h3>
-                                <Link href="/shop-details" class="theme-btn">
+                                <span>{{ item.label }}</span>
+                                <h3>{{ item.title }}</h3>
+                                <Link :href="`/shop-details/${item.slug}`" class="theme-btn">
                                     Acheter <i class="fas fa-shopping-basket"></i>
                                 </Link>
                             </div>
@@ -257,57 +244,33 @@
                 </div>
             </div>
         </section>
-
+ 
+        <!-- Gallery Section -->
         <div class="gallery-section-3 fix bg-white section-padding">
             <div class="container">
-                <div class="section-title text-center">
+                <div class="section-title text-center mb-50">
                     <span class="wow fadeInUp"><img src="/assets/img/sub-title.svg" alt="img">Notre Galerie</span>
-                    <h2 class="text-anim">Nos Activités & Produits</h2>
+                    <h2 class="text-anim">Nos Activités &amp; Produits</h2>
                     <p class="mt-3 wow fadeInUp" data-wow-delay=".2s">
                         Découvrez nos installations, nos producteurs et nos produits riz de qualité premium certifiés par l'ITRA.
                     </p>
                 </div>
-            </div>
-            <div class="gallery-wrapper-3">
-                <div class="swiper gallery-slide-3">
-                    <div class="swiper-wrapper">
-                        <div class="swiper-slide">
-                            <div class="gallery-image-box-3">
-                                <img src="/assets/img/riz7.jpeg" alt="img">
-                                <div class="content">
-                                    <p>Galerie</p>
-                                    <h3><Link href="/project-details">Production de Riz Local</Link></h3>
-                                </div>
-                            </div>
+                <div class="about-gallery-grid">
+                    <Link
+                        v-for="(item, i) in galleryItems"
+                        :key="`${item.title}-${i}`"
+                        :href="item.href"
+                        class="about-gallery-card wow fadeInUp"
+                        :class="{ 'about-gallery-card--large': i === 0, 'about-gallery-card--wide': i === 3 }"
+                        :data-wow-delay="`${0.2 + i * 0.1}s`"
+                    >
+                        <img :src="item.image" :alt="item.title">
+                        <div class="about-gallery-info">
+                            <span>{{ item.label }}</span>
+                            <h3>{{ item.title }}</h3>
+                            <p>{{ item.text }}</p>
                         </div>
-                        <div class="swiper-slide">
-                            <div class="gallery-image-box-3">
-                                <img src="/assets/img/riz5.jpeg" alt="img">
-                                <div class="content">
-                                    <p>Galerie</p>
-                                    <h3><Link href="/project-details">Transformation & Certification</Link></h3>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="swiper-slide">
-                            <div class="gallery-image-box-3">
-                                <img src="/assets/img/riz3.jpeg" alt="img">
-                                <div class="content">
-                                    <p>Galerie</p>
-                                    <h3><Link href="/project-details">Riz Premium du TOGO</Link></h3>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="swiper-slide">
-                            <div class="gallery-image-box-3">
-                                <img src="/assets/img/riz2.jpeg" alt="img">
-                                <div class="content">
-                                    <p>Galerie</p>
-                                    <h3><Link href="/project-details">Nos Producteurs Partenaires</Link></h3>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    </Link>
                 </div>
             </div>
         </div>
@@ -376,171 +339,25 @@
                     <h2 class="text-anim">Riz de Qualité Premium</h2>
                 </div>
                 <div class="row">
-                    <div class="col-xl-3 col-lg-4 col-md-6 wow fadeInUp" data-wow-delay=".2s">
+                    <div
+                        v-for="(product, i) in visibleProducts"
+                        :key="product.slug"
+                        class="col-xl-3 col-lg-4 col-md-6 wow fadeInUp"
+                        :data-wow-delay="`${0.2 + (i % 4) * 0.2}s`"
+                    >
                         <div class="products-image-box-5">
                             <div class="thumb">
-                                <img src="/assets/img/image12.jpg" alt="img">
-                                <Link href="/shop-cart" class="theme-btn">
+                                <img :src="product.image || '/assets/img/image1.jpg'" :alt="product.title">
+                                <Link :href="`/shop-details/${product.slug}`" class="theme-btn">
                                     Ajouter au panier <i class="fas fa-shopping-basket"></i>
                                 </Link>
                             </div>
                             <div class="content">
                                 <ul>
-                                    <li>
-                                        5 000 FCFA
-                                    </li>
-                                    <li>
-                                        <del>6 000 FCFA</del>
-                                    </li>
+                                    <li>{{ product.price ? product.price.toLocaleString('fr-FR') + ' FCFA' : '' }}</li>
+                                    <li v-if="product.price_promo"><del>{{ product.price_promo.toLocaleString('fr-FR') }} FCFA</del></li>
                                 </ul>
-                                <h3><Link href="/shop-details">Riz Blanc Premium 5kg</Link></h3>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-lg-4 col-md-6 wow fadeInUp" data-wow-delay=".4s">
-                        <div class="products-image-box-5">
-                            <div class="thumb">
-                                <img src="/assets/img/image11.jpg" alt="img">
-                                <Link href="/shop-cart" class="theme-btn">
-                                    Ajouter au panier <i class="fas fa-shopping-basket"></i>
-                                </Link>
-                            </div>
-                            <div class="content">
-                                <ul>
-                                    <li>
-                                        5 500 FCFA
-                                    </li>
-                                    <li>
-                                        <del>6 500 FCFA</del>
-                                    </li>
-                                </ul>
-                                <h3><Link href="/shop-details">Riz Étuvé Local 5kg</Link></h3>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-lg-4 col-md-6 wow fadeInUp" data-wow-delay=".6s">
-                        <div class="products-image-box-5">
-                            <div class="thumb">
-                                <img src="/assets/img/image3.jpg" alt="img">
-                                <Link href="/shop-cart" class="theme-btn">
-                                    Ajouter au panier <i class="fas fa-shopping-basket"></i>
-                                </Link>
-                            </div>
-                            <div class="content">
-                                <ul>
-                                    <li>
-                                        2 000 FCFA
-                                    </li>
-                                    <li>
-                                        <del>2 500 FCFA</del>
-                                    </li>
-                                </ul>
-                                <h3><Link href="/shop-details">Balles & Son de Riz 5kg</Link></h3>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-lg-4 col-md-6 wow fadeInUp" data-wow-delay=".8s">
-                        <div class="products-image-box-5">
-                            <div class="thumb">
-                                <img src="/assets/img/image5.jpg" alt="img">
-                                <Link href="/shop-cart" class="theme-btn">
-                                    Ajouter au panier <i class="fas fa-shopping-basket"></i>
-                                </Link>
-                            </div>
-                            <div class="content">
-                                <ul>
-                                    <li>
-                                        7 000 FCFA
-                                    </li>
-                                    <li>
-                                        <del>8 500 FCFA</del>
-                                    </li>
-                                </ul>
-                                <h3><Link href="/shop-details">Riz ITRA Certifié 10kg</Link></h3>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-lg-4 col-md-6 wow fadeInUp" data-wow-delay=".2s">
-                        <div class="products-image-box-5">
-                            <div class="thumb">
-                                <img src="/assets/img/image2.jpg" alt="img">
-                                <Link href="/shop-cart" class="theme-btn">
-                                    Ajouter au panier <i class="fas fa-shopping-basket"></i>
-                                </Link>
-                            </div>
-                            <div class="content">
-                                <ul>
-                                    <li>
-                                        10 000 FCFA
-                                    </li>
-                                    <li>
-                                        <del>12 000 FCFA</del>
-                                    </li>
-                                </ul>
-                                <h3><Link href="/shop-details">Riz Blanc Bulk 25kg</Link></h3>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-lg-4 col-md-6 wow fadeInUp" data-wow-delay=".4s">
-                        <div class="products-image-box-5">
-                            <div class="thumb">
-                                <img src="/assets/img/image1.jpg" alt="img">
-                                <Link href="/shop-cart" class="theme-btn">
-                                    Ajouter au panier <i class="fas fa-shopping-basket"></i>
-                                </Link>
-                            </div>
-                            <div class="content">
-                                <ul>
-                                    <li>
-                                        11 000 FCFA
-                                    </li>
-                                    <li>
-                                        <del>13 000 FCFA</del>
-                                    </li>
-                                </ul>
-                                <h3><Link href="/shop-details">Riz Étuvé Bulk 25kg</Link></h3>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-lg-4 col-md-6 wow fadeInUp" data-wow-delay=".6s">
-                        <div class="products-image-box-5">
-                            <div class="thumb">
-                                <img src="/assets/img/riz3.jpeg" alt="img">
-                                <Link href="/shop-cart" class="theme-btn">
-                                    Ajouter au panier <i class="fas fa-shopping-basket"></i>
-                                </Link>
-                            </div>
-                            <div class="content">
-                                <ul>
-                                    <li>
-                                        3 000 FCFA
-                                    </li>
-                                    <li>
-                                        <del>4 000 FCFA</del>
-                                    </li>
-                                </ul>
-                                <h3><Link href="/shop-details">Graines de Riz Premium 1kg</Link></h3>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-lg-4 col-md-6 wow fadeInUp" data-wow-delay=".8s">
-                        <div class="products-image-box-5">
-                            <div class="thumb">
-                                <img src="/assets/img/riz2.jpeg" alt="img">
-                                <Link href="/shop-cart" class="theme-btn">
-                                    Ajouter au panier <i class="fas fa-shopping-basket"></i>
-                                </Link>
-                            </div>
-                            <div class="content">
-                                <ul>
-                                    <li>
-                                        8 000 FCFA
-                                    </li>
-                                    <li>
-                                        <del>10 000 FCFA</del>
-                                    </li>
-                                </ul>
-                                <h3><Link href="/shop-details">Pack Découverte Riz</Link></h3>
+                                <h3><Link :href="`/shop-details/${product.slug}`">{{ product.title }}</Link></h3>
                             </div>
                         </div>
                     </div>
@@ -548,55 +365,73 @@
             </div>
         </section>
 
-         <!-- Testimonial Section Start -->
-        <section class="testimonial-section-4 section-padding fix pt-0">
+        <!-- Testimonial Section Start -->
+        <section class="about-testi-section section-padding fix pt-0">
             <div class="container">
-                <div class="swiper testimonial-slide">
-                    <div class="swiper-wrapper">
-                        <div class="swiper-slide">
-                            <div class="testimonial-wrapper-4">
-                                <div class="shape-1">
-                                    <img src="/assets/img/home-4/testimonial/shape-1.png" alt="img">
+                <div class="section-title text-center mb-50">
+                    <span class="wow fadeInUp"><img src="/assets/img/sub-title.svg" alt="img">Témoignages</span>
+                    <h2 class="text-anim">Ce que Disent Nos Clients</h2>
+                </div>
+                <div class="row g-4">
+                    <div
+                        v-for="(testimonial, i) in testimonials"
+                        :key="testimonial.name"
+                        class="col-lg-4 wow fadeInUp"
+                        :data-wow-delay="`${0.2 + i * 0.2}s`"
+                    >
+                        <div class="at-card" :class="{ 'at-card--featured': i === 1 }">
+                            <div class="at-quote"><i class="fas fa-quote-left"></i></div>
+                            <div class="at-stars">
+                                <i v-for="star in testimonial.rating" :key="star" class="fas fa-star"></i>
+                            </div>
+                            <p class="at-dynamic-text">{{ testimonial.text }}</p>
+                            <p>Le riz de HEZOUWE est de meilleure qualité et les prix sont justes. Je recommande à tous !</p>
+                            <div class="at-author">
+                                <div class="at-avatar at-dynamic-avatar">{{ testimonial.initials }}</div>
+                                <div class="at-dynamic-author">
+                                    <h4>{{ testimonial.name }}</h4>
+                                    <span>{{ testimonial.role }}</span>
                                 </div>
-                                <div class="shape-2"></div>
-                                <div class="row g-4 align-items-center">
-                                    <div class="col-lg-5">
-                                        <div class="testimonial-img">
-                                            <img src="/assets/img/image6.jpg" alt="img">
-                                        </div>
-                                    </div>
-                                    <div class="col-lg-7">
-                                        <div class="testimonial-content">
-                                            <div class="section-title text-center">
-                                                <span><img src="/assets/img/sub-title.svg" alt="img">Nos Témoignages</span>
-                                                <h2>"Le riz de HEZOUWE est de meilleure qualité et les prix sont justes. Je recommande à  tous!"</h2>
-                                            </div>
-                                            <div class="client-info-area">
-                                                <div class="client-info">
-                                                    <div class="client-image"></div>
-                                                    <div class="content">
-                                                        <p>Producteur Partenaire</p>
-                                                        <h5>Alassane Sow</h5>
-                                                    </div>
-                                                </div>
-                                                <div class="icon">
-                                                    <i class="flaticon-quote"></i>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                <div class="at-avatar"><i class="fas fa-user"></i></div>
+                                <div>
+                                    <h4>Alassane Sow</h4>
+                                    <span>Producteur Partenaire</span>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                 <div class="array-button">
-                    <button class="array-prev">
-                        <i class="far fa-arrow-left"></i>
-                    </button>
-                    <button class="array-next">
-                        <i class="far fa-arrow-right"></i>
-                    </button>
+                    <div class="col-lg-4 wow fadeInUp" data-wow-delay=".4s">
+                        <div class="at-card at-card--featured">
+                            <div class="at-quote"><i class="fas fa-quote-left"></i></div>
+                            <div class="at-stars">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
+                            <p>Naturellement parfumé, cuisson rapide et très nutritif. Le riz HEZOUWE a changé nos habitudes alimentaires !</p>
+                            <div class="at-author">
+                                <div class="at-avatar"><i class="fas fa-user"></i></div>
+                                <div>
+                                    <h4>Ama Akosua</h4>
+                                    <span>Cliente CDEJ Kpalimé</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 wow fadeInUp" data-wow-delay=".6s">
+                        <div class="at-card">
+                            <div class="at-quote"><i class="fas fa-quote-left"></i></div>
+                            <div class="at-stars">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                            </div>
+                            <p>Supporter HEZOUWE c'est soutenir les producteurs locaux. Leur engagement envers la qualité est exemplaire !</p>
+                            <div class="at-author">
+                                <div class="at-avatar"><i class="fas fa-user"></i></div>
+                                <div>
+                                    <h4>Kofi Mensah</h4>
+                                    <span>Producteur Région Plateaux</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -620,24 +455,33 @@
                     </Link>
                 </div>
                 <div class="row">
-                    <div class="col-lg-6 col-md-6 wow fadeInUp" data-wow-delay=".3s">
+                    <div
+                        v-for="(article, i) in latestNews"
+                        :key="article.slug"
+                        class="col-lg-6 col-md-6 wow fadeInUp"
+                        :data-wow-delay="`${0.3 + i * 0.2}s`"
+                    >
                         <div class="news-image-box-items-4">
                             <div class="news-image">
-                                <img src="/assets/img/home-4/news/news-01.jpg" alt="img">
+                                <img :src="article.image || article.thumb || '/assets/img/inner-page/news/news-01.jpg'" :alt="article.title">
                                 <div class="post-date">
-                                    <h4>15</h4>
-                                    <p>MARS 2026</p>
+                                    <h4>{{ article.dateDay }}</h4>
+                                    <p>{{ article.dateMonth }}</p>
                                 </div>
                             </div>
                             <div class="content">
                                 <ul class="post-date">
                                     <li>
-                                        Riz Local
+                                        {{ article.category || 'ActualitÃ©' }}
                                     </li>
                                     <li>
-                                        02 Commentaires
+                                        {{ article.commentsLabel }}
                                     </li>
                                 </ul>
+                                <h3 class="about-news-title"><Link :href="`/news-details/${article.slug}`">{{ article.title }}</Link></h3>
+                                <Link :href="`/news-details/${article.slug}`" class="link-btn about-news-link">Plus de DÃ©tails
+                                    <i class="far fa-arrow-right"></i>
+                                </Link>
                                 <h3><Link href="/news-details">HEZOUWE atteint 5000 clients satisfaits en Afrique de l'Ouest</Link></h3>
                                 <Link href="/news-details" class="link-btn">Plus de Détails
                                     <i class="far fa-arrow-right"></i>
@@ -698,7 +542,7 @@
         </section>
 
         <!-- Gallery Section Start -->
-       <div class="gallery-section-4 section-padding fix pt-0 section-bg">
+       <!-- <div class="gallery-section-4 section-padding fix pt-0 section-bg">
             <div class="swiper gallery-slide">
                 <div class="swiper-wrapper">
                     <div class="swiper-slide">
@@ -728,14 +572,141 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> -->
     </AppLayout>
 </template>
 
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Link } from '@inertiajs/vue3';
-import { onMounted } from 'vue';
+import { onMounted, computed } from 'vue';
+
+const props = defineProps({
+    products: { type: Array, default: () => [] },
+    news:     { type: Array, default: () => [] },
+});
+
+const fallbackProducts = [
+    { slug: 'riz-blanc-premium-5kg', title: 'Riz Blanc Premium 5kg', category: 'Riz Blanc', image: '/assets/img/riz2.jpeg', price: 5000, price_promo: 6000, short: 'Riz blanc local certifie ITRA.' },
+    { slug: 'riz-etuve-local-5kg', title: 'Riz Etuve Local 5kg', category: 'Riz Etuve', image: '/assets/img/riz3.jpeg', price: 5500, price_promo: 6500, short: 'Riz etuve nutritif et parfume.' },
+    { slug: 'riz-itra-certifie-10kg', title: 'Riz ITRA Certifie 10kg', category: 'Riz Certifie', image: '/assets/img/riz5.jpeg', price: 7000, price_promo: 8500, short: 'Format familial certifie ITRA.' },
+    { slug: 'balles-son-riz-5kg', title: 'Balles & Son de Riz 5kg', category: 'Sous-Produits', image: '/assets/img/riz5.jpeg', price: 2000, price_promo: 2500, short: 'Sous-produits naturels de riz.' },
+];
+
+const fallbackNews = [
+    { slug: '5000-clients-satisfaits', title: 'HEZOUWE atteint 5 000 clients satisfaits en Afrique de l Ouest', category: 'Croissance', comments: 5, date: '15 Mars 2026', image: '/assets/img/inner-page/news/news-01.jpg' },
+    { slug: 'certification-itra-riz-etuve', title: 'Nouvelle certification ITRA pour notre riz etuve', category: 'Certification', comments: 3, date: '10 Mars 2026', image: '/assets/img/inner-page/news/news-02.jpg' },
+];
+
+const visibleProducts = computed(() => {
+    return (props.products.length ? props.products : fallbackProducts).slice(0, 8);
+});
+
+const featuredProducts = computed(() => {
+    const cats = [
+        { key: 'Riz Blanc',     label: 'Premium',      fallbackImg: '/assets/img/image10.jpg', fallbackTitle: 'Riz Blanc Naturel' },
+        { key: 'Riz Étuvé',     label: 'Spécialité',   fallbackImg: '/assets/img/image1.jpg',  fallbackTitle: 'Riz Étuvé Local' },
+        { key: 'Riz Certifié',  label: 'Certification', fallbackImg: '/assets/img/image2.jpg',  fallbackTitle: 'Riz ITRA Certifié' },
+    ];
+    return cats.map(({ key, label, fallbackImg, fallbackTitle }) => {
+        const p = props.products.find(x => x.category === key);
+        return {
+            label,
+            title: p ? p.title : fallbackTitle,
+            slug:  p ? p.slug  : 'shop',
+            bg:    p && p.image ? p.image : fallbackImg,
+        };
+    });
+});
+
+const dynamicFeaturedProducts = computed(() => {
+    const labels = ['Premium', 'Specialite', 'Certification'];
+
+    return visibleProducts.value.slice(0, 3).map((product, index) => ({
+        label: product.badge || labels[index] || 'HEZOUWE',
+        title: product.title,
+        slug: product.slug,
+        bg: product.image || `/assets/img/riz${index + 2}.jpeg`,
+    }));
+});
+
+const galleryItems = computed(() => {
+    const productItems = visibleProducts.value.slice(0, 4).map((product, index) => ({
+        label: product.category || 'Produit',
+        title: product.title,
+        text: product.short || 'Riz local togolais transforme et conditionne par HEZOUWE.',
+        image: product.image || `/assets/img/riz${index + 2}.jpeg`,
+        href: `/shop-details/${product.slug}`,
+    }));
+
+    const fallbacks = [
+        { label: 'Production', title: 'Production de Riz Local', text: 'Suivi des producteurs et recoltes locales.', image: '/assets/img/riz7.jpeg', href: '/gallery' },
+        { label: 'Qualite', title: 'Transformation & Certification', text: 'Controle qualite et certification ITRA.', image: '/assets/img/riz5.jpeg', href: '/gallery' },
+        { label: 'Terroir', title: 'Riz Premium du TOGO', text: 'Une gamme concue pour les foyers et professionnels.', image: '/assets/img/riz3.jpeg', href: '/shop' },
+        { label: 'Cooperative', title: 'Nos Producteurs Partenaires', text: 'Une chaine locale portee par les membres.', image: '/assets/img/riz2.jpeg', href: '/about' },
+    ];
+
+    return [...productItems, ...fallbacks].slice(0, 4);
+});
+
+const formatNewsDate = (article) => {
+    if (article.date && typeof article.date === 'string') {
+        const parts = article.date.split(' ');
+        if (parts.length === 1 && article.date.includes('-')) {
+            const parsed = new Date(article.date);
+            if (!Number.isNaN(parsed.getTime())) {
+                return {
+                    day: String(parsed.getDate()).padStart(2, '0'),
+                    month: parsed.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' }).toUpperCase(),
+                };
+            }
+        }
+
+        return {
+            day: parts[0] || '',
+            month: parts.slice(1).join(' ').toUpperCase() || '',
+        };
+    }
+
+    return { day: '', month: '' };
+};
+
+const latestNews = computed(() => {
+    return (props.news.length ? props.news : fallbackNews).slice(0, 2).map((article) => {
+        const date = formatNewsDate(article);
+
+        return {
+            ...article,
+            dateDay: date.day,
+            dateMonth: date.month,
+            commentsLabel: `${String(article.comments || 0).padStart(2, '0')} Commentaires`,
+        };
+    });
+});
+
+const testimonials = [
+    {
+        name: 'Alassane Sow',
+        role: 'Producteur Partenaire',
+        initials: 'AS',
+        rating: 5,
+        text: 'Le riz de HEZOUWE est de meilleure qualite et les prix sont justes. Je recommande a tous !',
+    },
+    {
+        name: 'Ama Akosua',
+        role: 'Cliente CDEJ Kpalime',
+        initials: 'AA',
+        rating: 5,
+        text: 'Naturellement parfume, cuisson rapide et tres nutritif. Le riz HEZOUWE a change nos habitudes alimentaires !',
+    },
+    {
+        name: 'Kofi Mensah',
+        role: 'Producteur Region Plateaux',
+        initials: 'KM',
+        rating: 5,
+        text: 'Supporter HEZOUWE, c est soutenir les producteurs locaux. Leur engagement envers la qualite est exemplaire !',
+    },
+];
 
 onMounted(() => {
     if (typeof Swiper !== 'undefined') {
@@ -835,3 +806,211 @@ onMounted(() => {
     }
 });
 </script>
+
+<style scoped>
+.about-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+}
+
+.about-gallery-card {
+    position: relative;
+    min-height: 280px;
+    overflow: hidden;
+    border-radius: 8px;
+    display: block;
+    isolation: isolate;
+    background: #111;
+}
+
+.about-gallery-card--large {
+    grid-column: span 2;
+    grid-row: span 2;
+    min-height: 584px;
+}
+
+.about-gallery-card--wide {
+    grid-column: span 2;
+}
+
+.about-gallery-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+    inset: 0;
+    transition: transform 0.45s ease;
+    z-index: -2;
+}
+
+.about-gallery-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.04), rgba(10, 48, 25, 0.84));
+    z-index: -1;
+}
+
+.about-gallery-card:hover img {
+    transform: scale(1.06);
+}
+
+.about-gallery-info {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 28px;
+    color: #fff;
+}
+
+.about-gallery-info span {
+    width: fit-content;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.18);
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.about-gallery-info h3 {
+    color: #fff;
+    font-size: 26px;
+    line-height: 1.2;
+    margin-bottom: 8px;
+}
+
+.about-gallery-info p {
+    color: rgba(255, 255, 255, 0.86);
+    margin-bottom: 0;
+}
+
+.about-testi-section .row.g-4 > .col-lg-4:nth-child(n+4),
+.news-section-4 .row > .col-lg-6:nth-child(n+3),
+.at-card > p:not(.at-dynamic-text),
+.at-author > .at-avatar:not(.at-dynamic-avatar),
+.at-author > div:not(.at-avatar):not(.at-dynamic-author),
+.news-image-box-items-4 .about-news-title ~ h3,
+.news-image-box-items-4 .about-news-link ~ .link-btn {
+    display: none;
+}
+
+.at-card {
+    height: 100%;
+    border: 1px solid rgba(44, 121, 58, 0.14);
+    border-radius: 8px;
+    padding: 34px;
+    background: #fff;
+    box-shadow: 0 18px 44px rgba(22, 54, 32, 0.08);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.at-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 24px 54px rgba(22, 54, 32, 0.14);
+}
+
+.at-card--featured {
+    background: #163d25;
+    color: #fff;
+}
+
+.at-card--featured h4,
+.at-card--featured p {
+    color: #fff;
+}
+
+.at-quote {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: rgba(74, 164, 82, 0.12);
+    color: var(--theme);
+    margin-bottom: 22px;
+}
+
+.at-card--featured .at-quote {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+}
+
+.at-stars {
+    color: #f6b936;
+    margin-bottom: 16px;
+}
+
+.at-dynamic-text {
+    min-height: 96px;
+    color: #5f6b62;
+    line-height: 1.7;
+}
+
+.at-author {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 26px;
+}
+
+.at-avatar {
+    width: 54px;
+    height: 54px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    background: #ecf6ee;
+    color: #163d25;
+    font-weight: 800;
+}
+
+.at-card--featured .at-avatar {
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff;
+}
+
+.at-author h4 {
+    margin-bottom: 4px;
+}
+
+.at-author span {
+    color: #718073;
+    font-size: 14px;
+}
+
+.at-card--featured .at-author span {
+    color: rgba(255, 255, 255, 0.76);
+}
+
+@media (max-width: 991px) {
+    .about-gallery-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .about-gallery-card--large {
+        min-height: 420px;
+    }
+}
+
+@media (max-width: 575px) {
+    .about-gallery-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .about-gallery-card,
+    .about-gallery-card--large,
+    .about-gallery-card--wide {
+        grid-column: auto;
+        grid-row: auto;
+        min-height: 320px;
+    }
+
+    .about-gallery-info {
+        padding: 22px;
+    }
+}
+</style>

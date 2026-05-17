@@ -1,10 +1,26 @@
 <script setup>
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, router } from '@inertiajs/vue3';
 
 const props = defineProps({
     services: Object,
 });
+
+const resolveImage = (path) => {
+    if (!path) return '';
+    if (path.startsWith('/assets/') || path.startsWith('/storage/')) return path;
+    if ((path.startsWith('http://') || path.startsWith('https://')) && path.includes('/storage/')) {
+        return path.slice(path.indexOf('/storage/'));
+    }
+    if (path.startsWith('http://') || path.startsWith('https://')) return path;
+    return `/storage/${path}`;
+};
+
+const deleteService = (slug) => {
+    if (confirm('Êtes-vous sûr de vouloir supprimer ce service ?')) {
+        router.delete(`/admin/services/${slug}`);
+    }
+};
 </script>
 
 <template>
@@ -13,7 +29,10 @@ const props = defineProps({
     <AdminLayout title="Gestion des Services">
         <div class="admin-page">
             <div class="page-header">
-                <h1>Services</h1>
+                <div>
+                    <p class="eyebrow">Administration</p>
+                    <h1>Services</h1>
+                </div>
                 <Link href="/admin/services/create" class="btn-primary">
                     <i class="far fa-plus"></i>
                     Ajouter un service
@@ -26,6 +45,7 @@ const props = defineProps({
                         <tr>
                             <th>Image</th>
                             <th>Titre</th>
+                            <th>Icone</th>
                             <th>Description courte</th>
                             <th>Actions</th>
                         </tr>
@@ -33,19 +53,22 @@ const props = defineProps({
                     <tbody>
                         <tr v-for="service in services.data" :key="service.id">
                             <td>
-                                <img :src="service.image" :alt="service.title" class="thumb">
+                                <img :src="resolveImage(service.image)" :alt="service.title" class="thumb">
                             </td>
                             <td>
                                 <strong>{{ service.title }}</strong>
                                 <span class="slug">{{ service.slug }}</span>
                             </td>
-                            <td>{{ service.short }}</td>
+                            <td>
+                                <span class="icon-tag">{{ service.icon || '—' }}</span>
+                            </td>
+                            <td class="short-col">{{ service.short }}</td>
                             <td>
                                 <div class="action-buttons">
-                                    <Link :href="`/admin/services/${service.id}/edit`" class="btn-edit">
+                                    <Link :href="`/admin/services/${service.slug}/edit`" class="btn-edit" title="Modifier">
                                         <i class="far fa-edit"></i>
                                     </Link>
-                                    <button @click="deleteService(service.id)" class="btn-delete">
+                                    <button @click="deleteService(service.slug)" class="btn-delete" title="Supprimer">
                                         <i class="far fa-trash"></i>
                                     </button>
                                 </div>
@@ -55,18 +78,18 @@ const props = defineProps({
                 </table>
 
                 <div v-if="services.data.length === 0" class="empty-state">
-                    <i class="far fa-cog"></i>
+                    <i class="far fa-concierge-bell"></i>
                     <h3>Aucun service</h3>
                     <p>Commencez par ajouter votre premier service.</p>
                     <Link href="/admin/services/create" class="btn-primary">Ajouter un service</Link>
                 </div>
             </div>
 
-            <div v-if="services.links && services.links.length > 0" class="pagination">
+            <div v-if="services.links && services.links.length > 3" class="pagination">
                 <template v-for="(link, index) in services.links" :key="index">
-                    <Link 
-                        v-if="link.url" 
-                        :href="link.url" 
+                    <Link
+                        v-if="link.url"
+                        :href="link.url"
                         class="page-link"
                         :class="{ active: link.active }"
                         v-html="link.label"
@@ -78,16 +101,6 @@ const props = defineProps({
     </AdminLayout>
 </template>
 
-<script>
-import { router } from '@inertiajs/vue3';
-
-const deleteService = (id) => {
-    if (confirm('Êtes-vous sûr de vouloir supprimer ce service ?')) {
-        router.delete(`/admin/services/${id}`);
-    }
-};
-</script>
-
 <style scoped>
 .admin-page {
     display: flex;
@@ -97,15 +110,23 @@ const deleteService = (id) => {
 
 .page-header {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
     gap: 16px;
 }
 
+.eyebrow {
+    margin: 0 0 4px;
+    color: #5cb85c;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 0.78rem;
+}
+
 .page-header h1 {
     margin: 0;
-    color: #1a3a1a;
-    font-size: 1.75rem;
+    color: #17351a;
+    font-size: 1.85rem;
     font-weight: 900;
 }
 
@@ -120,18 +141,17 @@ const deleteService = (id) => {
     text-decoration: none;
     font-weight: 700;
     transition: background 0.2s;
+    white-space: nowrap;
 }
 
-.btn-primary:hover {
-    background: #4a9e4a;
-}
+.btn-primary:hover { background: #4a9e4a; }
 
 .table-container {
     background: #fff;
-    border: 1px solid #e8eee3;
-    border-radius: 12px;
+    border: 1px solid #e5ece2;
+    border-radius: 8px;
     overflow: hidden;
-    box-shadow: 0 2px 8px rgba(27, 58, 28, 0.05);
+    box-shadow: 0 16px 42px rgba(23, 53, 26, 0.06);
 }
 
 .data-table {
@@ -141,53 +161,72 @@ const deleteService = (id) => {
 
 .data-table th {
     text-align: left;
-    padding: 16px;
-    color: #6b7280;
-    font-size: 0.875rem;
-    font-weight: 600;
-    border-bottom: 2px solid #e8eee3;
-    background: #f9faf9;
+    padding: 14px 16px;
+    color: #68746a;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 2px solid #e5ece2;
+    background: #f8faf7;
 }
 
 .data-table td {
-    padding: 16px;
-    color: #1a3a1a;
+    padding: 14px 16px;
+    color: #17351a;
     font-weight: 500;
-    border-bottom: 1px solid #e8eee3;
+    border-bottom: 1px solid #e5ece2;
     vertical-align: middle;
 }
 
-.data-table tr:last-child td {
-    border-bottom: none;
-}
-
-.data-table tr:hover td {
-    background: #f9faf9;
-}
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: #fafcf9; }
 
 .thumb {
     width: 60px;
-    height: 60px;
-    border-radius: 8px;
+    height: 50px;
+    border-radius: 6px;
     object-fit: cover;
+    border: 1px solid #e5ece2;
+    background: #f8faf7;
 }
 
 .slug {
     display: block;
-    color: #6b7280;
+    color: #68746a;
     font-size: 0.8rem;
-    margin-top: 4px;
+    margin-top: 3px;
+}
+
+.icon-tag {
+    display: inline-block;
+    padding: 3px 8px;
+    background: #f0f7f0;
+    border: 1px solid #d4e8d4;
+    border-radius: 4px;
+    font-size: 0.78rem;
+    color: #2d6a2d;
+    font-family: monospace;
+}
+
+.short-col {
+    max-width: 300px;
+    color: #68746a !important;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .action-buttons {
     display: flex;
-    gap: 8px;
+    gap: 6px;
 }
 
 .btn-edit,
 .btn-delete {
-    width: 36px;
-    height: 36px;
+    width: 34px;
+    height: 34px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -195,96 +234,49 @@ const deleteService = (id) => {
     border: none;
     cursor: pointer;
     transition: all 0.2s;
-}
-
-.btn-edit {
-    background: #e8f4ff;
-    color: #245ea8;
     text-decoration: none;
 }
 
-.btn-edit:hover {
-    background: #d1e9ff;
-}
-
-.btn-delete {
-    background: #fee2e2;
-    color: #dc2626;
-}
-
-.btn-delete:hover {
-    background: #fecaca;
-}
+.btn-edit { background: #e8f4ff; color: #245ea8; }
+.btn-edit:hover { background: #d1e9ff; }
+.btn-delete { background: #fee2e2; color: #dc2626; }
+.btn-delete:hover { background: #fecaca; }
 
 .empty-state {
     padding: 64px 24px;
     text-align: center;
-    color: #6b7280;
+    color: #68746a;
 }
 
-.empty-state i {
-    font-size: 3rem;
-    color: #d1d5db;
-    margin-bottom: 16px;
-}
-
-.empty-state h3 {
-    margin: 0 0 8px;
-    color: #1a3a1a;
-    font-weight: 900;
-}
-
-.empty-state p {
-    margin: 0 0 16px;
-}
+.empty-state i { font-size: 3rem; color: #c8d9c4; margin-bottom: 16px; display: block; }
+.empty-state h3 { margin: 0 0 8px; color: #17351a; font-weight: 900; }
+.empty-state p { margin: 0 0 16px; }
 
 .pagination {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     justify-content: center;
     padding: 16px;
 }
 
 .page-link {
-    padding: 8px 16px;
-    border: 1px solid #e8eee3;
+    padding: 7px 14px;
+    border: 1px solid #e5ece2;
     border-radius: 6px;
-    color: #1a3a1a;
+    color: #17351a;
     text-decoration: none;
     font-weight: 600;
+    font-size: 0.9rem;
     transition: all 0.2s;
 }
 
-.page-link:hover {
-    background: #f9faf9;
-    border-color: #5cb85c;
-}
-
-.page-link.active {
-    background: #5cb85c;
-    color: #fff;
-    border-color: #5cb85c;
-}
-
-.page-link.disabled {
-    color: #9ca3af;
-    cursor: not-allowed;
-}
+.page-link:hover { background: #f8faf7; border-color: #5cb85c; }
+.page-link.active { background: #5cb85c; color: #fff; border-color: #5cb85c; }
+.page-link.disabled { color: #9ca3af; cursor: default; }
 
 @media (max-width: 768px) {
-    .page-header {
-        flex-direction: column;
-        align-items: flex-start;
-    }
-
-    .data-table th,
-    .data-table td {
-        padding: 12px 8px;
-    }
-
-    .thumb {
-        width: 48px;
-        height: 48px;
-    }
+    .page-header { flex-direction: column; align-items: flex-start; }
+    .data-table th, .data-table td { padding: 10px 8px; }
+    .short-col { display: none; }
 }
 </style>
