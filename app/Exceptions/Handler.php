@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
 
@@ -46,5 +47,20 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+    }
+
+    protected function unauthenticated($request, AuthenticationException $exception)
+    {
+        // Inertia non-GET requests (DELETE, POST, PATCH) get a 302 redirect
+        // which axios follows with the same method, causing "DELETE not supported
+        // for route login". Return a 409 with X-Inertia-Location so Inertia
+        // does a full browser GET redirect to the login page instead.
+        if ($request->header('X-Inertia')) {
+            return response()->json(['message' => 'Unauthenticated.'], 409, [
+                'X-Inertia-Location' => route('login'),
+            ]);
+        }
+
+        return parent::unauthenticated($request, $exception);
     }
 }

@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\PaymentVerifiedMail;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 
 class OrderController extends Controller
@@ -30,13 +32,35 @@ class OrderController extends Controller
     public function update(Request $request, Order $order)
     {
         $validated = $request->validate([
-            'status' => 'required|in:pending,confirmed,preparing,shipped,delivered,cancelled',
+            'status'         => 'required|in:pending,confirmed,preparing,shipped,delivered,cancelled',
             'payment_status' => 'nullable|in:unpaid,paid,failed,refunded',
         ]);
 
         $order->update($validated);
 
         return redirect()->route('admin.orders.index')->with('success', 'Statut de la commande mis à jour');
+    }
+
+    public function verifyPayment(Order $order)
+    {
+        if ($order->payment_status === 'paid') {
+            return back()->with('error', 'Ce paiement est déjà vérifié.');
+        }
+
+        $order->update([
+            'payment_status' => 'paid',
+            'status'         => 'confirmed',
+        ]);
+
+        $order->load('items');
+
+        try {
+            Mail::to($order->customer_email)->send(new PaymentVerifiedMail($order));
+        } catch (\Exception $e) {
+            // Log but don't block
+        }
+
+        return back()->with('success', 'Paiement vérifié. La commande est confirmée et le client a été notifié.');
     }
 
     public function markAsDelivered(Request $request, Order $order)
@@ -54,6 +78,6 @@ class OrderController extends Controller
     {
         $order->delete();
 
-        return redirect()->route('admin.orders.index')->with('success', 'Commande supprimee avec succes');
+        return redirect()->route('admin.orders.index')->with('success', 'Commande supprimée avec succès');
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\NewsletterSubscriber;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -56,7 +57,15 @@ class ProductController extends Controller
             'features' => 'nullable|array',
         ]);
 
-        Product::create($validated);
+        $product = Product::create($validated);
+
+        NewsletterSubscriber::notifyAll(
+            type: 'product',
+            title: $product->title,
+            excerpt: strip_tags($product->short),
+            image: url($product->image),
+            link: url('/shop-details/' . $product->slug),
+        );
 
         return redirect()->route('admin.products.index')->with('success', 'Produit créé avec succès');
     }

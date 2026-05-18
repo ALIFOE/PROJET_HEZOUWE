@@ -88,47 +88,47 @@
         </section>
 
         <!-- Brand Section Start -->
-        <div class="brand-section section-padding pt-0">
+        <!-- <div class="brand-section section-padding pt-0">
             <div class="container">
                 <div class="top-text text-center wow fadeInUp">
                     <p>Riz Hezouwe est utilisé par plus de 5,000+ clients à travers le TOGO et l'Afrique de l'Ouest</p>
                 </div>
                 <div class="swiper brand-slide">
-                    <div class="swiper-wrapper">
-                        <div class="swiper-slide">
+                    <div class="swiper-wrapper"> -->
+                        <!-- <div class="swiper-slide">
                             <div class="brand-image text-center">
-                                <img src="/assets/img/image1.jpg" alt="img">
+                                <img src="/assets/img/riz1.jpg" alt="img">
                             </div>
                         </div>
                         <div class="swiper-slide">
                             <div class="brand-image text-center">
-                                <img src="/assets/img/image2.jpg" alt="img">
+                                <img src="/assets/img/riz2.jpg" alt="img">
                             </div>
                         </div>
                         <div class="swiper-slide">
                             <div class="brand-image text-center">
-                                <img src="/assets/img/image3.jpg" alt="img">
+                                <img src="/assets/img/riz3.jpg" alt="img">
                             </div>
                         </div>
                         <div class="swiper-slide">
                             <div class="brand-image text-center">
-                                <img src="/assets/img/image10.jpg" alt="img">
+                                <img src="/assets/img/riz4.jpg" alt="img">
                             </div>
                         </div>
                         <div class="swiper-slide">
                             <div class="brand-image text-center">
-                                <img src="/assets/img/image11.jpg" alt="img">
+                                <img src="/assets/img/riz5.jpg" alt="img">
                             </div>
                         </div>
                         <div class="swiper-slide">
                             <div class="brand-image text-center">
-                                <img src="/assets/img/home-1/brand/brand-06.png" alt="img">
+                                <img src="/assets/img/riz6.jpg" alt="img">
                             </div>
-                        </div>
-                    </div>
+                        </div> -->
+                    <!-- </div>
                 </div>
             </div>
-        </div>
+        </div> -->
 
         <!-- Product Box Section Start -->
         <section class="product-box-section-4 style-about section-padding pt-0">

@@ -192,6 +192,7 @@ Route::middleware(['auth', 'verified', 'is.admin'])->prefix('admin')->name('admi
     Route::get('/', [App\Http\Controllers\Admin\AdminDashboardController::class, 'index'])->name('dashboard');
     Route::resource('orders', \App\Http\Controllers\Admin\OrderController::class)->only(['index', 'show', 'edit', 'update', 'destroy']);
     Route::post('orders/{order}/mark-delivered', [\App\Http\Controllers\Admin\OrderController::class, 'markAsDelivered'])->name('orders.mark-delivered');
+    Route::post('orders/{order}/verify-payment', [\App\Http\Controllers\Admin\OrderController::class, 'verifyPayment'])->name('orders.verify-payment');
     Route::post('products/upload-image', [\App\Http\Controllers\Admin\ProductController::class, 'uploadImage'])->name('products.upload-image');
     Route::resource('products', \App\Http\Controllers\Admin\ProductController::class);
     Route::post('services/upload-image', [\App\Http\Controllers\Admin\ServiceController::class, 'uploadImage'])->name('services.upload-image');
@@ -200,5 +201,9 @@ Route::middleware(['auth', 'verified', 'is.admin'])->prefix('admin')->name('admi
     Route::resource('news', \App\Http\Controllers\Admin\NewsController::class);
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class)->only(['index', 'show', 'edit', 'update', 'destroy']);
 });
+
+// Newsletter
+Route::post('/newsletter/subscribe', [App\Http\Controllers\NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
+Route::get('/newsletter/unsubscribe/{token}', [App\Http\Controllers\NewsletterController::class, 'unsubscribe'])->name('newsletter.unsubscribe');
 
 require __DIR__.'/auth.php';

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\News;
+use App\Models\NewsletterSubscriber;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
@@ -58,7 +59,15 @@ class NewsController extends Controller
             'image3' => 'nullable|string',
         ]);
 
-        News::create($validated);
+        $news = News::create($validated);
+
+        NewsletterSubscriber::notifyAll(
+            type: 'article',
+            title: $news->title,
+            excerpt: strip_tags($news->excerpt),
+            image: url($news->image),
+            link: url('/news-details/' . $news->slug),
+        );
 
         return redirect()->route('admin.news.index')->with('success', 'Actualité créée avec succès');
     }

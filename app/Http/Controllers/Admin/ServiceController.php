@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\NewsletterSubscriber;
 use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -52,7 +53,15 @@ class ServiceController extends Controller
             'facts' => 'nullable|array',
         ]);
 
-        Service::create($validated);
+        $service = Service::create($validated);
+
+        NewsletterSubscriber::notifyAll(
+            type: 'service',
+            title: $service->title,
+            excerpt: strip_tags($service->short),
+            image: url($service->image),
+            link: url('/service-details/' . $service->slug),
+        );
 
         return redirect()->route('admin.services.index')->with('success', 'Service créé avec succès');
     }

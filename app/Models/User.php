@@ -44,6 +44,16 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at' => 'datetime',
     ];
 
+    public function hasVerifiedEmail(): bool
+    {
+        return $this->role === 'admin' || parent::hasVerifiedEmail();
+    }
+
+    public function sendEmailVerificationNotification(): void
+    {
+        $this->notify(new \App\Notifications\VerifyEmailNotification());
+    }
+
     public function cartItems(): HasMany
     {
         return $this->hasMany(CartItem::class);

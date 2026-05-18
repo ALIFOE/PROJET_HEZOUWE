@@ -823,7 +823,7 @@ onUnmounted(() => {
 
 /* ─── Spacer ─── */
 .header-spacer {
-    height: calc(var(--top-bar-height) + var(--header-height));
+    height: 124px; /* 44px top-bar + 80px main-bar */
     transition: height 0.35s ease;
 }
 
@@ -840,7 +840,7 @@ onUnmounted(() => {
     }
 
     .header-spacer {
-        height: var(--header-height);
+        height: 80px; /* mobile : top-bar masquée, seulement le main-bar */
     }
 
     .hamburger {

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Support\ProductCatalog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Inertia\Inertia;
@@ -47,7 +48,15 @@ class UserController extends Controller
         $user->load(['orders' => fn ($q) => $q->latest()->limit(10)]);
         $user->loadCount('orders');
 
-        return Inertia::render('Admin/Users/Show', ['user' => $user]);
+        $cartItems = $user->cartItems()->latest()->get();
+        $cart      = ProductCatalog::hydrateCartItems($cartItems)->values()->all();
+        $cartTotal = array_sum(array_column($cart, 'line_total'));
+
+        return Inertia::render('Admin/Users/Show', [
+            'user'      => $user,
+            'cart'      => $cart,
+            'cartTotal' => $cartTotal,
+        ]);
     }
 
     public function edit(User $user)

@@ -2,7 +2,11 @@
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 
-const props = defineProps({ user: Object });
+const props = defineProps({
+    user:      Object,
+    cart:      Array,
+    cartTotal: Number,
+});
 
 const formatDate = (d) => {
     if (!d) return '—';
@@ -93,6 +97,71 @@ const initials = (name) => name ? name.split(' ').map(w => w[0]).join('').substr
                     </div>
                 </div>
             </div>
+
+            <!-- Panier actuel -->
+            <section class="cart-section">
+                <div class="section-header">
+                    <div class="section-title">
+                        <i class="far fa-shopping-cart"></i>
+                        <h3>Panier actuel</h3>
+                    </div>
+                    <span class="cart-count" :class="cart && cart.length ? 'count-active' : 'count-empty'">
+                        {{ cart && cart.length ? `${cart.length} article(s)` : 'Panier vide' }}
+                    </span>
+                </div>
+
+                <div v-if="cart && cart.length">
+                    <div class="cart-list">
+                        <div v-for="item in cart" :key="item.slug" class="cart-row">
+                            <img
+                                :src="item.image || '/assets/img/riz2.jpeg'"
+                                :alt="item.title"
+                                class="cart-img"
+                            />
+                            <div class="cart-info">
+                                <strong>{{ item.title }}</strong>
+                                <span class="cart-slug">{{ item.slug }}</span>
+                            </div>
+                            <div class="cart-stat">
+                                <span>Prix unitaire</span>
+                                <strong>{{ formatPrice(item.price) }}</strong>
+                            </div>
+                            <div class="cart-stat">
+                                <span>Quantité</span>
+                                <strong>× {{ item.qty }}</strong>
+                            </div>
+                            <div class="cart-stat cart-line-total">
+                                <span>Sous-total</span>
+                                <strong>{{ formatPrice(item.line_total) }}</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="cart-footer">
+                        <div class="cart-totals">
+                            <div class="total-row">
+                                <span>Sous-total panier</span>
+                                <strong>{{ formatPrice(cartTotal) }}</strong>
+                            </div>
+                            <div class="total-row delivery-row">
+                                <span>Livraison estimée</span>
+                                <strong :class="cartTotal >= 10000 ? 'free' : ''">
+                                    {{ cartTotal >= 10000 ? 'Gratuite' : formatPrice(1500) }}
+                                </strong>
+                            </div>
+                            <div class="total-row grand">
+                                <span>Total estimé</span>
+                                <strong>{{ formatPrice(cartTotal >= 10000 ? cartTotal : cartTotal + 1500) }}</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div v-else class="cart-empty">
+                    <i class="far fa-shopping-cart"></i>
+                    <p>Le panier de cet utilisateur est vide.</p>
+                </div>
+            </section>
         </div>
     </AdminLayout>
 </template>
@@ -184,4 +253,110 @@ const initials = (name) => name ? name.split(' ').map(w => w[0]).join('').substr
 
 @media (max-width: 900px) { .profile-grid { grid-template-columns: 1fr; } }
 @media (max-width: 768px) { .page-header { flex-direction: column; } }
+
+/* ── Panier ── */
+.cart-section {
+    background: #fff;
+    border: 1px solid #e5ece2;
+    border-radius: 8px;
+    box-shadow: 0 16px 42px rgba(23,53,26,0.06);
+    overflow: hidden;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #17351a;
+}
+
+.section-title i { color: #5cb85c; font-size: 1rem; }
+.section-title h3 { margin: 0; font-size: 1.05rem; font-weight: 900; }
+
+.cart-count {
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 900;
+}
+.count-active { background: #e8f5e9; color: #24782b; border: 1px solid #c3ddc0; }
+.count-empty  { background: #f5f5f5; color: #9aaa95; border: 1px solid #e0e0e0; }
+
+.cart-list { display: flex; flex-direction: column; }
+
+.cart-row {
+    display: grid;
+    grid-template-columns: 64px 1fr repeat(3, minmax(110px, auto));
+    align-items: center;
+    gap: 16px;
+    padding: 14px 20px;
+    border-bottom: 1px solid #edf2ea;
+}
+.cart-row:last-child { border-bottom: none; }
+
+.cart-img {
+    width: 64px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid #e5ece2;
+}
+
+.cart-info { display: flex; flex-direction: column; gap: 3px; }
+.cart-info strong { color: #17351a; font-weight: 900; }
+.cart-slug { color: #9aaa95; font-size: 0.8rem; }
+
+.cart-stat { display: flex; flex-direction: column; gap: 3px; }
+.cart-stat span { color: #9aaa95; font-size: 0.78rem; font-weight: 700; }
+.cart-stat strong { color: #17351a; font-weight: 900; }
+.cart-line-total strong { color: #24782b; }
+
+.cart-footer {
+    border-top: 2px solid #e5ece2;
+    padding: 16px 20px;
+    background: #f8faf7;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.cart-totals {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 280px;
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    font-size: 0.9rem;
+    color: #68746a;
+}
+.total-row strong { color: #17351a; font-weight: 900; }
+.total-row .free { color: #24782b; }
+
+.total-row.grand {
+    padding-top: 10px;
+    border-top: 1.5px solid #e5ece2;
+    font-size: 1rem;
+    font-weight: 900;
+    color: #17351a;
+}
+.total-row.grand strong { color: #24782b; font-size: 1.1rem; }
+
+.cart-empty {
+    padding: 48px 24px;
+    text-align: center;
+    color: #9aaa95;
+}
+.cart-empty i { font-size: 2.2rem; display: block; margin-bottom: 12px; color: #cdd6c9; }
+.cart-empty p { margin: 0; font-size: 0.95rem; }
+
+@media (max-width: 768px) {
+    .cart-row {
+        grid-template-columns: 56px 1fr;
+    }
+    .cart-stat { grid-column: 2; }
+}
 </style>

@@ -1,10 +1,15 @@
 <script setup>
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
+import { ref } from 'vue';
 
 const props = defineProps({
-    stats: Object,
+    stats:       Object,
+    activeCarts: Array,
 });
+
+const cartExpanded = ref(null);
+const toggleCart = (id) => { cartExpanded.value = cartExpanded.value === id ? null : id; };
 
 const formatPrice = (n) => n?.toLocaleString('fr-FR') ?? '0';
 
@@ -57,6 +62,17 @@ const getStatusClass = (status) => statusClass(status);
                         <span>En attente</span>
                         <strong>{{ stats.pending_orders }}</strong>
                         <Link href="/admin/orders" class="stat-link">Voir</Link>
+                    </div>
+                </div>
+
+                <div class="stat-card carts">
+                    <div class="stat-icon">
+                        <i class="far fa-shopping-cart"></i>
+                    </div>
+                    <div class="stat-content">
+                        <span>Paniers actifs</span>
+                        <strong>{{ stats.active_carts_count }}</strong>
+                        <span class="stat-subtitle">{{ stats.unpaid_orders }} commande(s) impayée(s)</span>
                     </div>
                 </div>
 
@@ -122,6 +138,69 @@ const getStatusClass = (status) => statusClass(status);
                 </div>
             </div>
 
+            <!-- Paniers actifs -->
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h2>
+                        Paniers actifs
+                        <span class="cart-badge" v-if="activeCarts && activeCarts.length">{{ activeCarts.length }}</span>
+                    </h2>
+                    <Link href="/admin/users" class="view-all">Voir les utilisateurs</Link>
+                </div>
+
+                <div v-if="activeCarts && activeCarts.length" class="ac-list">
+                    <div v-for="cart in activeCarts" :key="cart.id" class="ac-row">
+                        <div class="ac-user" @click="toggleCart(cart.id)">
+                            <div class="ac-avatar">{{ cart.name.charAt(0).toUpperCase() }}</div>
+                            <div class="ac-info">
+                                <strong>{{ cart.name }}</strong>
+                                <span>{{ cart.email }}</span>
+                            </div>
+                            <div class="ac-meta">
+                                <span class="ac-count">{{ cart.item_count }} article(s)</span>
+                                <strong class="ac-total">{{ formatPrice(cart.cart_total) }} FCFA</strong>
+                            </div>
+                            <div class="ac-actions">
+                                <Link :href="`/admin/users/${cart.id}`" class="ac-btn-view" @click.stop>
+                                    <i class="far fa-eye"></i>
+                                </Link>
+                                <button class="ac-btn-toggle" :class="{ open: cartExpanded === cart.id }">
+                                    <i class="far fa-chevron-down"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <Transition name="slide">
+                            <div v-if="cartExpanded === cart.id" class="ac-items">
+                                <div v-for="item in cart.items" :key="item.title" class="ac-item">
+                                    <img :src="item.image || '/assets/img/riz2.jpeg'" :alt="item.title" class="ac-img" />
+                                    <div class="ac-item-info">
+                                        <strong>{{ item.title }}</strong>
+                                        <span>{{ formatPrice(item.price) }} FCFA / unité</span>
+                                    </div>
+                                    <span class="ac-qty">× {{ item.qty }}</span>
+                                    <strong class="ac-line">{{ formatPrice(item.line_total) }} FCFA</strong>
+                                </div>
+                                <div class="ac-footer">
+                                    <span>Livraison</span>
+                                    <span :class="cart.delivery === 0 ? 'free-tag' : ''">
+                                        {{ cart.delivery === 0 ? 'Gratuite' : formatPrice(cart.delivery) + ' FCFA' }}
+                                    </span>
+                                    <span>Total estimé</span>
+                                    <strong>{{ formatPrice(cart.cart_total + cart.delivery) }} FCFA</strong>
+                                </div>
+                            </div>
+                        </Transition>
+                    </div>
+                </div>
+
+                <div v-else class="empty-state">
+                    <i class="far fa-shopping-cart"></i>
+                    <h3>Aucun panier actif</h3>
+                    <p>Aucun utilisateur n'a d'articles dans son panier pour le moment.</p>
+                </div>
+            </div>
+
             <!-- Recent Products -->
             <div class="dashboard-section">
                 <div class="section-header">
@@ -181,7 +260,7 @@ const getStatusClass = (status) => statusClass(status);
 
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 20px;
 }
 
@@ -210,6 +289,11 @@ const getStatusClass = (status) => statusClass(status);
     border-radius: 12px;
     font-size: 1.5rem;
     flex-shrink: 0;
+}
+
+.carts .stat-icon {
+    background: #e8f5e9;
+    color: #24782b;
 }
 
 .products .stat-icon {
@@ -495,6 +579,137 @@ const getStatusClass = (status) => statusClass(status);
     background: #ffe8e8;
     color: #b42323;
 }
+
+/* ── Paniers actifs ── */
+.cart-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 6px;
+    background: #5cb85c;
+    color: #fff;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 900;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+.ac-list { display: flex; flex-direction: column; gap: 8px; }
+
+.ac-row {
+    border: 1px solid #e5ece2;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.ac-user {
+    display: grid;
+    grid-template-columns: 40px 1fr auto auto;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    cursor: pointer;
+    background: #fafcf9;
+    transition: background 0.15s;
+}
+.ac-user:hover { background: #f0f7ee; }
+
+.ac-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #1a3a1a;
+    color: #d5a741;
+    font-weight: 900;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.ac-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.ac-info strong { color: #17351a; font-weight: 900; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ac-info span { color: #68746a; font-size: 0.82rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.ac-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.ac-count { color: #68746a; font-size: 0.8rem; font-weight: 700; }
+.ac-total { color: #24782b; font-weight: 900; white-space: nowrap; }
+
+.ac-actions { display: flex; align-items: center; gap: 6px; }
+
+.ac-btn-view, .ac-btn-toggle {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e5ece2;
+    background: #fff;
+    color: #5cb85c;
+    cursor: pointer;
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: all 0.15s;
+}
+.ac-btn-view:hover { background: #e8f5e8; border-color: #5cb85c; }
+.ac-btn-toggle { color: #68746a; }
+.ac-btn-toggle.open i { transform: rotate(180deg); }
+.ac-btn-toggle i { transition: transform 0.2s; }
+
+.ac-items {
+    border-top: 1px solid #e5ece2;
+    background: #fff;
+    padding: 12px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.ac-item {
+    display: grid;
+    grid-template-columns: 44px 1fr auto auto;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 10px;
+    background: #f8faf7;
+    border-radius: 6px;
+}
+
+.ac-img {
+    width: 44px;
+    height: 44px;
+    object-fit: cover;
+    border-radius: 5px;
+    border: 1px solid #e5ece2;
+}
+
+.ac-item-info { display: flex; flex-direction: column; gap: 2px; }
+.ac-item-info strong { color: #17351a; font-size: 0.9rem; font-weight: 800; }
+.ac-item-info span { color: #9aaa95; font-size: 0.78rem; }
+
+.ac-qty { color: #68746a; font-weight: 800; font-size: 0.9rem; white-space: nowrap; }
+.ac-line { color: #24782b; font-weight: 900; white-space: nowrap; }
+
+.ac-footer {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 4px 20px;
+    padding: 10px 10px 4px;
+    border-top: 1px solid #edf2ea;
+    font-size: 0.88rem;
+    color: #68746a;
+}
+.ac-footer strong { color: #17351a; font-weight: 900; }
+.free-tag { color: #24782b; font-weight: 800; }
+
+/* Slide transition */
+.slide-enter-active, .slide-leave-active { transition: max-height 0.25s ease, opacity 0.2s; overflow: hidden; max-height: 600px; }
+.slide-enter-from, .slide-leave-to { max-height: 0; opacity: 0; }
 
 @media (max-width: 1024px) {
     .stats-grid {

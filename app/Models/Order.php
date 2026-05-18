@@ -27,6 +27,7 @@ class Order extends Model
         'delivery_cost',
         'discount',
         'total',
+        'transaction_id',
     ];
 
     protected $casts = [

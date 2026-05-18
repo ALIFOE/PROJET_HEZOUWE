@@ -1,10 +1,13 @@
 <script setup>
 import AdminLayout from '@/Layouts/AdminLayout.vue';
+import { ref, computed } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 
 const props = defineProps({
     order: Object,
 });
+
+const verifying = ref(false);
 
 const formatPrice = (value) => `${Number(value || 0).toLocaleString('fr-FR')} FCFA`;
 const formatDate = (value) => value ? new Date(value).toLocaleString('fr-FR') : 'N/A';
@@ -25,6 +28,12 @@ const paymentLabels = {
     refunded: 'Remboursee',
 };
 
+const paymentMethodLabels = {
+    cash_on_delivery: 'Paiement a la livraison',
+    bank_transfer: 'Virement bancaire',
+    mobile_money: 'Mobile Money',
+};
+
 const statusClass = (status) => ({
     pending: 'warning',
     confirmed: 'info',
@@ -33,6 +42,18 @@ const statusClass = (status) => ({
     delivered: 'success',
     cancelled: 'danger',
 }[status] || 'warning');
+
+const isCOD = computed(() => props.order.payment_method === 'cash_on_delivery');
+const upfrontAmount = computed(() => Math.ceil((props.order.total || 0) / 2));
+const remainingAmount = computed(() => Math.floor((props.order.total || 0) / 2));
+
+const verifyPayment = () => {
+    if (!confirm('Confirmer la verification du paiement ? Le client sera notifie par email.')) return;
+    verifying.value = true;
+    router.post(`/admin/orders/${props.order.id}/verify-payment`, {}, {
+        onFinish: () => { verifying.value = false; },
+    });
+};
 
 const deleteOrder = () => {
     if (!confirm(`Supprimer definitivement la commande ${props.order.order_number} ?`)) {
@@ -128,6 +149,75 @@ const deleteOrder = () => {
                     </div>
                 </section>
             </div>
+
+            <!-- Payment Verification Panel -->
+            <section class="detail-card pay-verify-card"
+                :class="order.payment_status === 'paid' ? 'pay-verified' : 'pay-pending'">
+                <div class="card-header">
+                    <h2>
+                        <i class="far" :class="order.payment_status === 'paid' ? 'fa-check-circle' : 'fa-credit-card'"></i>
+                        Paiement
+                    </h2>
+                    <span :class="['status-pill', order.payment_status === 'paid' ? 'success' : 'warning']">
+                        {{ paymentLabels[order.payment_status] || order.payment_status }}
+                    </span>
+                </div>
+
+                <div class="pay-grid">
+                    <div class="pay-row">
+                        <span>Mode de paiement</span>
+                        <strong>{{ paymentMethodLabels[order.payment_method] || order.payment_method || 'N/A' }}</strong>
+                    </div>
+
+                    <template v-if="isCOD">
+                        <div class="pay-row highlight">
+                            <span>Montant acompte (50%)</span>
+                            <strong class="money">{{ formatPrice(upfrontAmount) }}</strong>
+                        </div>
+                        <div class="pay-row">
+                            <span>Reste a la livraison (50%)</span>
+                            <strong>{{ formatPrice(remainingAmount) }}</strong>
+                        </div>
+                        <div class="pay-row" :class="order.transaction_id ? 'highlight-id' : 'missing-id'">
+                            <span>ID de transaction declare</span>
+                            <strong class="txn-id">{{ order.transaction_id || 'Non renseigne' }}</strong>
+                        </div>
+                    </template>
+
+                    <template v-else-if="order.payment_method === 'bank_transfer'">
+                        <div class="pay-row">
+                            <span>Total a virer</span>
+                            <strong class="money">{{ formatPrice(order.total) }}</strong>
+                        </div>
+                        <div class="pay-row">
+                            <span>Reference virement</span>
+                            <strong>{{ order.transaction_id || 'En attente de virement' }}</strong>
+                        </div>
+                    </template>
+                </div>
+
+                <div v-if="order.payment_status !== 'paid'" class="verify-action">
+                    <div class="verify-hint" v-if="isCOD">
+                        <i class="far fa-info-circle"></i>
+                        Verifiez que l'ID de transaction <strong>{{ order.transaction_id }}</strong> correspond
+                        bien a un paiement de <strong>{{ formatPrice(upfrontAmount) }}</strong> via YAS ou MOOV Africa.
+                    </div>
+                    <div class="verify-hint" v-else-if="order.payment_method === 'bank_transfer'">
+                        <i class="far fa-info-circle"></i>
+                        Verifiez que le virement de <strong>{{ formatPrice(order.total) }}</strong> a bien ete recu
+                        sur le compte bancaire HEZOUWE avant de valider.
+                    </div>
+                    <button class="btn-verify" :disabled="verifying" @click="verifyPayment">
+                        <i class="far" :class="verifying ? 'fa-spinner fa-spin' : 'fa-check-double'"></i>
+                        {{ verifying ? 'Validation en cours...' : 'Verifier et valider le paiement' }}
+                    </button>
+                </div>
+
+                <div v-else class="verified-badge">
+                    <i class="far fa-check-circle"></i>
+                    Paiement confirme — le client a ete notifie par email.
+                </div>
+            </section>
 
             <section class="detail-card">
                 <div class="card-header">
@@ -471,5 +561,141 @@ const deleteOrder = () => {
     .detail-card {
         padding: 18px;
     }
+}
+
+/* Payment verification panel */
+.pay-verify-card.pay-pending {
+    border-color: #f0c060;
+    background: #fffdf5;
+}
+
+.pay-verify-card.pay-verified {
+    border-color: #a8d8a8;
+    background: #f5fdf5;
+}
+
+.pay-verify-card .card-header {
+    margin-bottom: 18px;
+}
+
+.pay-verify-card h2 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pay-grid {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.pay-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    padding: 10px 14px;
+    border-radius: 6px;
+    background: #fff;
+    border: 1px solid #e5ece2;
+}
+
+.pay-row span {
+    color: #68746a;
+    font-size: 0.88rem;
+    font-weight: 700;
+}
+
+.pay-row strong {
+    color: #17351a;
+}
+
+.pay-row.highlight {
+    background: #fff8e6;
+    border-color: #f0c060;
+}
+
+.pay-row.highlight-id {
+    background: #e8f4ff;
+    border-color: #7ab5e8;
+}
+
+.pay-row.missing-id {
+    background: #fff0f0;
+    border-color: #f5a0a0;
+}
+
+.txn-id {
+    font-family: monospace;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+    color: #1a4da8 !important;
+}
+
+.verify-hint {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 12px 16px;
+    background: #fff8e1;
+    border: 1px solid #f0c060;
+    border-radius: 6px;
+    color: #7a5700;
+    font-size: 0.9rem;
+    margin-bottom: 14px;
+    line-height: 1.5;
+}
+
+.verify-hint i {
+    margin-top: 2px;
+    flex-shrink: 0;
+    color: #c08000;
+}
+
+.verify-action {
+    padding-top: 4px;
+}
+
+.btn-verify {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 24px;
+    background: #24782b;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 900;
+    cursor: pointer;
+    transition: background 0.18s;
+}
+
+.btn-verify:hover:not(:disabled) {
+    background: #1a5e20;
+}
+
+.btn-verify:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+.verified-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    background: #e7f7e7;
+    border: 1.5px solid #a8d8a8;
+    border-radius: 8px;
+    color: #24782b;
+    font-weight: 800;
+    font-size: 0.95rem;
+}
+
+.verified-badge i {
+    font-size: 1.1rem;
 }
 </style>
