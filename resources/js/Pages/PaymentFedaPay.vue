@@ -39,9 +39,9 @@
                         </div>
 
                         <div class="operators-grid">
-                            <div class="op-chip"><span>T₿</span> T-Money</div>
-                            <div class="op-chip"><span>FL</span> Flooz</div>
-                            <div class="op-chip"><span>~W</span> Wave</div>
+                            <div class="op-chip"><span class="op-text-badge">T₿</span> T-Money</div>
+                            <div class="op-chip"><img src="/assets/img/flooz logo.png" alt="Flooz" class="op-logo-img"> Flooz</div>
+                            <div class="op-chip"><span class="op-text-badge">W</span> Wave</div>
                         </div>
 
                         <button
@@ -239,12 +239,22 @@ const startPayment = async () => {
     color: #1a3a1a;
 }
 
-.op-chip span {
+.op-text-badge {
     background: #2d6a4f;
     color: #fff;
     border-radius: 6px;
     padding: 2px 6px;
     font-size: 0.72rem;
+}
+
+.op-logo-img {
+    height: 22px;
+    width: auto;
+    object-fit: contain;
+    border-radius: 4px;
+    background: #fff;
+    padding: 1px 3px;
+    border: 1px solid #d0dfd0;
 }
 
 .pay-btn {

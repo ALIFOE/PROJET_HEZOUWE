@@ -124,14 +124,14 @@
 
                                     <div class="operator-cards">
                                         <div class="operator-card yas">
-                                            <div class="op-logo">YAS</div>
+                                            <div class="op-logo"><img src="/assets/img/mixx-by-yas.png" alt="Mixx by YAS" class="op-img"></div>
                                             <div>
-                                                <strong>Mix by YAS</strong>
+                                                <strong>Mixx by YAS</strong>
                                                 <span class="op-num">+228 70 XX XX XX</span>
                                             </div>
                                         </div>
                                         <div class="operator-card moov">
-                                            <div class="op-logo">MOOV</div>
+                                            <div class="op-logo"><img src="/assets/img/flooz logo.png" alt="Flooz" class="op-img"></div>
                                             <div>
                                                 <strong>Flooz — Moov Africa</strong>
                                                 <span class="op-num">+228 79 XX XX XX</span>
@@ -164,15 +164,15 @@
                                     <p class="panel-desc">Après confirmation de votre commande, vous serez redirigé vers la page de paiement sécurisée FedaPay. Vous pourrez payer avec :</p>
                                     <div class="operator-cards">
                                         <div class="operator-card tmoney">
-                                            <div class="op-logo">T₿</div>
+                                            <div class="op-logo op-text">T₿</div>
                                             <div><strong>T-Money</strong><span class="op-num">Togocel</span></div>
                                         </div>
                                         <div class="operator-card moov">
-                                            <div class="op-logo">FL</div>
+                                            <div class="op-logo"><img src="/assets/img/flooz logo.png" alt="Flooz" class="op-img"></div>
                                             <div><strong>Flooz</strong><span class="op-num">Moov Africa</span></div>
                                         </div>
                                         <div class="operator-card wave">
-                                            <div class="op-logo">~W</div>
+                                            <div class="op-logo op-text">W</div>
                                             <div><strong>Wave</strong><span class="op-num">Wave Mobile</span></div>
                                         </div>
                                     </div>
@@ -458,10 +458,11 @@ const submitOrder = () => {
 .operator-card.moov { border-color: #e8f5e9; background: #f0faf5; }
 
 .op-logo {
-    width: 38px;
+    width: 48px;
     height: 38px;
     border-radius: 8px;
-    background: #1a3a1a;
+    background: #fff;
+    border: 1px solid #e0ece0;
     color: #d5a741;
     font-size: 0.68rem;
     font-weight: 900;
@@ -469,6 +470,17 @@ const submitOrder = () => {
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    overflow: hidden;
+}
+.op-logo.op-text {
+    background: #1a3a1a;
+    color: #d5a741;
+}
+.op-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 3px;
 }
 .operator-card strong { display: block; color: #17351a; font-size: 0.85rem; font-weight: 900; }
 .op-num { display: block; color: #5cb85c; font-size: 0.88rem; font-weight: 900; margin-top: 2px; }

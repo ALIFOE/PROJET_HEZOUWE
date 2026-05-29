@@ -28,11 +28,38 @@ const latestOrder = computed(() => props.orders?.[0] || null);
 
 const statusLabels = {
     pending: 'En attente',
-    confirmed: 'Confirmee',
-    preparing: 'Preparation',
+    confirmed: 'Confirmée',
+    preparing: 'Préparation',
     shipped: 'En livraison',
-    delivered: 'Livree',
-    cancelled: 'Annulee',
+    delivered: 'Livrée',
+    cancelled: 'Annulée',
+};
+
+const paymentStatusLabels = {
+    unpaid: 'Non payé',
+    paid: 'Payé ✓',
+    failed: 'Échec',
+    refunded: 'Remboursé',
+    rejected: 'Rejeté',
+};
+
+const paymentStatusClass = (status) => ({
+    unpaid: 'warning',
+    paid: 'success',
+    failed: 'danger',
+    refunded: 'info',
+    rejected: 'danger',
+}[status] || 'warning');
+
+const paymentMethodLabels = {
+    cash_on_delivery: 'Paiement à la livraison',
+    mobile_money: 'Mobile Money',
+    bank_transfer: 'Virement bancaire',
+};
+
+const expandedReceipts = ref({});
+const toggleReceipt = (orderId) => {
+    expandedReceipts.value[orderId] = !expandedReceipts.value[orderId];
 };
 
 const statusClass = (status) => ({
@@ -220,7 +247,48 @@ onMounted(() => {
                                         <span class="status-pill" :class="statusClass(order.status)">
                                             {{ statusLabels[order.status] || order.status }}
                                         </span>
-                                        <span>{{ order.payment_method }}</span>
+                                        <span class="status-pill" :class="paymentStatusClass(order.payment_status)">
+                                            {{ paymentStatusLabels[order.payment_status] || order.payment_status }}
+                                        </span>
+                                    </div>
+                                    <div v-if="order.rejection_reason" class="rejection-notice">
+                                        <i class="far fa-exclamation-circle"></i>
+                                        <span>{{ order.rejection_reason }}</span>
+                                    </div>
+                                    <div v-if="order.payment_status === 'paid'" class="receipt-toggle-row">
+                                        <button class="receipt-toggle-btn" @click="toggleReceipt(order.id)">
+                                            <i class="far fa-receipt"></i>
+                                            {{ expandedReceipts[order.id] ? 'Masquer le reçu' : 'Voir le reçu' }}
+                                        </button>
+                                    </div>
+                                    <div v-if="order.payment_status === 'paid' && expandedReceipts[order.id]" class="receipt-panel">
+                                        <div class="receipt-header">Reçu de paiement — {{ order.order_number }}</div>
+                                        <table class="receipt-table">
+                                            <thead>
+                                                <tr>
+                                                    <th>Produit</th>
+                                                    <th class="text-center">Qté</th>
+                                                    <th class="text-right">Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr v-for="item in order.items" :key="item.id">
+                                                    <td>{{ item.product_title }}</td>
+                                                    <td class="text-center">{{ item.quantity }}</td>
+                                                    <td class="text-right">{{ formatPrice(item.line_total) }} FCFA</td>
+                                                </tr>
+                                            </tbody>
+                                            <tfoot>
+                                                <tr class="total-row">
+                                                    <td colspan="2">Total payé</td>
+                                                    <td class="text-right">{{ formatPrice(order.total) }} FCFA</td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                        <div class="receipt-meta">
+                                            <span>{{ paymentMethodLabels[order.payment_method] || order.payment_method }}</span>
+                                            <span v-if="order.transaction_id">ID : {{ order.transaction_id }}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -649,7 +717,100 @@ onMounted(() => {
 .order-meta {
     margin-top: 10px;
     justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 6px;
 }
+
+.rejection-notice {
+    margin-top: 8px;
+    padding: 8px 12px;
+    background: #fff0f0;
+    border: 1px solid #fcc;
+    border-radius: 6px;
+    color: #b42323;
+    font-size: 0.8rem;
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+}
+
+.receipt-toggle-row {
+    margin-top: 10px;
+}
+
+.receipt-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    background: #f0faf0;
+    border: 1px solid #c3ddc0;
+    border-radius: 6px;
+    color: #1a3a1a;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background .15s;
+}
+.receipt-toggle-btn:hover { background: #e0f0e0; }
+
+.receipt-panel {
+    margin-top: 10px;
+    border: 1px solid #c3ddc0;
+    border-radius: 8px;
+    overflow: hidden;
+    font-size: 0.85rem;
+}
+
+.receipt-header {
+    background: #1a3a1a;
+    color: #fff;
+    padding: 10px 14px;
+    font-weight: 700;
+    font-size: 0.8rem;
+}
+
+.receipt-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.receipt-table th {
+    padding: 8px 14px;
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    color: #6c757d;
+    font-weight: 900;
+    border-bottom: 1px solid #e8eee3;
+    background: #f8faf8;
+}
+
+.receipt-table td {
+    padding: 8px 14px;
+    color: #1a3a1a;
+    border-bottom: 1px solid #f0f4f0;
+}
+
+.receipt-table tfoot td {
+    font-weight: 900;
+    color: #2d6a4f;
+    border-bottom: none;
+    background: #f0faf0;
+}
+
+.receipt-meta {
+    padding: 8px 14px;
+    background: #f8faf8;
+    border-top: 1px solid #e8eee3;
+    color: #6c757d;
+    font-size: 0.78rem;
+    display: flex;
+    gap: 14px;
+}
+
+.text-center { text-align: center; }
+.text-right { text-align: right; }
 
 .status-pill {
     display: inline-flex;

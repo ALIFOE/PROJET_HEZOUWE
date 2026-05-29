@@ -54,6 +54,55 @@
     </div>
   </td></tr>
 
+  <!-- Receipt / Items table -->
+  @if($order->items && $order->items->count())
+  <tr><td style="background:#fff;padding:0 40px 24px;">
+    <p style="margin:0 0 12px;color:#1a3a1a;font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:0.5px;">Reçu de commande</p>
+    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;font-size:13px;">
+      <tr style="border-bottom:2px solid #dee2e6;">
+        <th style="text-align:left;padding:8px 0;color:#6c757d;font-size:11px;text-transform:uppercase;letter-spacing:.5px;font-weight:900;">Produit</th>
+        <th style="text-align:center;padding:8px 0;color:#6c757d;font-size:11px;text-transform:uppercase;letter-spacing:.5px;font-weight:900;">Qté</th>
+        <th style="text-align:right;padding:8px 0;color:#6c757d;font-size:11px;text-transform:uppercase;letter-spacing:.5px;font-weight:900;">Prix unit.</th>
+        <th style="text-align:right;padding:8px 0;color:#6c757d;font-size:11px;text-transform:uppercase;letter-spacing:.5px;font-weight:900;">Total</th>
+      </tr>
+      @foreach($order->items as $item)
+      <tr style="border-bottom:1px solid #f0f4f0;">
+        <td style="padding:10px 0;color:#1a3a1a;font-weight:600;">{{ $item->product_title }}</td>
+        <td style="padding:10px 0;text-align:center;color:#555;">{{ $item->quantity }}</td>
+        <td style="padding:10px 0;text-align:right;color:#555;">{{ number_format($item->unit_price, 0, ',', ' ') }} FCFA</td>
+        <td style="padding:10px 0;text-align:right;color:#1a3a1a;font-weight:700;">{{ number_format($item->line_total, 0, ',', ' ') }} FCFA</td>
+      </tr>
+      @endforeach
+      @if($order->delivery_cost > 0)
+      <tr style="border-bottom:1px solid #f0f4f0;">
+        <td colspan="3" style="padding:8px 0;color:#6c757d;font-size:12px;">Frais de livraison</td>
+        <td style="padding:8px 0;text-align:right;color:#6c757d;font-size:12px;">{{ number_format($order->delivery_cost, 0, ',', ' ') }} FCFA</td>
+      </tr>
+      @else
+      <tr style="border-bottom:1px solid #f0f4f0;">
+        <td colspan="3" style="padding:8px 0;color:#5cb85c;font-size:12px;">Livraison offerte</td>
+        <td style="padding:8px 0;text-align:right;color:#5cb85c;font-size:12px;">0 FCFA</td>
+      </tr>
+      @endif
+      <tr>
+        <td colspan="3" style="padding:14px 0 8px;color:#1a3a1a;font-weight:900;">Total payé</td>
+        <td style="padding:14px 0 8px;text-align:right;color:#2d6a4f;font-size:1.1em;font-weight:900;">{{ number_format($order->total, 0, ',', ' ') }} FCFA</td>
+      </tr>
+    </table>
+    <div style="background:#f0faf0;border-radius:6px;padding:10px 14px;margin-top:8px;font-size:12px;color:#555;">
+      <strong style="color:#1a3a1a;">Mode de paiement :</strong>
+      @if($order->payment_method === 'mobile_money') 📱 Mobile Money (FedaPay)
+      @elseif($order->payment_method === 'bank_transfer') 🏦 Virement bancaire
+      @else 🏠 Paiement à la livraison
+      @endif
+      @if($order->transaction_id)
+      &nbsp;— ID : <strong style="color:#1a3a1a;font-family:monospace;">{{ $order->transaction_id }}</strong>
+      @endif
+      &nbsp;— Date : <strong style="color:#1a3a1a;">{{ $order->updated_at->format('d/m/Y à H:i') }}</strong>
+    </div>
+  </td></tr>
+  @endif
+
   <!-- Next steps -->
   <tr><td style="background:#fff;padding:0 40px 32px;">
     <p style="margin:0 0 14px;color:#1a3a1a;font-size:13px;font-weight:900;text-transform:uppercase;letter-spacing:0.5px;">Prochaines étapes</p>
