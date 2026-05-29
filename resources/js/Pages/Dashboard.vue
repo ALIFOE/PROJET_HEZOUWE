@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link, usePage, useForm } from '@inertiajs/vue3';
+import { Head, Link, usePage } from '@inertiajs/vue3';
 import { computed, ref, onMounted } from 'vue';
 import QRCode from 'qrcode';
 
@@ -62,19 +62,6 @@ const toggleReceipt = (orderId) => {
     expandedReceipts.value[orderId] = !expandedReceipts.value[orderId];
 };
 
-const retryForms = ref({});
-const getRetryForm = (orderId) => {
-    if (!retryForms.value[orderId]) {
-        retryForms.value[orderId] = useForm({ transaction_id: '' });
-    }
-    return retryForms.value[orderId];
-};
-const submitRetry = (orderId) => {
-    const form = getRetryForm(orderId);
-    form.patch(`/orders/${orderId}/retry-payment`, {
-        onSuccess: () => { form.reset(); },
-    });
-};
 
 const statusClass = (status) => ({
     pending: 'warning',
@@ -265,35 +252,17 @@ onMounted(() => {
                                             {{ paymentStatusLabels[order.payment_status] || order.payment_status }}
                                         </span>
                                     </div>
-                                    <!-- Rejet + formulaire de re-soumission -->
+                                    <!-- Paiement rejeté → redirection vers sélection paiement -->
                                     <div v-if="order.payment_status === 'rejected'" class="rejection-notice">
                                         <div class="rejection-header">
                                             <i class="far fa-exclamation-triangle"></i>
                                             <strong>Paiement rejeté — Action requise</strong>
                                         </div>
                                         <p class="rejection-reason">{{ order.rejection_reason }}</p>
-                                        <div class="retry-form">
-                                            <label>Nouvel ID de transaction</label>
-                                            <div class="retry-input-row">
-                                                <input
-                                                    v-model="getRetryForm(order.id).transaction_id"
-                                                    type="text"
-                                                    placeholder="Ex: TG240518XXXX"
-                                                    class="retry-input"
-                                                >
-                                                <button
-                                                    class="retry-btn"
-                                                    :disabled="getRetryForm(order.id).processing || !getRetryForm(order.id).transaction_id"
-                                                    @click="submitRetry(order.id)"
-                                                >
-                                                    <i class="far" :class="getRetryForm(order.id).processing ? 'fa-spinner fa-spin' : 'fa-paper-plane'"></i>
-                                                    {{ getRetryForm(order.id).processing ? 'Envoi...' : 'Soumettre' }}
-                                                </button>
-                                            </div>
-                                            <p v-if="getRetryForm(order.id).errors.transaction_id" class="retry-error">
-                                                {{ getRetryForm(order.id).errors.transaction_id }}
-                                            </p>
-                                        </div>
+                                        <a :href="`/orders/${order.id}/pay`" class="retry-pay-btn">
+                                            <i class="far fa-credit-card"></i>
+                                            Reprendre le paiement
+                                        </a>
                                     </div>
 
                                     <!-- Reçu pour commandes payées -->
@@ -792,54 +761,20 @@ onMounted(() => {
     line-height: 1.5;
 }
 
-.retry-form label {
-    display: block;
-    font-size: 0.78rem;
-    font-weight: 800;
-    color: #1a3a1a;
-    margin-bottom: 6px;
-}
-
-.retry-input-row {
-    display: flex;
-    gap: 8px;
-}
-
-.retry-input {
-    flex: 1;
-    padding: 8px 12px;
-    border: 1.5px solid #dfe8db;
-    border-radius: 6px;
-    font-family: monospace;
-    font-size: 0.88rem;
-    outline: none;
-    transition: border-color .15s;
-}
-.retry-input:focus { border-color: #5cb85c; }
-
-.retry-btn {
+.retry-pay-btn {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 8px 16px;
+    gap: 7px;
+    padding: 9px 18px;
     background: #2d6a4f;
     color: #fff;
-    border: none;
-    border-radius: 6px;
-    font-size: 0.82rem;
+    border-radius: 7px;
+    font-size: 0.83rem;
     font-weight: 800;
-    cursor: pointer;
-    white-space: nowrap;
+    text-decoration: none;
     transition: background .15s;
 }
-.retry-btn:hover:not(:disabled) { background: #1a3a1a; }
-.retry-btn:disabled { opacity: .6; cursor: not-allowed; }
-
-.retry-error {
-    margin: 6px 0 0;
-    color: #b42323;
-    font-size: 0.78rem;
-}
+.retry-pay-btn:hover { background: #1a3a1a; }
 
 .receipt-toggle-row {
     margin-top: 10px;

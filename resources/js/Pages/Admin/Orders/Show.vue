@@ -221,10 +221,18 @@ const deleteOrder = () => {
                             <i class="far" :class="verifying ? 'fa-spinner fa-spin' : 'fa-check-double'"></i>
                             {{ verifying ? 'Validation...' : 'Valider le paiement' }}
                         </button>
-                        <button class="btn-reject" @click="showRejectModal = true">
+                        <button
+                            v-if="order.payment_status !== 'rejected'"
+                            class="btn-reject"
+                            @click="showRejectModal = true"
+                        >
                             <i class="far fa-times-circle"></i>
                             Rejeter le paiement
                         </button>
+                        <span v-else class="rejected-pending-hint">
+                            <i class="far fa-clock"></i>
+                            En attente de correction par le client
+                        </span>
                     </div>
                 </div>
             </section>
@@ -399,6 +407,12 @@ const deleteOrder = () => {
     border:1.5px solid #f5a0a0; border-radius:8px; font-size:1rem; font-weight:900; cursor:pointer; transition:all .18s;
 }
 .btn-reject:hover { background:#fff0f0; border-color:#e05555; }
+
+.rejected-pending-hint {
+    display:inline-flex; align-items:center; gap:7px;
+    padding:12px 18px; background:#fff8e1; border:1px solid #f0c060;
+    border-radius:8px; color:#7a5700; font-size:0.88rem; font-weight:700;
+}
 
 .verified-badge {
     display:inline-flex; align-items:center; gap:8px;

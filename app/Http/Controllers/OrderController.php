@@ -144,6 +144,52 @@ class OrderController extends Controller
         return back()->with('success', 'Votre nouvel ID de transaction a été soumis. Notre équipe va le vérifier.');
     }
 
+    public function pay(Request $request, Order $order): Response|RedirectResponse
+    {
+        abort_if($order->user_id !== $request->user()->id, 403);
+        abort_if($order->payment_status === 'paid', 403, 'Ce paiement est déjà validé.');
+        $order->load('items');
+        return Inertia::render('OrderPayment', ['order' => $order]);
+    }
+
+    public function processPayment(Request $request, Order $order): RedirectResponse
+    {
+        abort_if($order->user_id !== $request->user()->id, 403);
+        abort_if($order->payment_status === 'paid', 403, 'Ce paiement est déjà validé.');
+
+        $validated = $request->validate([
+            'payment_method' => ['required', 'in:cash_on_delivery,mobile_money,bank_transfer'],
+            'transaction_id' => [
+                Rule::requiredIf(in_array($request->payment_method, ['cash_on_delivery', 'bank_transfer'])),
+                'nullable', 'string', 'max:100',
+            ],
+        ], [
+            'payment_method.required' => 'Veuillez choisir un mode de paiement.',
+            'payment_method.in'       => 'Mode de paiement invalide.',
+            'transaction_id.required' => "L'identifiant de transaction est obligatoire pour ce mode de paiement.",
+        ]);
+
+        $order->update([
+            'payment_method'   => $validated['payment_method'],
+            'transaction_id'   => $validated['transaction_id'] ?? null,
+            'payment_status'   => 'unpaid',
+            'rejection_reason' => null,
+        ]);
+
+        try {
+            Mail::to(env('MAIL_FROM_ADDRESS', env('MAIL_USERNAME')))
+                ->send(new NewOrderAdminMail($order->load('items')));
+        } catch (\Exception $e) {
+            Log::warning('ProcessPayment admin notify failed: ' . $e->getMessage());
+        }
+
+        if ($validated['payment_method'] === 'mobile_money') {
+            return redirect()->route('payment.fedapay', ['order' => $order->id]);
+        }
+
+        return redirect()->route('dashboard')->with('success', 'Votre paiement a été soumis. Notre équipe va le vérifier.');
+    }
+
     public function receipt(Request $request, Order $order)
     {
         abort_if($order->user_id !== $request->user()->id, 403);
