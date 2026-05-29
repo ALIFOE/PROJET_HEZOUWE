@@ -1,9 +1,9 @@
 <?php return array(
     'root' => array(
         'name' => 'laravel/laravel',
-        'pretty_version' => '1.0.0+no-version-set',
-        'version' => '1.0.0.0',
-        'reference' => null,
+        'pretty_version' => 'dev-main',
+        'version' => 'dev-main',
+        'reference' => '1ef830e6a415ccebfcae8efcc65db54e3b72bc49',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -111,6 +111,15 @@
             'install_path' => __DIR__ . '/../fakerphp/faker',
             'aliases' => array(),
             'dev_requirement' => true,
+        ),
+        'fedapay/fedapay-php' => array(
+            'pretty_version' => '0.4.8',
+            'version' => '0.4.8.0',
+            'reference' => '36f9f80878a9541e48a90db6f2d49b00ed868afe',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../fedapay/fedapay-php',
+            'aliases' => array(),
+            'dev_requirement' => false,
         ),
         'filp/whoops' => array(
             'pretty_version' => '2.18.4',
@@ -410,9 +419,9 @@
             'dev_requirement' => false,
         ),
         'laravel/laravel' => array(
-            'pretty_version' => '1.0.0+no-version-set',
-            'version' => '1.0.0.0',
-            'reference' => null,
+            'pretty_version' => 'dev-main',
+            'version' => 'dev-main',
+            'reference' => '1ef830e6a415ccebfcae8efcc65db54e3b72bc49',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

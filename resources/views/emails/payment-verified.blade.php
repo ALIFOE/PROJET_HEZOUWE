@@ -154,8 +154,29 @@
     </table>
   </td></tr>
 
+  <!-- QR livraison -->
+  <tr><td style="background:#f0f8ff;border:1px solid #bcd4f0;margin:0 40px;padding:20px 40px;">
+    <table width="100%" cellpadding="0" cellspacing="0">
+      <tr>
+        <td style="vertical-align:top;width:44px;">
+          <div style="width:40px;height:40px;border-radius:50%;background:#1a4da8;color:#fff;text-align:center;line-height:40px;font-size:20px;">📱</div>
+        </td>
+        <td style="padding-left:14px;">
+          <p style="margin:0 0 4px;color:#1a3a1a;font-size:14px;font-weight:900;">Scanner le code QR à la livraison</p>
+          <p style="margin:0 0 12px;color:#5a6b5c;font-size:13px;line-height:1.6;">
+            Lors de la réception de votre colis, scannez le code QR présenté par votre livreur pour confirmer la réception en toute sécurité.
+          </p>
+          <a href="{{ url('/orders/'.$order->id.'/scan-delivery') }}"
+             style="display:inline-block;padding:10px 22px;background:#1a4da8;color:#fff;text-decoration:none;border-radius:7px;font-weight:900;font-size:13px;">
+            📷 Scanner le code QR du livreur
+          </a>
+        </td>
+      </tr>
+    </table>
+  </td></tr>
+
   <!-- CTA -->
-  <tr><td style="background:#fff;padding:0 40px 28px;text-align:center;border-top:1px solid #e8eee3;">
+  <tr><td style="background:#fff;padding:20px 40px 28px;text-align:center;border-top:1px solid #e8eee3;">
     <a href="{{ url('/orders/'.$order->id.'/receipt') }}"
        style="display:inline-block;padding:13px 32px;background:#2d6a4f;color:#fff;text-decoration:none;border-radius:8px;font-weight:900;font-size:14px;margin-right:10px;">
       📥 Télécharger le reçu

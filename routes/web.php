@@ -180,6 +180,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/orders/{order}/pay', [OrderController::class, 'pay'])->name('orders.pay');
     Route::patch('/orders/{order}/pay', [OrderController::class, 'processPayment'])->name('orders.process-payment');
     Route::get('/orders/{order}/receipt', [OrderController::class, 'receipt'])->name('orders.receipt');
+    Route::get('/orders/{order}/scan-delivery', [App\Http\Controllers\DeliveryController::class, 'scan'])->name('orders.scan-delivery');
+    Route::post('/orders/{order}/verify-delivery', [App\Http\Controllers\DeliveryController::class, 'verify'])->name('orders.verify-delivery');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -207,11 +209,15 @@ Route::post('/fedapay/webhook', [App\Http\Controllers\FedaPayController::class, 
     ->middleware('throttle:60,1')
     ->name('fedapay.webhook');
 
+// Lien livreur — public, sans authentification
+Route::get('/delivery/{token}', [App\Http\Controllers\DeliveryController::class, 'showQR'])->name('delivery.qr');
+
 // Routes Admin
 Route::middleware(['auth', 'verified', 'is.admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [App\Http\Controllers\Admin\AdminDashboardController::class, 'index'])->name('dashboard');
     Route::resource('orders', \App\Http\Controllers\Admin\OrderController::class)->only(['index', 'show', 'edit', 'update', 'destroy']);
     Route::post('orders/{order}/mark-delivered', [\App\Http\Controllers\Admin\OrderController::class, 'markAsDelivered'])->name('orders.mark-delivered');
+    Route::post('orders/{order}/generate-delivery-token', [App\Http\Controllers\DeliveryController::class, 'generateToken'])->name('orders.generate-delivery-token');
     Route::post('orders/{order}/verify-payment', [\App\Http\Controllers\Admin\OrderController::class, 'verifyPayment'])->name('orders.verify-payment');
     Route::post('orders/{order}/reject-payment', [\App\Http\Controllers\Admin\OrderController::class, 'rejectPayment'])->name('orders.reject-payment');
     Route::post('products/upload-image', [\App\Http\Controllers\Admin\ProductController::class, 'uploadImage'])->name('products.upload-image');

@@ -2,6 +2,7 @@
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { ref, computed } from 'vue';
 import { Head, Link, router, useForm } from '@inertiajs/vue3';
+import axios from 'axios';
 
 const props = defineProps({
     order: Object,
@@ -68,6 +69,30 @@ const submitRejection = () => {
 const deleteOrder = () => {
     if (!confirm(`Supprimer définitivement la commande ${props.order.order_number} ?`)) return;
     router.delete(`/admin/orders/${props.order.id}`);
+};
+
+// Bon de livraison QR
+const generatingToken = ref(false);
+const deliveryUrl = ref('');
+const copiedUrl = ref(false);
+
+const generateDeliveryToken = async () => {
+    generatingToken.value = true;
+    try {
+        const resp = await axios.post(`/admin/orders/${props.order.id}/generate-delivery-token`);
+        deliveryUrl.value = resp.data.url;
+    } catch {
+        alert('Erreur lors de la génération du lien. Réessayez.');
+    } finally {
+        generatingToken.value = false;
+    }
+};
+
+const copyDeliveryUrl = async () => {
+    if (!deliveryUrl.value) return;
+    await navigator.clipboard.writeText(deliveryUrl.value);
+    copiedUrl.value = true;
+    setTimeout(() => { copiedUrl.value = false; }, 2500);
 };
 </script>
 
@@ -263,6 +288,48 @@ const deleteOrder = () => {
                 </div>
             </section>
         </div>
+
+            <!-- Bon de livraison QR -->
+            <section class="detail-card delivery-card">
+                <div class="card-header">
+                    <h2><i class="far fa-qrcode"></i> Bon de livraison (Code QR)</h2>
+                    <span :class="['status-pill', order.delivery_verified_at ? 'success' : 'warning']">
+                        {{ order.delivery_verified_at ? 'Livraison confirmée' : 'En attente' }}
+                    </span>
+                </div>
+
+                <div v-if="order.delivery_verified_at" class="verified-badge">
+                    <i class="far fa-check-circle"></i>
+                    Livraison confirmée par le client le {{ formatDate(order.delivery_verified_at) }}
+                </div>
+
+                <div v-else class="delivery-generate">
+                    <p class="delivery-hint">
+                        <i class="far fa-info-circle"></i>
+                        Générez un lien unique à envoyer au livreur. Ce lien affiche le code QR à présenter au client pour valider la réception. Utilisation unique.
+                    </p>
+
+                    <div v-if="deliveryUrl" class="delivery-url-box">
+                        <label>Lien livreur (à partager)</label>
+                        <div class="url-row">
+                            <input type="text" :value="deliveryUrl" readonly class="url-input">
+                            <button class="btn-copy" @click="copyDeliveryUrl">
+                                <i class="far" :class="copiedUrl ? 'fa-check' : 'fa-copy'"></i>
+                                {{ copiedUrl ? 'Copié !' : 'Copier' }}
+                            </button>
+                        </div>
+                        <a :href="deliveryUrl" target="_blank" class="url-preview-link">
+                            <i class="far fa-external-link"></i> Aperçu du lien livreur
+                        </a>
+                        <p class="regen-hint">Générer à nouveau invalidera l'ancien lien.</p>
+                    </div>
+
+                    <button class="btn-generate" :disabled="generatingToken" @click="generateDeliveryToken">
+                        <i class="far" :class="generatingToken ? 'fa-spinner fa-spin' : 'fa-qrcode'"></i>
+                        {{ deliveryUrl ? 'Regénérer le lien' : 'Générer le lien livreur' }}
+                    </button>
+                </div>
+            </section>
 
         <!-- Reject Modal -->
         <Teleport to="body">
@@ -492,6 +559,59 @@ const deleteOrder = () => {
 }
 .btn-reject-confirm:hover:not(:disabled) { background:#8c1a1a; }
 .btn-reject-confirm:disabled { opacity:.6; cursor:not-allowed; }
+
+/* Delivery QR section */
+.delivery-card { border-color: #bcd4f0; background: #f8fbff; }
+.delivery-card h2 { display: flex; align-items: center; gap: 8px; }
+
+.delivery-hint {
+    display: flex; align-items: flex-start; gap: 10px;
+    background: #f0f8ff; border: 1px solid #bcd4f0; border-radius: 8px;
+    padding: 13px 16px; color: #1a4a7a; font-size: 0.88rem; line-height: 1.6;
+    margin-bottom: 18px;
+}
+.delivery-hint i { color: #1a6ba8; margin-top: 2px; flex-shrink: 0; }
+
+.delivery-generate { display: flex; flex-direction: column; gap: 14px; margin-top: 16px; }
+
+.delivery-url-box {
+    background: #fff; border: 1.5px solid #a8d8a8;
+    border-radius: 10px; padding: 16px 18px;
+    display: flex; flex-direction: column; gap: 10px;
+}
+.delivery-url-box label { font-size: 0.82rem; font-weight: 800; color: #17351a; text-transform: uppercase; letter-spacing: .5px; }
+
+.url-row { display: flex; gap: 8px; }
+.url-input {
+    flex: 1; border: 1.5px solid #e5ece2; border-radius: 7px;
+    padding: 10px 12px; font-size: 0.82rem; font-family: monospace;
+    color: #1a4da8; background: #f8faf7; outline: none;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.btn-copy {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 10px 16px; background: #2d6a4f; color: #fff;
+    border: none; border-radius: 7px; font-size: 0.85rem; font-weight: 800; cursor: pointer; white-space: nowrap;
+    transition: background .15s;
+}
+.btn-copy:hover { background: #1a3a1a; }
+
+.url-preview-link {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.82rem; color: #2d6a4f; font-weight: 700; text-decoration: none;
+}
+.url-preview-link:hover { text-decoration: underline; }
+
+.regen-hint { font-size: 0.78rem; color: #9aaa95; margin: 0; }
+
+.btn-generate {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    align-self: flex-start; padding: 12px 24px; background: #1a4da8; color: #fff;
+    border: none; border-radius: 8px; font-size: 0.95rem; font-weight: 900;
+    cursor: pointer; transition: background .15s;
+}
+.btn-generate:hover:not(:disabled) { background: #0f3070; }
+.btn-generate:disabled { opacity: .65; cursor: not-allowed; }
 
 @media (max-width:1100px) {
     .summary-strip, .details-grid { grid-template-columns:repeat(2,1fr); }

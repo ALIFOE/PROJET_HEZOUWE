@@ -29,6 +29,8 @@ class Order extends Model
         'total',
         'transaction_id',
         'rejection_reason',
+        'delivery_token',
+        'delivery_verified_at',
     ];
 
     protected $casts = [
