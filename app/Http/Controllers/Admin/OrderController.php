@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Mail\NewOrderAdminMail;
+use App\Mail\OrderStatusAdminMail;
 use App\Mail\OrderStatusMail;
 use App\Mail\PaymentRejectedMail;
 use App\Mail\PaymentVerifiedMail;
@@ -82,9 +83,9 @@ class OrderController extends Controller
             Log::warning('PaymentVerifiedMail failed: ' . $e->getMessage());
         }
 
-        // Email de confirmation à l'admin
+        // Notification interne à l'admin
         try {
-            Mail::to($this->adminEmail())->send(new OrderStatusMail($order, 'confirmed'));
+            Mail::to($this->adminEmail())->send(new OrderStatusAdminMail($order, 'confirmed'));
         } catch (\Exception $e) {
             Log::warning('Admin PaymentVerified notify failed: ' . $e->getMessage());
         }
