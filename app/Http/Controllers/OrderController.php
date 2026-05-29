@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\NewOrderAdminMail;
 use App\Mail\OrderConfirmationMail;
 use App\Models\Order;
 use App\Support\ProductCatalog;
@@ -88,10 +89,19 @@ class OrderController extends Controller
 
         $order->load('items');
 
+        // Email de confirmation au client
         try {
             Mail::to($order->customer_email)->send(new OrderConfirmationMail($order));
         } catch (\Exception $e) {
             Log::warning('OrderConfirmationMail failed: ' . $e->getMessage());
+        }
+
+        // Notification à l'admin : nouvelle commande reçue
+        try {
+            Mail::to(env('MAIL_FROM_ADDRESS', env('MAIL_USERNAME')))
+                ->send(new NewOrderAdminMail($order));
+        } catch (\Exception $e) {
+            Log::warning('NewOrderAdminMail failed: ' . $e->getMessage());
         }
 
         // Mobile Money → redirection vers la page de paiement FedaPay

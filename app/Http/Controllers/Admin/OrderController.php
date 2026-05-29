@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\NewOrderAdminMail;
 use App\Mail\OrderStatusMail;
+use App\Mail\PaymentRejectedMail;
 use App\Mail\PaymentVerifiedMail;
 use App\Models\Order;
 use Illuminate\Http\Request;
@@ -13,6 +15,11 @@ use Inertia\Inertia;
 
 class OrderController extends Controller
 {
+    private function adminEmail(): string
+    {
+        return env('MAIL_FROM_ADDRESS', env('MAIL_USERNAME'));
+    }
+
     public function index()
     {
         $orders = Order::with('user', 'items')->orderBy('created_at', 'desc')->paginate(15);
@@ -35,13 +42,12 @@ class OrderController extends Controller
     {
         $validated = $request->validate([
             'status'         => 'required|in:pending,confirmed,preparing,shipped,delivered,cancelled',
-            'payment_status' => 'nullable|in:unpaid,paid,failed,refunded',
+            'payment_status' => 'nullable|in:unpaid,paid,failed,refunded,rejected',
         ]);
 
         $previousStatus = $order->status;
         $order->update($validated);
 
-        // Envoyer email si le statut a changé (hors pending)
         if ($validated['status'] !== $previousStatus && $validated['status'] !== 'pending') {
             $order->load('items');
             try {
@@ -51,7 +57,8 @@ class OrderController extends Controller
             }
         }
 
-        return redirect()->route('admin.orders.index')->with('success', 'Statut mis à jour' . ($validated['status'] !== $previousStatus ? ' — client notifié par email.' : '.'));
+        return redirect()->route('admin.orders.index')
+            ->with('success', 'Statut mis à jour' . ($validated['status'] !== $previousStatus ? ' — client notifié.' : '.'));
     }
 
     public function verifyPayment(Order $order)
@@ -61,19 +68,58 @@ class OrderController extends Controller
         }
 
         $order->update([
-            'payment_status' => 'paid',
-            'status'         => 'confirmed',
+            'payment_status'   => 'paid',
+            'status'           => 'confirmed',
+            'rejection_reason' => null,
         ]);
 
         $order->load('items');
 
+        // Email au client
         try {
             Mail::to($order->customer_email)->send(new PaymentVerifiedMail($order));
         } catch (\Exception $e) {
             Log::warning('PaymentVerifiedMail failed: ' . $e->getMessage());
         }
 
-        return back()->with('success', 'Paiement vérifié. Commande confirmée et client notifié par email.');
+        // Email de confirmation à l'admin
+        try {
+            Mail::to($this->adminEmail())->send(new OrderStatusMail($order, 'confirmed'));
+        } catch (\Exception $e) {
+            Log::warning('Admin PaymentVerified notify failed: ' . $e->getMessage());
+        }
+
+        return back()->with('success', 'Paiement vérifié ✅ — Client et admin notifiés par email.');
+    }
+
+    public function rejectPayment(Request $request, Order $order)
+    {
+        $request->validate([
+            'rejection_reason' => 'required|string|min:10|max:500',
+        ], [
+            'rejection_reason.required' => 'Vous devez saisir un motif de rejet.',
+            'rejection_reason.min'      => 'Le motif doit contenir au moins 10 caractères.',
+        ]);
+
+        if ($order->payment_status === 'paid') {
+            return back()->with('error', 'Impossible de rejeter un paiement déjà validé.');
+        }
+
+        $order->update([
+            'payment_status'   => 'rejected',
+            'rejection_reason' => $request->rejection_reason,
+        ]);
+
+        $order->load('items');
+
+        // Email au client avec le motif
+        try {
+            Mail::to($order->customer_email)->send(new PaymentRejectedMail($order));
+        } catch (\Exception $e) {
+            Log::warning('PaymentRejectedMail failed: ' . $e->getMessage());
+        }
+
+        return back()->with('success', 'Paiement rejeté — Client notifié avec le motif.');
     }
 
     public function markAsDelivered(Request $request, Order $order)

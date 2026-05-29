@@ -28,6 +28,7 @@ class Order extends Model
         'discount',
         'total',
         'transaction_id',
+        'rejection_reason',
     ];
 
     protected $casts = [
