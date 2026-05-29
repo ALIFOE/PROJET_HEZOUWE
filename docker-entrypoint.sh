@@ -12,5 +12,8 @@ php artisan view:cache
 echo "==> Migrations..."
 php artisan migrate --force
 
+echo "==> Seeders..."
+php artisan db:seed --force
+
 echo "==> Démarrage du serveur sur port ${PORT:-10000}..."
 exec php artisan serve --host=0.0.0.0 --port="${PORT:-10000}"
