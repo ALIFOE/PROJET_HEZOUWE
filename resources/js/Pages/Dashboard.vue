@@ -1,6 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link, usePage } from '@inertiajs/vue3';
+import { Head, Link, usePage, useForm } from '@inertiajs/vue3';
 import { computed, ref, onMounted } from 'vue';
 import QRCode from 'qrcode';
 
@@ -60,6 +60,20 @@ const paymentMethodLabels = {
 const expandedReceipts = ref({});
 const toggleReceipt = (orderId) => {
     expandedReceipts.value[orderId] = !expandedReceipts.value[orderId];
+};
+
+const retryForms = ref({});
+const getRetryForm = (orderId) => {
+    if (!retryForms.value[orderId]) {
+        retryForms.value[orderId] = useForm({ transaction_id: '' });
+    }
+    return retryForms.value[orderId];
+};
+const submitRetry = (orderId) => {
+    const form = getRetryForm(orderId);
+    form.patch(`/orders/${orderId}/retry-payment`, {
+        onSuccess: () => { form.reset(); },
+    });
 };
 
 const statusClass = (status) => ({
@@ -251,15 +265,47 @@ onMounted(() => {
                                             {{ paymentStatusLabels[order.payment_status] || order.payment_status }}
                                         </span>
                                     </div>
-                                    <div v-if="order.rejection_reason" class="rejection-notice">
-                                        <i class="far fa-exclamation-circle"></i>
-                                        <span>{{ order.rejection_reason }}</span>
+                                    <!-- Rejet + formulaire de re-soumission -->
+                                    <div v-if="order.payment_status === 'rejected'" class="rejection-notice">
+                                        <div class="rejection-header">
+                                            <i class="far fa-exclamation-triangle"></i>
+                                            <strong>Paiement rejeté — Action requise</strong>
+                                        </div>
+                                        <p class="rejection-reason">{{ order.rejection_reason }}</p>
+                                        <div class="retry-form">
+                                            <label>Nouvel ID de transaction</label>
+                                            <div class="retry-input-row">
+                                                <input
+                                                    v-model="getRetryForm(order.id).transaction_id"
+                                                    type="text"
+                                                    placeholder="Ex: TG240518XXXX"
+                                                    class="retry-input"
+                                                >
+                                                <button
+                                                    class="retry-btn"
+                                                    :disabled="getRetryForm(order.id).processing || !getRetryForm(order.id).transaction_id"
+                                                    @click="submitRetry(order.id)"
+                                                >
+                                                    <i class="far" :class="getRetryForm(order.id).processing ? 'fa-spinner fa-spin' : 'fa-paper-plane'"></i>
+                                                    {{ getRetryForm(order.id).processing ? 'Envoi...' : 'Soumettre' }}
+                                                </button>
+                                            </div>
+                                            <p v-if="getRetryForm(order.id).errors.transaction_id" class="retry-error">
+                                                {{ getRetryForm(order.id).errors.transaction_id }}
+                                            </p>
+                                        </div>
                                     </div>
+
+                                    <!-- Reçu pour commandes payées -->
                                     <div v-if="order.payment_status === 'paid'" class="receipt-toggle-row">
                                         <button class="receipt-toggle-btn" @click="toggleReceipt(order.id)">
                                             <i class="far fa-receipt"></i>
                                             {{ expandedReceipts[order.id] ? 'Masquer le reçu' : 'Voir le reçu' }}
                                         </button>
+                                        <a :href="`/orders/${order.id}/receipt`" target="_blank" class="receipt-download-btn">
+                                            <i class="far fa-download"></i>
+                                            Télécharger
+                                        </a>
                                     </div>
                                     <div v-if="order.payment_status === 'paid' && expandedReceipts[order.id]" class="receipt-panel">
                                         <div class="receipt-header">Reçu de paiement — {{ order.order_number }}</div>
@@ -722,23 +768,87 @@ onMounted(() => {
 }
 
 .rejection-notice {
-    margin-top: 8px;
-    padding: 8px 12px;
+    margin-top: 10px;
+    padding: 14px 16px;
     background: #fff0f0;
-    border: 1px solid #fcc;
-    border-radius: 6px;
+    border: 1.5px solid #f5c6cb;
+    border-radius: 8px;
+    font-size: 0.82rem;
+}
+
+.rejection-header {
+    display: flex;
+    align-items: center;
+    gap: 7px;
     color: #b42323;
-    font-size: 0.8rem;
+    font-weight: 800;
+    margin-bottom: 6px;
+}
+
+.rejection-reason {
+    margin: 0 0 12px;
+    color: #b42323;
+    font-size: 0.82rem;
+    line-height: 1.5;
+}
+
+.retry-form label {
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: #1a3a1a;
+    margin-bottom: 6px;
+}
+
+.retry-input-row {
     display: flex;
     gap: 8px;
-    align-items: flex-start;
+}
+
+.retry-input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1.5px solid #dfe8db;
+    border-radius: 6px;
+    font-family: monospace;
+    font-size: 0.88rem;
+    outline: none;
+    transition: border-color .15s;
+}
+.retry-input:focus { border-color: #5cb85c; }
+
+.retry-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: #2d6a4f;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    font-weight: 800;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background .15s;
+}
+.retry-btn:hover:not(:disabled) { background: #1a3a1a; }
+.retry-btn:disabled { opacity: .6; cursor: not-allowed; }
+
+.retry-error {
+    margin: 6px 0 0;
+    color: #b42323;
+    font-size: 0.78rem;
 }
 
 .receipt-toggle-row {
     margin-top: 10px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
-.receipt-toggle-btn {
+.receipt-toggle-btn, .receipt-download-btn {
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -751,8 +861,16 @@ onMounted(() => {
     font-weight: 700;
     cursor: pointer;
     transition: background .15s;
+    text-decoration: none;
 }
-.receipt-toggle-btn:hover { background: #e0f0e0; }
+.receipt-toggle-btn:hover, .receipt-download-btn:hover { background: #e0f0e0; }
+
+.receipt-download-btn {
+    background: #2d6a4f;
+    color: #fff;
+    border-color: #2d6a4f;
+}
+.receipt-download-btn:hover { background: #1a3a1a; border-color: #1a3a1a; }
 
 .receipt-panel {
     margin-top: 10px;

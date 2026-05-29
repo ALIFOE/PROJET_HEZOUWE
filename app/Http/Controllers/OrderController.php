@@ -116,6 +116,41 @@ class OrderController extends Controller
         return redirect()->route('dashboard')->with('success', $message);
     }
 
+    public function retryPayment(Request $request, Order $order): RedirectResponse
+    {
+        abort_if($order->user_id !== $request->user()->id, 403);
+        abort_if($order->payment_status === 'paid', 403, 'Ce paiement est déjà validé.');
+
+        $validated = $request->validate([
+            'transaction_id' => ['required', 'string', 'max:100'],
+        ], [
+            'transaction_id.required' => 'L\'identifiant de transaction est obligatoire.',
+        ]);
+
+        $order->update([
+            'transaction_id'   => $validated['transaction_id'],
+            'payment_status'   => 'unpaid',
+            'rejection_reason' => null,
+        ]);
+
+        // Notifier l'admin
+        try {
+            Mail::to(env('MAIL_FROM_ADDRESS', env('MAIL_USERNAME')))
+                ->send(new NewOrderAdminMail($order->load('items')));
+        } catch (\Exception $e) {
+            Log::warning('RetryPayment admin notify failed: ' . $e->getMessage());
+        }
+
+        return back()->with('success', 'Votre nouvel ID de transaction a été soumis. Notre équipe va le vérifier.');
+    }
+
+    public function receipt(Request $request, Order $order)
+    {
+        abort_if($order->user_id !== $request->user()->id, 403);
+        $order->load('items', 'user');
+        return view('receipt', compact('order'));
+    }
+
     private function summary($items): array
     {
         $subtotal     = (int) $items->sum('line_total');
