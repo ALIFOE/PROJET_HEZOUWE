@@ -38,19 +38,14 @@ class RegisteredUserController extends Controller
         ]);
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+            'name'              => $request->name,
+            'email'             => $request->email,
+            'password'          => Hash::make($request->password),
+            'email_verified_at' => now(),
         ]);
-
-        try {
-            event(new Registered($user));
-        } catch (\Exception $e) {
-            \Log::error('Email de vérification non envoyé : ' . $e->getMessage());
-        }
 
         Auth::login($user);
 
-        return redirect()->route('verification.notice');
+        return redirect(RouteServiceProvider::HOME);
     }
 }
