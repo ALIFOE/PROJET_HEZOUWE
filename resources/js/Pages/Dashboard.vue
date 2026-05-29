@@ -1,8 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, usePage } from '@inertiajs/vue3';
-import { computed, ref, onMounted } from 'vue';
-import QRCode from 'qrcode';
+import { computed, ref } from 'vue';
 
 const props = defineProps({
     cartItems: Array,
@@ -72,24 +71,6 @@ const statusClass = (status) => ({
     cancelled: 'danger',
 }[status] || 'warning');
 
-onMounted(() => {
-    (props.orders || []).forEach(order => {
-        if (order.status === 'shipped') {
-            const qrElement = document.getElementById(`qr-${order.id}`);
-            if (qrElement) {
-                const qrData = `${props.appUrl}/admin/orders/${order.id}/mark-delivered`;
-                QRCode.toCanvas(qrElement, qrData, {
-                    width: 128,
-                    margin: 1,
-                    color: {
-                        dark: '#1a3a1a',
-                        light: '#ffffff'
-                    }
-                });
-            }
-        }
-    });
-});
 </script>
 
 <template>
@@ -239,11 +220,6 @@ onMounted(() => {
                                             <span class="product-price">{{ formatPrice(item.unit_price) }} FCFA</span>
                                         </div>
                                     </div>
-                                    <div v-if="order.status === 'shipped'" class="order-qr">
-                                        <strong>Code QR de livraison</strong>
-                                        <div class="qr-code" :id="`qr-${order.id}`"></div>
-                                        <span class="qr-hint">Présentez ce code au livreur</span>
-                                    </div>
                                     <div class="order-meta">
                                         <span class="status-pill" :class="statusClass(order.status)">
                                             {{ statusLabels[order.status] || order.status }}
@@ -252,6 +228,19 @@ onMounted(() => {
                                             {{ paymentStatusLabels[order.payment_status] || order.payment_status }}
                                         </span>
                                     </div>
+                                    <!-- Scanner QR livreur -->
+                                    <div v-if="order.delivery_verified_at" class="delivery-confirmed-badge">
+                                        <i class="far fa-check-circle"></i>
+                                        Livraison confirmée
+                                    </div>
+                                    <div v-else-if="order.payment_status === 'paid' && order.delivery_token" class="scan-qr-row">
+                                        <a :href="`/orders/${order.id}/scan-delivery`" class="scan-qr-btn">
+                                            <i class="far fa-camera"></i>
+                                            Scanner le code QR du livreur
+                                        </a>
+                                        <span class="scan-qr-hint">Pour confirmer la réception de votre commande</span>
+                                    </div>
+
                                     <!-- Paiement rejeté → redirection vers sélection paiement -->
                                     <div v-if="order.payment_status === 'rejected'" class="rejection-notice">
                                         <div class="rejection-header">
@@ -775,6 +764,49 @@ onMounted(() => {
     transition: background .15s;
 }
 .retry-pay-btn:hover { background: #1a3a1a; }
+
+.scan-qr-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 10px;
+}
+
+.scan-qr-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    align-self: flex-start;
+    padding: 10px 18px;
+    background: #1a4da8;
+    color: #fff;
+    border-radius: 7px;
+    font-size: 0.83rem;
+    font-weight: 800;
+    text-decoration: none;
+    transition: background .15s;
+}
+.scan-qr-btn:hover { background: #0f3070; }
+
+.scan-qr-hint {
+    font-size: 0.78rem;
+    color: #7f8c8d;
+    padding-left: 2px;
+}
+
+.delivery-confirmed-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 10px;
+    padding: 8px 14px;
+    background: #e7f7e7;
+    border: 1px solid #a8d8a8;
+    border-radius: 7px;
+    color: #24782b;
+    font-size: 0.82rem;
+    font-weight: 800;
+}
 
 .receipt-toggle-row {
     margin-top: 10px;
