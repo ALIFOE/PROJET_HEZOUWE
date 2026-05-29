@@ -36,8 +36,8 @@ class AuthenticatedSessionController extends Controller
 
         $user = $request->user();
 
-        if ($user->email === 'admin@hezouwe.com') {
-            return redirect()->intended('/admin');
+        if ($user->role === 'admin') {
+            return redirect('/admin');
         }
 
         return redirect()->intended(RouteServiceProvider::HOME);
