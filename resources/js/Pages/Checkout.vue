@@ -94,16 +94,17 @@
                                     </div>
                                 </label>
 
-                                <!-- Mobile money (coming soon) -->
-                                <div class="pay-card disabled">
+                                <!-- Mobile money — FedaPay -->
+                                <label class="pay-card" :class="{ selected: form.payment_method === 'mobile_money' }">
+                                    <input v-model="form.payment_method" type="radio" value="mobile_money">
                                     <div class="pay-card-inner">
                                         <div class="pay-icon mm-icon">📱</div>
                                         <div>
-                                            <strong>Mobile Money <span class="soon-badge">Bientôt</span></strong>
-                                            <span>Mix by YAS / Flooz via PayGate Global — disponible prochainement</span>
+                                            <strong>Mobile Money</strong>
+                                            <span>T-Money · Flooz · Wave — paiement sécurisé via FedaPay</span>
                                         </div>
                                     </div>
-                                </div>
+                                </label>
                             </div>
 
                             <!-- COD instructions -->
@@ -153,6 +154,35 @@
                                 </div>
                             </div>
 
+                            <!-- Mobile Money instructions -->
+                            <div v-if="form.payment_method === 'mobile_money'" class="pay-panel mm-panel">
+                                <div class="panel-header mm-header">
+                                    <i class="fas fa-mobile-alt"></i>
+                                    Paiement Mobile Money — FedaPay
+                                </div>
+                                <div class="panel-body">
+                                    <p class="panel-desc">Après confirmation de votre commande, vous serez redirigé vers la page de paiement sécurisée FedaPay. Vous pourrez payer avec :</p>
+                                    <div class="operator-cards">
+                                        <div class="operator-card tmoney">
+                                            <div class="op-logo">T₿</div>
+                                            <div><strong>T-Money</strong><span class="op-num">Togocel</span></div>
+                                        </div>
+                                        <div class="operator-card moov">
+                                            <div class="op-logo">FL</div>
+                                            <div><strong>Flooz</strong><span class="op-num">Moov Africa</span></div>
+                                        </div>
+                                        <div class="operator-card wave">
+                                            <div class="op-logo">~W</div>
+                                            <div><strong>Wave</strong><span class="op-num">Wave Mobile</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="bank-notice" style="margin-top:14px;">
+                                        <i class="fas fa-shield-alt"></i>
+                                        Paiement sécurisé et certifié. Votre numéro n'est jamais partagé.
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Bank transfer instructions -->
                             <div v-if="form.payment_method === 'bank_transfer'" class="pay-panel bank-panel">
                                 <div class="panel-header bank-header">
@@ -162,23 +192,25 @@
                                 <div class="panel-body">
                                     <div class="bank-details">
                                         <div class="bank-row"><span>Titulaire</span><strong>COOP CA HEZOUWE</strong></div>
-                                        <div class="bank-row"><span>Banque</span><strong>À compléter</strong></div>
-                                        <div class="bank-row"><span>Numéro de compte</span><strong>À compléter</strong></div>
-                                        <div class="bank-row"><span>Code SWIFT</span><strong>À compléter</strong></div>
+                                        <div class="bank-row"><span>Banque</span><strong>BANQUE ATLANTIQUE TOGO</strong></div>
+                                        <div class="bank-row"><span>Numéro de compte</span><strong>À COMPLÉTER</strong></div>
+                                        <div class="bank-row"><span>Code SWIFT / BIC</span><strong>À COMPLÉTER</strong></div>
                                         <div class="bank-row highlight"><span>Référence de virement</span><strong>Votre nom + numéro de commande</strong></div>
                                         <div class="bank-row highlight"><span>Montant exact</span><strong class="amount-green">{{ formatPrice(summary.total) }} FCFA</strong></div>
                                     </div>
                                     <div class="bank-notice">
                                         <i class="fas fa-clock"></i>
-                                        Votre commande sera traitée dans les <strong>24-48h ouvrables</strong> après réception du virement. Envoyez votre justificatif à <a href="mailto:contact@hezouwe.tg">contact@hezouwe.tg</a>
+                                        Votre commande sera traitée dans les <strong>24-48h ouvrables</strong> après réception du virement.
+                                        Envoyez votre justificatif à <a href="mailto:contact@hezouwe.tg">contact@hezouwe.tg</a>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Submit (mobile) -->
-                        <button type="submit" class="submit-btn mobile-submit" :disabled="form.processing || form.payment_method === 'mobile_money'">
+                        <button type="submit" class="submit-btn mobile-submit" :disabled="form.processing">
                             <span v-if="form.processing">Traitement en cours…</span>
+                            <span v-else-if="form.payment_method === 'mobile_money'">Continuer vers le paiement Mobile Money <i class="far fa-arrow-right"></i></span>
                             <span v-else>Confirmer la commande <i class="far fa-arrow-right"></i></span>
                         </button>
                     </div>
@@ -216,8 +248,9 @@
                                 </div>
                             </div>
 
-                            <button type="submit" class="submit-btn" :disabled="form.processing || form.payment_method === 'mobile_money'">
+                            <button type="submit" class="submit-btn" :disabled="form.processing">
                                 <span v-if="form.processing">Traitement en cours…</span>
+                                <span v-else-if="form.payment_method === 'mobile_money'">Continuer vers Mobile Money <i class="far fa-arrow-right"></i></span>
                                 <span v-else>Confirmer la commande <i class="far fa-arrow-right"></i></span>
                             </button>
 

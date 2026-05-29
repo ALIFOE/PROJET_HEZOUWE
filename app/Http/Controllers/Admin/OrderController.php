@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Mail\OrderStatusMail;
 use App\Mail\PaymentVerifiedMail;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Inertia\Inertia;
 
@@ -36,9 +38,20 @@ class OrderController extends Controller
             'payment_status' => 'nullable|in:unpaid,paid,failed,refunded',
         ]);
 
+        $previousStatus = $order->status;
         $order->update($validated);
 
-        return redirect()->route('admin.orders.index')->with('success', 'Statut de la commande mis à jour');
+        // Envoyer email si le statut a changé (hors pending)
+        if ($validated['status'] !== $previousStatus && $validated['status'] !== 'pending') {
+            $order->load('items');
+            try {
+                Mail::to($order->customer_email)->send(new OrderStatusMail($order, $validated['status']));
+            } catch (\Exception $e) {
+                Log::warning('OrderStatusMail failed: ' . $e->getMessage());
+            }
+        }
+
+        return redirect()->route('admin.orders.index')->with('success', 'Statut mis à jour' . ($validated['status'] !== $previousStatus ? ' — client notifié par email.' : '.'));
     }
 
     public function verifyPayment(Order $order)
@@ -57,10 +70,10 @@ class OrderController extends Controller
         try {
             Mail::to($order->customer_email)->send(new PaymentVerifiedMail($order));
         } catch (\Exception $e) {
-            // Log but don't block
+            Log::warning('PaymentVerifiedMail failed: ' . $e->getMessage());
         }
 
-        return back()->with('success', 'Paiement vérifié. La commande est confirmée et le client a été notifié.');
+        return back()->with('success', 'Paiement vérifié. Commande confirmée et client notifié par email.');
     }
 
     public function markAsDelivered(Request $request, Order $order)
@@ -70,14 +83,20 @@ class OrderController extends Controller
         }
 
         $order->update(['status' => 'delivered']);
+        $order->load('items');
 
-        return response()->json(['success' => true, 'message' => 'Commande marquée comme livrée']);
+        try {
+            Mail::to($order->customer_email)->send(new OrderStatusMail($order, 'delivered'));
+        } catch (\Exception $e) {
+            Log::warning('DeliveredMail failed: ' . $e->getMessage());
+        }
+
+        return response()->json(['success' => true, 'message' => 'Commande marquée comme livrée — client notifié.']);
     }
 
     public function destroy(Order $order)
     {
         $order->delete();
-
         return redirect()->route('admin.orders.index')->with('success', 'Commande supprimée avec succès');
     }
 }

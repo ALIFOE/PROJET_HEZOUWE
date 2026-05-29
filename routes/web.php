@@ -175,7 +175,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/cart', [CartController::class, 'clear'])->name('cart.clear');
 
     Route::get('/checkout', [OrderController::class, 'checkout'])->name('checkout');
-    Route::post('/orders', [OrderController::class, 'store'])->name('orders.store');
+    Route::post('/orders', [OrderController::class, 'store'])->middleware('throttle:5,1')->name('orders.store');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -186,6 +186,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::post('/payment/create-session', [PaymentController::class, 'createCheckoutSession'])->middleware(['auth', 'verified'])->name('payment.create-session');
 Route::get('/payment/success', [PaymentController::class, 'success'])->middleware(['auth', 'verified'])->name('payment.success');
 Route::get('/payment/cancel', [PaymentController::class, 'cancel'])->middleware(['auth', 'verified'])->name('payment.cancel');
+
+// Routes FedaPay — Mobile Money
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/payment/mobile-money/{order}', function (\App\Models\Order $order) {
+        abort_if($order->user_id !== request()->user()->id, 403);
+        return \Inertia\Inertia::render('PaymentFedaPay', ['order' => $order]);
+    })->name('payment.fedapay');
+    Route::post('/fedapay/initiate', [App\Http\Controllers\FedaPayController::class, 'initiate'])
+        ->middleware('throttle:10,1')
+        ->name('fedapay.initiate');
+    Route::get('/orders/{order}/fedapay-callback', [App\Http\Controllers\FedaPayController::class, 'callback'])->name('fedapay.callback');
+});
+// Webhook FedaPay (pas de CSRF — serveur à serveur)
+Route::post('/fedapay/webhook', [App\Http\Controllers\FedaPayController::class, 'webhook'])
+    ->middleware('throttle:60,1')
+    ->name('fedapay.webhook');
 
 // Routes Admin
 Route::middleware(['auth', 'verified', 'is.admin'])->prefix('admin')->name('admin.')->group(function () {

@@ -8,6 +8,7 @@ use App\Support\ProductCatalog;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -85,17 +86,24 @@ class OrderController extends Controller
             return $order;
         });
 
-        // Load relationships for the email
         $order->load('items');
 
         try {
             Mail::to($order->customer_email)->send(new OrderConfirmationMail($order));
         } catch (\Exception $e) {
-            // Mail failure should not block order creation
+            Log::warning('OrderConfirmationMail failed: ' . $e->getMessage());
         }
 
-        return redirect()->route('dashboard')
-            ->with('success', 'Commande ' . $order->order_number . ' enregistrée. Vérifiez votre email pour les instructions de paiement.');
+        // Mobile Money → redirection vers la page de paiement FedaPay
+        if ($validated['payment_method'] === 'mobile_money') {
+            return redirect()->route('payment.fedapay', ['order' => $order->id]);
+        }
+
+        $message = $validated['payment_method'] === 'bank_transfer'
+            ? 'Commande ' . $order->order_number . ' enregistrée. Effectuez votre virement et envoyez le justificatif à contact@hezouwe.tg.'
+            : 'Commande ' . $order->order_number . ' enregistrée. Vous recevrez les instructions de paiement par email.';
+
+        return redirect()->route('dashboard')->with('success', $message);
     }
 
     private function summary($items): array
