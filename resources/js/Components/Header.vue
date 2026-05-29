@@ -66,6 +66,9 @@
                         </div>
                     </Link>
 
+                    <!-- Overlay mobile (en dehors du nav pour ne pas bloquer les liens) -->
+                    <div class="mobile-overlay" :class="{ 'overlay-active': mobileMenuOpen }" @click="closeMobileMenu"></div>
+
                     <!-- Menu desktop -->
                     <nav class="desktop-nav" :class="{ 'mobile-open': mobileMenuOpen }">
                         <ul class="nav-list">
@@ -114,9 +117,6 @@
                                 </Link>
                             </li>
                         </ul>
-
-                        <!-- Overlay mobile -->
-                        <div class="mobile-overlay" @click="closeMobileMenu"></div>
                     </nav>
 
                     <!-- Actions droite -->
@@ -817,6 +817,15 @@ onUnmounted(() => {
     display: none;
 }
 
+.mobile-overlay.overlay-active {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    pointer-events: all;
+}
+
 .mobile-auth-item {
     display: none;
 }
@@ -905,21 +914,6 @@ onUnmounted(() => {
 
     .desktop-nav.mobile-open {
         right: 0;
-    }
-
-    .mobile-overlay {
-        display: block;
-        position: fixed;
-        inset: 0;
-        background: rgba(0,0,0,0);
-        z-index: 1000;
-        pointer-events: none;
-        transition: background 0.4s;
-    }
-
-    .desktop-nav.mobile-open .mobile-overlay {
-        background: rgba(0,0,0,0.5);
-        pointer-events: all;
     }
 
     .nav-list {
