@@ -15,11 +15,11 @@ class AdminSeeder extends Seeder
             [
                 'name'              => 'Admin HEZOUWE',
                 'role'              => 'admin',
-                'password'          => Hash::make('Admin@2024'),
+                'password'          => Hash::make('admin1234'),
                 'email_verified_at' => now(),
             ]
         );
 
-        $this->command->info('  Admin créé : baudoinalifoe.dcli.dev24@gmail.com / Admin@2024');
+        $this->command->info('  Admin créé : baudoinalifoe.dcli.dev24@gmail.com / admin1234');
     }
 }
