@@ -38,15 +38,14 @@ class RegisteredUserController extends Controller
         ]);
 
         $user = User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
-            'password' => Hash::make($request->password),
+            'name'              => $request->name,
+            'email'             => $request->email,
+            'password'          => Hash::make($request->password),
+            'email_verified_at' => now(),
         ]);
-
-        event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect()->route('verification.notice');
+        return redirect(RouteServiceProvider::HOME);
     }
 }
