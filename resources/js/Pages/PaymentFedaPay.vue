@@ -40,7 +40,7 @@
 
                         <div class="operators-grid">
                             <div class="op-chip"><span class="op-text-badge">T₿</span> T-Money</div>
-                            <div class="op-chip"><img src="/assets/img/flooz logo.png" alt="Flooz" class="op-logo-img"> Flooz</div>
+                            <div class="op-chip"><span class="op-text-badge">FL</span> Flooz</div>
                             <div class="op-chip"><span class="op-text-badge">W</span> Wave</div>
                         </div>
 
@@ -74,7 +74,7 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import { Link, router } from '@inertiajs/vue3';
 import { ref, onMounted } from 'vue';
 
-const props = defineProps({ order: Object });
+const props = defineProps({ order: Object, fedapayPublicKey: String });
 
 const loading = ref(false);
 const paid    = ref(false);
@@ -106,7 +106,7 @@ const startPayment = async () => {
         const { token } = res.data;
 
         window.FedaPay.init({
-            public_key:   import.meta.env.VITE_FEDAPAY_PUBLIC_KEY,
+            public_key:   props.fedapayPublicKey,
             transaction:  { token },
             onComplete(resp) {
                 if (resp.reason === FedaPay.DIALOG_DISMISSED) {

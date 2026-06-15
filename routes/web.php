@@ -197,7 +197,10 @@ Route::get('/payment/cancel', [PaymentController::class, 'cancel'])->middleware(
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/payment/mobile-money/{order}', function (\App\Models\Order $order) {
         abort_if($order->user_id !== request()->user()->id, 403);
-        return \Inertia\Inertia::render('PaymentFedaPay', ['order' => $order]);
+        return \Inertia\Inertia::render('PaymentFedaPay', [
+            'order'            => $order,
+            'fedapayPublicKey' => env('FEDAPAY_PUBLIC_KEY'),
+        ]);
     })->name('payment.fedapay');
     Route::post('/fedapay/initiate', [App\Http\Controllers\FedaPayController::class, 'initiate'])
         ->middleware('throttle:10,1')
