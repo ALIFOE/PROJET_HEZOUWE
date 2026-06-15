@@ -176,11 +176,20 @@ class OrderController extends Controller
             'rejection_reason' => null,
         ]);
 
+        // Notification admin : paiement soumis en attente de vérification
         try {
             Mail::to(env('MAIL_FROM_ADDRESS', env('MAIL_USERNAME')))
                 ->send(new NewOrderAdminMail($order->load('items')));
         } catch (\Exception $e) {
             Log::warning('ProcessPayment admin notify failed: ' . $e->getMessage());
+        }
+
+        // Confirmation client : commande en attente de vérification
+        try {
+            Mail::to($order->customer_email)
+                ->send(new OrderConfirmationMail($order));
+        } catch (\Exception $e) {
+            Log::warning('ProcessPayment client notify failed: ' . $e->getMessage());
         }
 
         if ($validated['payment_method'] === 'mobile_money') {

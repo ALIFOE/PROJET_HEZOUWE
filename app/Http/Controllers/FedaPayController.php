@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\NewOrderAdminMail;
 use App\Mail\OrderStatusMail;
 use App\Models\Order;
 use FedaPay\FedaPay;
@@ -87,10 +88,21 @@ class FedaPayController extends Controller
                     'transaction_id' => (string) $transactionId,
                 ]);
 
+                $order->load('items');
+
+                // Confirmation au client
                 try {
                     Mail::to($order->customer_email)->send(new OrderStatusMail($order, 'confirmed'));
                 } catch (\Exception $e) {
-                    Log::warning('Mail status failed: ' . $e->getMessage());
+                    Log::warning('FedaPay client mail failed: ' . $e->getMessage());
+                }
+
+                // Notification admin : paiement Mobile Money reçu
+                try {
+                    Mail::to(env('MAIL_FROM_ADDRESS', env('MAIL_USERNAME')))
+                        ->send(new NewOrderAdminMail($order));
+                } catch (\Exception $e) {
+                    Log::warning('FedaPay admin mail failed: ' . $e->getMessage());
                 }
 
                 return redirect()->route('dashboard')
