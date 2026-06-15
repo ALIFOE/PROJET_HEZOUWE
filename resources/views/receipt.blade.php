@@ -490,16 +490,24 @@ function downloadPDF() {
     btn.textContent = '⏳ Génération en cours…';
 
     const element = document.querySelector('.receipt');
+
+    // Forcer temporairement la largeur pour centrer le contenu dans le PDF
+    const prev = { maxWidth: element.style.maxWidth, margin: element.style.margin };
+    element.style.maxWidth = '100%';
+    element.style.margin   = '0';
+
     const opt = {
-        margin: 0,
-        filename: 'recu-{{ $order->order_number }}.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, logging: false },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        margin:     [8, 8, 8, 8],
+        filename:   'recu-{{ $order->order_number }}.pdf',
+        image:      { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, logging: false, windowWidth: 800 },
+        jsPDF:      { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
     html2pdf().set(opt).from(element).save().then(() => {
-        btn.disabled = false;
+        element.style.maxWidth = prev.maxWidth;
+        element.style.margin   = prev.margin;
+        btn.disabled  = false;
         btn.textContent = '🖨 Imprimer / Télécharger PDF';
     });
 }
