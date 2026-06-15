@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Reçu {{ $order->order_number }} — HEZOUWE</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
 /* ── Base ─────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -318,7 +319,7 @@ body {
     <div class="toolbar-title">Reçu de paiement — {{ $order->order_number }}</div>
     <div class="toolbar-actions">
         <a href="/dashboard" class="btn-back">← Mon espace client</a>
-        <button class="btn-print" onclick="window.print()">🖨 Imprimer / Télécharger PDF</button>
+        <button class="btn-print" onclick="downloadPDF()">🖨 Imprimer / Télécharger PDF</button>
     </div>
 </div>
 
@@ -405,11 +406,6 @@ body {
                 @else 🏠 Paiement à la livraison
                 @endif
             </div>
-            @if($order->transaction_id)
-            <div class="pm-label" style="margin-top:4px;">
-                ID Transaction : <strong style="font-family:monospace;color:#17351a;">{{ $order->transaction_id }}</strong>
-            </div>
-            @endif
         </div>
         <div class="pm-badge">✓ Payé</div>
     </div>
@@ -482,10 +478,31 @@ body {
     <!-- Footer -->
     <div class="receipt-footer">
         <p>Ce document constitue un reçu officiel de paiement émis par COOP CA HEZOUWE.</p>
-        <p><a href="{{ url('/') }}">www.hezouwe.tg</a> &nbsp;|&nbsp; &copy; {{ date('Y') }} COOP CA HEZOUWE</p>
+        <p>&copy; {{ date('Y') }} COOP CA HEZOUWE — Tous droits réservés</p>
     </div>
 
 </div>
 
+<script>
+function downloadPDF() {
+    const btn = document.querySelector('.btn-print');
+    btn.disabled = true;
+    btn.textContent = '⏳ Génération en cours…';
+
+    const element = document.querySelector('.receipt');
+    const opt = {
+        margin: 0,
+        filename: 'recu-{{ $order->order_number }}.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true, logging: false },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(element).save().then(() => {
+        btn.disabled = false;
+        btn.textContent = '🖨 Imprimer / Télécharger PDF';
+    });
+}
+</script>
 </body>
 </html>
