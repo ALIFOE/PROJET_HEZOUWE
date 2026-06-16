@@ -5,10 +5,14 @@
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#f0f4ef;padding:32px 16px;">
 <tr><td align="center">
 <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
-  <tr><td style="background:#1a3a1a;border-radius:12px 12px 0 0;padding:28px 40px;text-align:center;">
-    <p style="margin:0 0 4px;color:#d5a741;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:2px;">Coopérative du Riz Local</p>
-    <h1 style="margin:0;color:#fff;font-size:24px;font-weight:900;">HEZOUWE</h1>
-    <span style="display:inline-block;margin-top:12px;background:#d5a741;color:#1a3a1a;font-size:11px;font-weight:900;text-transform:uppercase;padding:4px 14px;border-radius:999px;">Panier mis à jour</span>
+  <tr><td style="background:#1a3a1a;border-radius:12px 12px 0 0;padding:24px 40px;text-align:center;">
+    <img src="{{ url('/assets/img/logo/logo_hezouwe.jpeg') }}" alt="HEZOUWE" height="60"
+         style="height:60px;width:auto;border-radius:8px;display:inline-block;margin-bottom:10px;">
+    <div>
+      <p style="margin:0 0 2px;color:#d5a741;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:2px;">Coopérative du Riz Local</p>
+      <h1 style="margin:0;color:#fff;font-size:22px;font-weight:900;">COOP CA HEZOUWE</h1>
+    </div>
+    <span style="display:inline-block;margin-top:12px;background:#d5a741;color:#1a3a1a;font-size:11px;font-weight:900;text-transform:uppercase;padding:5px 16px;border-radius:999px;">Panier mis à jour</span>
   </td></tr>
   <tr><td style="background:#fff;padding:32px 40px 20px;">
     <h2 style="margin:0 0 8px;color:#1a3a1a;font-size:18px;font-weight:900;">Bonjour {{ $userName }} !</h2>

@@ -7,9 +7,13 @@
     <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;">
 
       <!-- Header -->
-      <tr><td style="background:#1a3a1a;border-radius:12px 12px 0 0;padding:36px 40px;text-align:center;">
-        <p style="margin:0 0 4px;color:#d5a741;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:2px;">Coopérative du Riz Local</p>
-        <h1 style="margin:0;color:#fff;font-size:28px;font-weight:900;letter-spacing:1px;">HEZOUWE</h1>
+      <tr><td style="background:#1a3a1a;border-radius:12px 12px 0 0;padding:24px 40px;text-align:center;">
+        <img src="{{ url('/assets/img/logo/logo_hezouwe.jpeg') }}" alt="HEZOUWE" height="60"
+             style="height:60px;width:auto;border-radius:8px;display:inline-block;margin-bottom:10px;">
+        <div>
+          <p style="margin:0 0 2px;color:#d5a741;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:2px;">Coopérative du Riz Local</p>
+          <h1 style="margin:0;color:#fff;font-size:22px;font-weight:900;">COOP CA HEZOUWE</h1>
+        </div>
       </td></tr>
 
       <!-- Icon -->
@@ -20,7 +24,7 @@
         <p style="margin:0 0 8px;color:#d5a741;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:2px;">Dernière étape</p>
         <h2 style="margin:0 0 16px;color:#1a3a1a;font-size:22px;font-weight:900;">Vérifiez votre adresse email</h2>
         <p style="margin:0 0 28px;color:#5a6b5c;font-size:15px;line-height:1.7;">
-          Merci de vous être inscrit(e) sur HEZOUWE. Cliquez sur le bouton ci-dessous pour activer votre compte et accéder à votre espace.
+          Merci de vous être inscrit(e) sur COOP CA HEZOUWE. Cliquez sur le bouton ci-dessous pour activer votre compte et accéder à votre espace.
         </p>
         <table cellpadding="0" cellspacing="0" style="margin:0 auto 32px;">
           <tr><td style="border-radius:8px;background:#1a3a1a;">
@@ -59,7 +63,7 @@
                 <div style="width:24px;height:24px;border-radius:50%;background:#5cb85c;color:#fff;font-size:11px;font-weight:900;text-align:center;line-height:24px;">3</div>
               </td>
               <td>
-                <p style="margin:0;color:#17351a;font-size:13px;font-weight:700;">Accédez à votre tableau de bord HEZOUWE</p>
+                <p style="margin:0;color:#17351a;font-size:13px;font-weight:700;">Accédez à votre tableau de bord COOP CA HEZOUWE</p>
               </td>
             </tr>
           </table>

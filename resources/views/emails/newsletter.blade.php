@@ -14,9 +14,13 @@
 
         <!-- Header -->
         <tr>
-          <td style="background:#1a3a1a;border-radius:12px 12px 0 0;padding:32px 40px;text-align:center;">
-            <p style="margin:0 0 4px;color:#d5a741;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:2px;">CoopÃ©rative du Riz Local</p>
-            <h1 style="margin:0;color:#ffffff;font-size:28px;font-weight:900;letter-spacing:1px;">HEZOUWE</h1>
+          <td style="background:#1a3a1a;border-radius:12px 12px 0 0;padding:24px 40px;text-align:center;">
+            <img src="{{ url('/assets/img/logo/logo_hezouwe.jpeg') }}" alt="HEZOUWE" height="60"
+                 style="height:60px;width:auto;border-radius:8px;display:inline-block;margin-bottom:10px;">
+            <div>
+              <p style="margin:0 0 2px;color:#d5a741;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:2px;">Coopérative du Riz Local</p>
+              <h1 style="margin:0;color:#fff;font-size:22px;font-weight:900;">COOP CA HEZOUWE</h1>
+            </div>
             <div style="margin-top:16px;">
               @if($type === 'article')
                 <span style="display:inline-block;background:#d5a741;color:#1a3a1a;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:1px;padding:5px 14px;border-radius:999px;">Nouvel Article</span>

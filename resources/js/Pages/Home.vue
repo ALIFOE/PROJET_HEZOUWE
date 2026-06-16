@@ -119,22 +119,22 @@
                             <div class="cr-stats-side">
                                 <div class="cr-stat-box wow fadeInUp" data-wow-delay=".3s">
                                     <div class="cr-stat-icon"><i class="fas fa-users"></i></div>
-                                    <h2><span class="odometer" data-count="30">00</span></h2>
+                                    <h2><span class="odometer" data-count="30">30</span></h2>
                                     <p>Membres de la Coopérative</p>
                                 </div>
                                 <div class="cr-stat-box wow fadeInUp" data-wow-delay=".4s">
                                     <div class="cr-stat-icon"><i class="fas fa-briefcase"></i></div>
-                                    <h2><span class="odometer" data-count="13">00</span></h2>
+                                    <h2><span class="odometer" data-count="13">54</span></h2>
                                     <p>Emplois Créés Année 1</p>
                                 </div>
                                 <div class="cr-stat-box wow fadeInUp" data-wow-delay=".5s">
                                     <div class="cr-stat-icon"><i class="fas fa-school"></i></div>
-                                    <h2><span class="odometer" data-count="10">00</span></h2>
+                                    <h2><span class="odometer" data-count="10">10</span></h2>
                                     <p>CDEJ Partenaires</p>
                                 </div>
                                 <div class="cr-stat-box wow fadeInUp" data-wow-delay=".6s">
                                     <div class="cr-stat-icon"><i class="fas fa-seedling"></i></div>
-                                    <h2><span class="odometer" data-count="11">00</span></h2>
+                                    <h2><span class="odometer" data-count="11">11</span></h2>
                                     <p>Hectares Disponibles</p>
                                 </div>
                             </div>
