@@ -9,6 +9,7 @@ use App\Mail\OrderStatusMail;
 use App\Mail\PaymentRejectedMail;
 use App\Mail\PaymentVerifiedMail;
 use App\Models\Order;
+use App\Services\WhatsAppService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
@@ -76,21 +77,35 @@ class OrderController extends Controller
 
         $order->load('items');
 
-        // Email au client
+        // Emails
         try {
             Mail::to($order->customer_email)->send(new PaymentVerifiedMail($order));
         } catch (\Exception $e) {
             Log::warning('PaymentVerifiedMail failed: ' . $e->getMessage());
         }
-
-        // Notification interne à l'admin
         try {
             Mail::to($this->adminEmail())->send(new OrderStatusAdminMail($order, 'confirmed'));
         } catch (\Exception $e) {
             Log::warning('Admin PaymentVerified notify failed: ' . $e->getMessage());
         }
 
-        return back()->with('success', 'Paiement vérifié ✅ — Client et admin notifiés par email.');
+        // WhatsApp
+        $wa = new WhatsAppService();
+        $wa->sendToClient($order->customer_phone,
+            "✅ *COOP CA HEZOUWE — Paiement validé !*\n" .
+            "Bonjour {$order->customer_name}, votre paiement pour la commande *{$order->order_number}* a été vérifié et validé !\n\n" .
+            "💰 Montant : " . number_format($order->total, 0, ',', ' ') . " FCFA\n" .
+            "📦 Votre commande est en cours de préparation.\n\n" .
+            "Merci pour votre confiance — COOP CA HEZOUWE 🌾"
+        );
+        $wa->sendToAdmin(
+            "✅ *Paiement validé*\n" .
+            "Commande *{$order->order_number}* — {$order->customer_name}\n" .
+            "Montant : " . number_format($order->total, 0, ',', ' ') . " FCFA\n" .
+            "Statut : Confirmée ✅"
+        );
+
+        return back()->with('success', 'Paiement vérifié ✅ — Client et admin notifiés par email et WhatsApp.');
     }
 
     public function rejectPayment(Request $request, Order $order)
@@ -119,6 +134,23 @@ class OrderController extends Controller
         } catch (\Exception $e) {
             Log::warning('PaymentRejectedMail failed: ' . $e->getMessage());
         }
+
+        // WhatsApp
+        $wa = new WhatsAppService();
+        $clientProofUrl = url('/orders/' . $order->id . '/pay');
+        $wa->sendToClient($order->customer_phone,
+            "⚠️ *COOP CA HEZOUWE — Paiement non validé*\n" .
+            "Bonjour {$order->customer_name}, votre paiement pour la commande *{$order->order_number}* n'a pas pu être validé.\n\n" .
+            "❌ Motif : {$request->rejection_reason}\n\n" .
+            "📎 Corrigez et soumettez à nouveau ici :\n{$clientProofUrl}\n\n" .
+            "Pour toute question : contact@hezouwe.tg | +228 70 67 94 48"
+        );
+        $wa->sendToAdmin(
+            "❌ *Paiement rejeté*\n" .
+            "Commande *{$order->order_number}* — {$order->customer_name}\n" .
+            "Motif : {$request->rejection_reason}\n" .
+            "Le client a été notifié."
+        );
 
         return back()->with('success', 'Paiement rejeté — Client notifié avec le motif.');
     }

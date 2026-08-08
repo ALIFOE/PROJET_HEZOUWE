@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\NewOrderAdminMail;
 use App\Mail\OrderConfirmationMail;
 use App\Models\Order;
+use App\Services\WhatsAppService;
 use App\Support\ProductCatalog;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -47,6 +48,7 @@ class OrderController extends Controller
                 Rule::requiredIf($request->payment_method === 'cash_on_delivery'),
                 'nullable', 'string', 'max:100',
             ],
+            'payment_proof'  => ['nullable', 'file', 'mimes:jpg,jpeg,png,gif,webp,pdf', 'max:5120'],
         ]);
 
         $cartItems = $request->user()->cartItems()->latest()->get();
@@ -58,13 +60,19 @@ class OrderController extends Controller
 
         $summary = $this->summary($items);
 
-        $order = DB::transaction(function () use ($request, $validated, $items, $summary) {
+        $proofPath = null;
+        if ($request->hasFile('payment_proof')) {
+            $proofPath = $request->file('payment_proof')->store('payment-proofs', 'public');
+        }
+
+        $order = DB::transaction(function () use ($request, $validated, $items, $summary, $proofPath) {
             $order = Order::create(array_merge($validated, [
                 'user_id'        => $request->user()->id,
                 'order_number'   => 'HZ-' . now()->format('Ymd') . '-' . Str::upper(Str::random(6)),
                 'status'         => 'pending',
                 'payment_status' => 'unpaid',
                 'transaction_id' => $validated['transaction_id'] ?? null,
+                'payment_proof'  => $proofPath,
                 'subtotal'       => $summary['subtotal'],
                 'delivery_cost'  => $summary['delivery_cost'],
                 'discount'       => 0,
@@ -89,20 +97,39 @@ class OrderController extends Controller
 
         $order->load('items');
 
-        // Email de confirmation au client
+        // Emails
         try {
             Mail::to($order->customer_email)->send(new OrderConfirmationMail($order));
         } catch (\Exception $e) {
             Log::warning('OrderConfirmationMail failed: ' . $e->getMessage());
         }
-
-        // Notification à l'admin : nouvelle commande reçue
         try {
             Mail::to(env('MAIL_FROM_ADDRESS', env('MAIL_USERNAME')))
                 ->send(new NewOrderAdminMail($order));
         } catch (\Exception $e) {
             Log::warning('NewOrderAdminMail failed: ' . $e->getMessage());
         }
+
+        // WhatsApp
+        $wa = new WhatsAppService();
+        $adminOrderUrl  = url('/admin/orders/' . $order->id);
+        $clientProofUrl = url('/orders/' . $order->id . '/pay');
+        $wa->sendToClient($order->customer_phone,
+            "✅ *COOP CA HEZOUWE*\n" .
+            "Bonjour {$order->customer_name}, votre commande *{$order->order_number}* est bien enregistrée !\n\n" .
+            "💰 Total : " . number_format($order->total, 0, ',', ' ') . " FCFA\n" .
+            "📦 Mode : " . ($validated['payment_method'] === 'cash_on_delivery' ? 'Paiement à la livraison' : 'Virement bancaire') . "\n\n" .
+            "📎 Ajoutez votre preuve de paiement ici :\n{$clientProofUrl}\n\n" .
+            "Merci pour votre confiance ! 🌾"
+        );
+        $wa->sendToAdmin(
+            "🛒 *Nouvelle commande HEZOUWE*\n" .
+            "Client : {$order->customer_name}\n" .
+            "Commande : *{$order->order_number}*\n" .
+            "Montant : " . number_format($order->total, 0, ',', ' ') . " FCFA\n" .
+            "Mode : " . ($validated['payment_method'] === 'cash_on_delivery' ? 'Paiement livraison' : 'Virement') . "\n\n" .
+            "🔍 Vérifier la commande :\n{$adminOrderUrl}"
+        );
 
         // Mobile Money → redirection vers la page de paiement FedaPay
         if ($validated['payment_method'] === 'mobile_money') {
@@ -163,34 +190,57 @@ class OrderController extends Controller
                 Rule::requiredIf(in_array($request->payment_method, ['cash_on_delivery', 'bank_transfer'])),
                 'nullable', 'string', 'max:100',
             ],
+            'payment_proof'  => ['nullable', 'file', 'mimes:jpg,jpeg,png,gif,webp,pdf', 'max:5120'],
         ], [
             'payment_method.required' => 'Veuillez choisir un mode de paiement.',
             'payment_method.in'       => 'Mode de paiement invalide.',
             'transaction_id.required' => "L'identifiant de transaction est obligatoire pour ce mode de paiement.",
+            'payment_proof.mimes'     => 'La preuve doit être une image (jpg, png, gif, webp) ou un PDF.',
+            'payment_proof.max'       => 'La preuve ne doit pas dépasser 5 Mo.',
         ]);
 
-        $order->update([
+        $updates = [
             'payment_method'   => $validated['payment_method'],
             'transaction_id'   => $validated['transaction_id'] ?? null,
             'payment_status'   => 'unpaid',
             'rejection_reason' => null,
-        ]);
+        ];
+        if ($request->hasFile('payment_proof')) {
+            $updates['payment_proof'] = $request->file('payment_proof')->store('payment-proofs', 'public');
+        }
 
-        // Notification admin : paiement soumis en attente de vérification
+        $order->update($updates);
+
+        // Emails
         try {
             Mail::to(env('MAIL_FROM_ADDRESS', env('MAIL_USERNAME')))
                 ->send(new NewOrderAdminMail($order->load('items')));
         } catch (\Exception $e) {
             Log::warning('ProcessPayment admin notify failed: ' . $e->getMessage());
         }
-
-        // Confirmation client : commande en attente de vérification
         try {
-            Mail::to($order->customer_email)
-                ->send(new OrderConfirmationMail($order));
+            Mail::to($order->customer_email)->send(new OrderConfirmationMail($order));
         } catch (\Exception $e) {
             Log::warning('ProcessPayment client notify failed: ' . $e->getMessage());
         }
+
+        // WhatsApp
+        $wa = new WhatsAppService();
+        $adminOrderUrl  = url('/admin/orders/' . $order->id);
+        $clientProofUrl = url('/orders/' . $order->id . '/pay');
+        $wa->sendToClient($order->customer_phone,
+            "⏳ *COOP CA HEZOUWE*\n" .
+            "Bonjour {$order->customer_name}, votre paiement pour la commande *{$order->order_number}* est en cours de vérification.\n\n" .
+            "📎 Complétez ou modifiez votre preuve de paiement ici :\n{$clientProofUrl}\n\n" .
+            "Nous vous confirmons dès validation. Merci ! 🌾"
+        );
+        $wa->sendToAdmin(
+            "💳 *Paiement soumis — à vérifier*\n" .
+            "Client : {$order->customer_name}\n" .
+            "Commande : *{$order->order_number}*\n" .
+            "Montant : " . number_format($order->total, 0, ',', ' ') . " FCFA\n\n" .
+            "🔍 Vérifier et valider :\n{$adminOrderUrl}"
+        );
 
         if ($validated['payment_method'] === 'mobile_money') {
             return redirect()->route('payment.fedapay', ['order' => $order->id]);

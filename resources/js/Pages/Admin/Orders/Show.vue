@@ -227,6 +227,31 @@ const copyDeliveryUrl = async () => {
                     </template>
                 </div>
 
+                <!-- Preuve de paiement -->
+                <div v-if="order.payment_proof" class="proof-admin-box">
+                    <div class="proof-admin-label">
+                        <i class="fas fa-file-image"></i> Preuve de paiement fournie par le client
+                    </div>
+                    <div class="proof-admin-content">
+                        <template v-if="order.payment_proof.match(/\.(jpg|jpeg|png|gif|webp)$/i)">
+                            <a :href="`/storage/${order.payment_proof}`" target="_blank">
+                                <img :src="`/storage/${order.payment_proof}`" class="proof-admin-img" alt="Preuve">
+                            </a>
+                            <span class="proof-admin-hint">Cliquez sur l'image pour l'agrandir</span>
+                        </template>
+                        <template v-else>
+                            <a :href="`/storage/${order.payment_proof}`" target="_blank" class="proof-admin-pdf">
+                                <i class="fas fa-file-pdf fa-2x"></i>
+                                <span>Ouvrir le document PDF</span>
+                            </a>
+                        </template>
+                    </div>
+                </div>
+                <div v-else-if="order.payment_method !== 'mobile_money'" class="proof-admin-missing">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    Aucune preuve de paiement jointe par le client
+                </div>
+
                 <!-- Actions -->
                 <div v-if="order.payment_status === 'paid'" class="verified-badge">
                     <i class="far fa-check-circle"></i>
@@ -623,5 +648,38 @@ const copyDeliveryUrl = async () => {
     .summary-strip, .details-grid { grid-template-columns:1fr; }
     .detail-card { padding:18px; }
     .action-buttons { flex-direction:column; }
+}
+
+/* Proof admin */
+.proof-admin-box {
+    margin-top: 14px; padding: 14px 16px;
+    background: #f0faf0; border: 1.5px solid #b5dbb5; border-radius: 10px;
+}
+.proof-admin-label {
+    display: flex; align-items: center; gap: 8px;
+    font-weight: 900; color: #1a3a1a; font-size: 0.88rem;
+    margin-bottom: 12px;
+}
+.proof-admin-label i { color: #5cb85c; }
+.proof-admin-content { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+.proof-admin-img {
+    max-width: 280px; max-height: 200px; object-fit: contain;
+    border-radius: 8px; border: 1px solid #c3ddc0;
+    cursor: zoom-in; transition: transform .2s;
+}
+.proof-admin-img:hover { transform: scale(1.03); }
+.proof-admin-hint { color: #6c9c6c; font-size: 0.78rem; }
+.proof-admin-pdf {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 12px 18px; background: #fff3f3; border: 1.5px solid #f5a0a0;
+    border-radius: 8px; color: #c0392b; font-weight: 700; text-decoration: none;
+    font-size: 0.88rem; transition: background .15s;
+}
+.proof-admin-pdf:hover { background: #ffe0e0; }
+.proof-admin-missing {
+    margin-top: 12px; padding: 10px 14px;
+    background: #fff8e1; border: 1px solid #ffd54f;
+    border-radius: 8px; color: #8d6c0f; font-size: 0.84rem;
+    display: flex; align-items: center; gap: 8px;
 }
 </style>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\NewOrderAdminMail;
 use App\Mail\OrderStatusMail;
 use App\Models\Order;
+use App\Services\WhatsAppService;
 use FedaPay\FedaPay;
 use FedaPay\Transaction;
 use Illuminate\Http\Request;
@@ -90,20 +91,37 @@ class FedaPayController extends Controller
 
                 $order->load('items');
 
-                // Confirmation au client
+                // Emails
                 try {
                     Mail::to($order->customer_email)->send(new OrderStatusMail($order, 'confirmed'));
                 } catch (\Exception $e) {
                     Log::warning('FedaPay client mail failed: ' . $e->getMessage());
                 }
-
-                // Notification admin : paiement Mobile Money reçu
                 try {
                     Mail::to(env('MAIL_FROM_ADDRESS', env('MAIL_USERNAME')))
                         ->send(new NewOrderAdminMail($order));
                 } catch (\Exception $e) {
                     Log::warning('FedaPay admin mail failed: ' . $e->getMessage());
                 }
+
+                // WhatsApp
+                $wa = new WhatsAppService();
+                $adminOrderUrl = url('/admin/orders/' . $order->id);
+                $wa->sendToClient($order->customer_phone,
+                    "🎉 *COOP CA HEZOUWE*\n" .
+                    "Bonjour {$order->customer_name}, votre paiement Mobile Money pour la commande *{$order->order_number}* a été reçu avec succès !\n\n" .
+                    "💰 Montant : " . number_format($order->total, 0, ',', ' ') . " FCFA\n" .
+                    "✅ Statut : Commande confirmée\n\n" .
+                    "Nous préparons votre livraison. Merci pour votre confiance ! 🌾"
+                );
+                $wa->sendToAdmin(
+                    "💸 *Paiement Mobile Money reçu*\n" .
+                    "Client : {$order->customer_name}\n" .
+                    "Commande : *{$order->order_number}*\n" .
+                    "Montant : " . number_format($order->total, 0, ',', ' ') . " FCFA\n" .
+                    "Statut : ✅ Approuvé par FedaPay\n\n" .
+                    "🔍 Voir la commande :\n{$adminOrderUrl}"
+                );
 
                 return redirect()->route('dashboard')
                     ->with('success', 'Paiement reçu ! Votre commande ' . $order->order_number . ' est confirmée.');

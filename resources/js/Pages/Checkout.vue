@@ -151,6 +151,38 @@
                                         <p class="field-hint">Saisissez l'identifiant de transaction reçu après votre paiement Mobile Money.</p>
                                         <InputError :message="form.errors.transaction_id" />
                                     </div>
+
+                                    <!-- Preuve de paiement -->
+                                    <div class="proof-zone">
+                                        <div class="proof-title">
+                                            <i class="fas fa-file-image"></i>
+                                            Preuve de paiement <span class="proof-optional">(recommandé)</span>
+                                        </div>
+                                        <p class="proof-desc">
+                                            Joignez une <strong>photo du bordereau</strong>, une <strong>capture du SMS Mobile Money</strong> ou tout autre justificatif de votre paiement de {{ formatPrice(Math.ceil(summary.total / 2)) }} FCFA.
+                                        </p>
+                                        <div v-if="!codProofPreview" class="proof-btns">
+                                            <label class="proof-btn">
+                                                <i class="fas fa-camera"></i> Prendre une photo
+                                                <input type="file" accept="image/*" capture="environment" class="proof-input" @change="setProof('cod', $event)">
+                                            </label>
+                                            <label class="proof-btn">
+                                                <i class="fas fa-folder-open"></i> Choisir un fichier
+                                                <input type="file" accept="image/*,application/pdf" class="proof-input" @change="setProof('cod', $event)">
+                                            </label>
+                                        </div>
+                                        <div v-if="codProofPreview" class="proof-preview-box">
+                                            <img v-if="codProofIsImage" :src="codProofPreview" class="proof-thumb" alt="Preuve">
+                                            <div v-else class="proof-pdf-row">
+                                                <i class="fas fa-file-pdf"></i>
+                                                <span>{{ codProofFileName }}</span>
+                                            </div>
+                                            <button type="button" @click="clearProof('cod')" class="proof-remove">
+                                                <i class="fas fa-times"></i> Supprimer
+                                            </button>
+                                        </div>
+                                        <InputError :message="form.errors.payment_proof" />
+                                    </div>
                                 </div>
                             </div>
 
@@ -202,6 +234,38 @@
                                         <i class="fas fa-clock"></i>
                                         Votre commande sera traitée dans les <strong>24-48h ouvrables</strong> après réception du virement.
                                         Envoyez votre justificatif à <a href="mailto:contact@hezouwe.tg">contact@hezouwe.tg</a>
+                                    </div>
+
+                                    <!-- Preuve de virement -->
+                                    <div class="proof-zone" style="margin-top:18px;">
+                                        <div class="proof-title">
+                                            <i class="fas fa-file-image"></i>
+                                            Justificatif de virement <span class="proof-optional">(recommandé)</span>
+                                        </div>
+                                        <p class="proof-desc">
+                                            Joignez le <strong>reçu de virement</strong>, une <strong>capture d'écran</strong> de la confirmation bancaire ou tout autre document prouvant votre transfert.
+                                        </p>
+                                        <div v-if="!bankProofPreview" class="proof-btns">
+                                            <label class="proof-btn">
+                                                <i class="fas fa-camera"></i> Prendre une photo
+                                                <input type="file" accept="image/*" capture="environment" class="proof-input" @change="setProof('bank', $event)">
+                                            </label>
+                                            <label class="proof-btn">
+                                                <i class="fas fa-folder-open"></i> Choisir un fichier
+                                                <input type="file" accept="image/*,application/pdf" class="proof-input" @change="setProof('bank', $event)">
+                                            </label>
+                                        </div>
+                                        <div v-if="bankProofPreview" class="proof-preview-box">
+                                            <img v-if="bankProofIsImage" :src="bankProofPreview" class="proof-thumb" alt="Justificatif">
+                                            <div v-else class="proof-pdf-row">
+                                                <i class="fas fa-file-pdf"></i>
+                                                <span>{{ bankProofFileName }}</span>
+                                            </div>
+                                            <button type="button" @click="clearProof('bank')" class="proof-remove">
+                                                <i class="fas fa-times"></i> Supprimer
+                                            </button>
+                                        </div>
+                                        <InputError :message="form.errors.payment_proof" />
                                     </div>
                                 </div>
                             </div>
@@ -276,6 +340,7 @@
 import AppLayout from '@/Layouts/AppLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
+import { ref, watch } from 'vue';
 
 const props = defineProps({
     cartItems: Array,
@@ -294,7 +359,62 @@ const form = useForm({
     notes:          '',
     payment_method: 'cash_on_delivery',
     transaction_id: '',
+    payment_proof:  null,
 });
+
+// COD proof state
+const codProofPreview  = ref(null);
+const codProofIsImage  = ref(false);
+const codProofFileName = ref('');
+
+// Bank proof state
+const bankProofPreview  = ref(null);
+const bankProofIsImage  = ref(false);
+const bankProofFileName = ref('');
+
+// Reset proof when switching payment method
+watch(() => form.payment_method, () => {
+    clearProof('cod');
+    clearProof('bank');
+});
+
+const setProof = (type, e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    form.payment_proof = file;
+    const isImage = file.type.startsWith('image/');
+    if (type === 'cod') {
+        codProofFileName.value = file.name;
+        codProofIsImage.value  = isImage;
+        if (isImage) {
+            const r = new FileReader();
+            r.onload = (ev) => { codProofPreview.value = ev.target.result; };
+            r.readAsDataURL(file);
+        } else { codProofPreview.value = 'pdf'; }
+    } else {
+        bankProofFileName.value = file.name;
+        bankProofIsImage.value  = isImage;
+        if (isImage) {
+            const r = new FileReader();
+            r.onload = (ev) => { bankProofPreview.value = ev.target.result; };
+            r.readAsDataURL(file);
+        } else { bankProofPreview.value = 'pdf'; }
+    }
+    e.target.value = '';
+};
+
+const clearProof = (type) => {
+    form.payment_proof = null;
+    if (type === 'cod') {
+        codProofPreview.value  = null;
+        codProofIsImage.value  = false;
+        codProofFileName.value = '';
+    } else {
+        bankProofPreview.value  = null;
+        bankProofIsImage.value  = false;
+        bankProofFileName.value = '';
+    }
+};
 
 const formatPrice = (n) => Number(n || 0).toLocaleString('fr-FR');
 
@@ -605,4 +725,52 @@ const submitOrder = () => {
     .operator-cards { grid-template-columns: 1fr; }
     .co-card { padding: 18px; }
 }
+
+/* ── Proof upload ───────────────────────────────────── */
+.proof-zone {
+    margin-top: 18px;
+    background: #f8faf7;
+    border: 1.5px dashed #b5cdb5;
+    border-radius: 10px;
+    padding: 16px 18px;
+}
+.proof-title {
+    display: flex; align-items: center; gap: 8px;
+    font-weight: 900; color: #1a3a1a; font-size: 0.9rem;
+    margin-bottom: 6px;
+}
+.proof-title i { color: #5cb85c; }
+.proof-optional { font-weight: 400; color: #9aaa95; font-size: 0.8rem; }
+.proof-desc { color: #5a6b5c; font-size: 0.83rem; line-height: 1.5; margin: 0 0 12px; }
+.proof-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+.proof-btn {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 9px 16px; border: 1.5px solid #b5cdb5;
+    border-radius: 8px; background: #fff; color: #1a3a1a;
+    font-size: 0.85rem; font-weight: 700; cursor: pointer;
+    transition: border-color .15s, background .15s;
+}
+.proof-btn:hover { border-color: #5cb85c; background: #f0faf0; }
+.proof-btn i { color: #5cb85c; }
+.proof-input { display: none; }
+.proof-preview-box {
+    display: flex; align-items: center; gap: 12px;
+    margin-top: 10px; padding: 10px 12px;
+    background: #fff; border: 1px solid #c3ddc0; border-radius: 8px;
+}
+.proof-thumb {
+    width: 64px; height: 64px; object-fit: cover;
+    border-radius: 6px; border: 1px solid #e0ece0; flex-shrink: 0;
+}
+.proof-pdf-row {
+    display: flex; align-items: center; gap: 10px;
+    color: #e74c3c; font-size: 0.88rem; font-weight: 700;
+}
+.proof-remove {
+    margin-left: auto; display: flex; align-items: center; gap: 5px;
+    padding: 6px 12px; background: #fff0f0; border: 1px solid #f5a0a0;
+    color: #b42323; border-radius: 6px; font-size: 0.8rem; font-weight: 700;
+    cursor: pointer;
+}
+.proof-remove:hover { background: #ffe0e0; }
 </style>

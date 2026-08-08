@@ -28,6 +28,7 @@ class Order extends Model
         'discount',
         'total',
         'transaction_id',
+        'payment_proof',
         'rejection_reason',
         'delivery_token',
         'delivery_verified_at',

@@ -8,6 +8,7 @@ $baseDir = dirname($vendorDir);
 return array(
     'voku\\' => array($vendorDir . '/voku/portable-ascii/src/voku'),
     'Whoops\\' => array($vendorDir . '/filp/whoops/src/Whoops'),
+    'Twilio\\' => array($vendorDir . '/twilio/sdk/src/Twilio'),
     'TijsVerkoyen\\CssToInlineStyles\\' => array($vendorDir . '/tijsverkoyen/css-to-inline-styles/src'),
     'Tightenco\\Ziggy\\' => array($vendorDir . '/tightenco/ziggy/src'),
     'Tests\\' => array($baseDir . '/tests'),
