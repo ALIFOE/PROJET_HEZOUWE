@@ -142,7 +142,7 @@
                             <span class="cart-badge" :class="{ 'badge-pulse': cartPulse }">{{ cartCount }}</span>
                         </Link>
 
-                        <Link v-if="isAuthenticated" href="/dashboard" class="account-btn" aria-label="Mon compte">
+                        <Link v-if="isAuthenticated" :href="dashboardLink" class="account-btn" aria-label="Mon compte">
                             <i class="far fa-user"></i>
                         </Link>
 
@@ -193,6 +193,8 @@ const searchOpen = ref(false);
 const searchQuery = ref('');
 const page = usePage();
 const isAuthenticated = computed(() => Boolean(page.props.auth?.user));
+const isAdmin = computed(() => page.props.auth?.user?.role === 'admin');
+const dashboardLink = computed(() => isAdmin.value ? '/admin' : '/dashboard');
 const cartCount = computed(() => page.props.cartCount || 0);
 const cartPulse = ref(false);
 const searchInput = ref(null);

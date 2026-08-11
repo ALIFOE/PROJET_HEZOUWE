@@ -109,4 +109,12 @@ class NewsController extends Controller
         $news->delete();
         return redirect()->route('admin.news.index')->with('success', 'Actualité supprimée avec succès');
     }
+
+    public function toggleVisibility(News $news)
+    {
+        $news->update(['is_visible' => !$news->is_visible]);
+        return redirect()->route('admin.news.index')->with('success', 
+            $news->is_visible ? 'Article rendu visible' : 'Article masqué'
+        );
+    }
 }

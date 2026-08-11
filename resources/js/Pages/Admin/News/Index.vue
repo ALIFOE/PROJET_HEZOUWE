@@ -22,6 +22,10 @@ const deleteNews = (article) => {
     if (!confirm(`Supprimer définitivement l'article "${article.title}" ?`)) return;
     router.delete(`/admin/news/${article.slug}`, { preserveScroll: true });
 };
+
+const toggleVisibility = (article) => {
+    router.post(`/admin/news/${article.slug}/toggle-visibility`, {}, { preserveScroll: true });
+};
 </script>
 
 <template>
@@ -58,6 +62,7 @@ const deleteNews = (article) => {
                                 <th>Auteur</th>
                                 <th>Date</th>
                                 <th>Tags</th>
+                                <th>Visibilité</th>
                                 <th class="actions-col">Actions</th>
                             </tr>
                         </thead>
@@ -82,6 +87,20 @@ const deleteNews = (article) => {
                                         <span v-if="(article.tag || []).length > 2" class="tag-more">+{{ (article.tag || []).length - 2 }}</span>
                                     </div>
                                     <span v-else class="muted">—</span>
+                                </td>
+                                <td>
+                                    <div class="visibility-cell">
+                                        <button 
+                                            type="button" 
+                                            class="btn-visibility"
+                                            :class="{ 'is-visible': article.is_visible, 'is-hidden': !article.is_visible }"
+                                            @click="toggleVisibility(article)"
+                                            :title="article.is_visible ? 'Cliquez pour masquer cet article' : 'Cliquez pour afficher cet article'"
+                                        >
+                                            <i :class="article.is_visible ? 'far fa-eye' : 'far fa-eye-slash'"></i>
+                                            <span>{{ article.is_visible ? 'Visible' : 'Masqué' }}</span>
+                                        </button>
+                                    </div>
                                 </td>
                                 <td>
                                     <div class="action-buttons">
@@ -191,6 +210,31 @@ const deleteNews = (article) => {
 }
 .tag-more { font-size: 0.72rem; color: #9aaa95; font-weight: 700; align-self: center; }
 .muted { color: #9aaa95; font-size: 0.88rem; }
+
+.visibility-cell { display: flex; align-items: center; justify-content: center; }
+
+.btn-visibility {
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    min-height: 36px; padding: 7px 12px; border-radius: 6px;
+    text-decoration: none; font-weight: 850; font-size: 0.88rem;
+    border: 1px solid transparent; cursor: pointer; transition: all 0.2s ease;
+}
+
+.btn-visibility.is-visible {
+    background: #c8e6c9; color: #1b5e20; border-color: #81c784;
+}
+
+.btn-visibility.is-visible:hover {
+    background: #81c784; color: #fff; transform: translateY(-1px);
+}
+
+.btn-visibility.is-hidden {
+    background: #ffcdd2; color: #b71c1c; border-color: #ef9a9a;
+}
+
+.btn-visibility.is-hidden:hover {
+    background: #ef9a9a; color: #fff; transform: translateY(-1px);
+}
 
 .actions-col { width: 220px; }
 .action-buttons { display: flex; flex-wrap: wrap; gap: 8px; }

@@ -29,6 +29,7 @@ class News extends Model
         'thumb',
         'image2',
         'image3',
+        'is_visible',
     ];
 
     protected $casts = [
@@ -37,6 +38,7 @@ class News extends Model
         'date' => 'date',
         'read' => 'integer',
         'comments' => 'integer',
+        'is_visible' => 'boolean',
     ];
 
     public function getRouteKeyName(): string

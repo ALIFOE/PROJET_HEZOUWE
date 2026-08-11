@@ -228,6 +228,7 @@ Route::middleware(['auth', 'verified', 'is.admin'])->prefix('admin')->name('admi
     Route::post('services/upload-image', [\App\Http\Controllers\Admin\ServiceController::class, 'uploadImage'])->name('services.upload-image');
     Route::resource('services', \App\Http\Controllers\Admin\ServiceController::class);
     Route::post('news/upload-image', [\App\Http\Controllers\Admin\NewsController::class, 'uploadImage'])->name('news.upload-image');
+    Route::post('news/{news}/toggle-visibility', [\App\Http\Controllers\Admin\NewsController::class, 'toggleVisibility'])->name('news.toggle-visibility');
     Route::resource('news', \App\Http\Controllers\Admin\NewsController::class);
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class)->only(['index', 'show', 'edit', 'update', 'destroy']);
 });

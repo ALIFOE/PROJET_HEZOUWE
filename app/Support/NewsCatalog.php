@@ -9,8 +9,8 @@ class NewsCatalog
 {
     public static function all(): Collection
     {
-        // Récupère les actualités de la base de données, avec fallback sur le config
-        $news = News::orderBy('date', 'desc')->get();
+        // Récupère les actualités visibles de la base de données, avec fallback sur le config
+        $news = News::where('is_visible', true)->orderBy('date', 'desc')->get();
         
         if ($news->isEmpty()) {
             return collect(config('news_hezouwe', []));
@@ -22,7 +22,7 @@ class NewsCatalog
     public static function find(string $slug): ?array
     {
         // Cherche en base de données en priorité
-        $newsItem = News::where('slug', $slug)->first();
+        $newsItem = News::where('slug', $slug)->where('is_visible', true)->first();
         
         if ($newsItem) {
             return $newsItem->toArray();
