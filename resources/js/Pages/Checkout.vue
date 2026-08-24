@@ -82,13 +82,13 @@
                                     </div>
                                 </label>
 
-                                <!-- Bank transfer -->
-                                <label class="pay-card" :class="{ selected: form.payment_method === 'bank_transfer' }">
-                                    <input v-model="form.payment_method" type="radio" value="bank_transfer">
+                                <!-- Bank transfer (not yet available) -->
+                                <label class="pay-card disabled">
+                                    <input type="radio" value="bank_transfer" disabled>
                                     <div class="pay-card-inner">
                                         <div class="pay-icon bank-icon">🏦</div>
                                         <div>
-                                            <strong>Virement bancaire</strong>
+                                            <strong>Virement bancaire <span class="soon-badge">Bientôt disponible</span></strong>
                                             <span>Virement vers notre compte bancaire, traitement sous 24-48h</span>
                                         </div>
                                     </div>
@@ -101,7 +101,7 @@
                                         <div class="pay-icon mm-icon">📱</div>
                                         <div>
                                             <strong>Mobile Money</strong>
-                                            <span>T-Money · Flooz · Wave — paiement sécurisé via FedaPay</span>
+                                            <span>Mixx by YAS · Flooz — paiement sécurisé</span>
                                         </div>
                                     </div>
                                 </label>
@@ -190,23 +190,31 @@
                             <div v-if="form.payment_method === 'mobile_money'" class="pay-panel mm-panel">
                                 <div class="panel-header mm-header">
                                     <i class="fas fa-mobile-alt"></i>
-                                    Paiement Mobile Money — FedaPay
+                                    Paiement Mobile Money
                                 </div>
                                 <div class="panel-body">
-                                    <p class="panel-desc">Après confirmation de votre commande, vous serez redirigé vers la page de paiement sécurisée FedaPay. Vous pourrez payer avec :</p>
+                                    <p class="panel-desc">Choisissez votre opérateur, puis confirmez votre commande pour finaliser le paiement.</p>
                                     <div class="operator-cards">
-                                        <div class="operator-card tmoney">
-                                            <div class="op-logo op-text">T₿</div>
-                                            <div><strong>T-Money</strong><span class="op-num">Togocel</span></div>
-                                        </div>
-                                        <div class="operator-card moov">
+                                        <button
+                                            type="button"
+                                            class="operator-card yas"
+                                            :class="{ selected: mobileOperator === 'mixx_yas' }"
+                                            @click="mobileOperator = 'mixx_yas'"
+                                        >
+                                            <div class="op-logo"><img src="/assets/img/mixx-by-yas.png" alt="Mixx by YAS" class="op-img"></div>
+                                            <div><strong>Mixx by YAS</strong><span class="op-num">Togocel</span></div>
+                                            <i class="fas fa-check-circle op-check"></i>
+                                        </button>
+                                        <button
+                                            type="button"
+                                            class="operator-card moov"
+                                            :class="{ selected: mobileOperator === 'flooz' }"
+                                            @click="mobileOperator = 'flooz'"
+                                        >
                                             <div class="op-logo"><img src="/assets/img/flooz logo.png" alt="Flooz" class="op-img"></div>
                                             <div><strong>Flooz</strong><span class="op-num">Moov Africa</span></div>
-                                        </div>
-                                        <div class="operator-card wave">
-                                            <div class="op-logo op-text">W</div>
-                                            <div><strong>Wave</strong><span class="op-num">Wave Mobile</span></div>
-                                        </div>
+                                            <i class="fas fa-check-circle op-check"></i>
+                                        </button>
                                     </div>
                                     <div class="bank-notice" style="margin-top:14px;">
                                         <i class="fas fa-shield-alt"></i>
@@ -232,7 +240,7 @@
                                     </div>
                                     <div class="bank-notice">
                                         <i class="fas fa-clock"></i>
-                                        Votre commande sera traitée dans les <strong>24-48h ouvrables</strong> après réception du virement.
+                                        Votre commande sera traitée dans les <strong>premiers jours ouvrables</strong> après réception du virement.
                                         Envoyez votre justificatif à <a href="mailto:contact@hezouwe.tg">contact@hezouwe.tg</a>
                                     </div>
 
@@ -298,6 +306,10 @@
                                     <span>Sous-total</span>
                                     <span>{{ formatPrice(summary.subtotal) }} FCFA</span>
                                 </div>
+                                <div v-if="summary.discount > 0" class="t-row discount-row">
+                                    <span>Remise promo <template v-if="summary.coupon_code">({{ summary.coupon_code }})</template></span>
+                                    <span>−{{ formatPrice(summary.discount) }} FCFA</span>
+                                </div>
                                 <div class="t-row">
                                     <span>Livraison</span>
                                     <span>{{ summary.delivery_cost === 0 ? 'Gratuite' : formatPrice(summary.delivery_cost) + ' FCFA' }}</span>
@@ -361,6 +373,9 @@ const form = useForm({
     transaction_id: '',
     payment_proof:  null,
 });
+
+// Selected Mobile Money operator (visual only)
+const mobileOperator = ref(null);
 
 // COD proof state
 const codProofPreview  = ref(null);
@@ -577,6 +592,24 @@ const submitOrder = () => {
 .operator-card.yas { border-color: #e3f2fd; background: #f0f8ff; }
 .operator-card.moov { border-color: #e8f5e9; background: #f0faf5; }
 
+button.operator-card {
+    width: 100%;
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+    position: relative;
+    transition: border-color .15s, transform .1s;
+}
+button.operator-card:hover { border-color: #5cb85c; }
+button.operator-card.selected { border-color: #5cb85c; box-shadow: 0 0 0 2px rgba(92,184,92,0.18); }
+.op-check {
+    display: none;
+    margin-left: auto;
+    color: #5cb85c;
+    font-size: 1.1rem;
+}
+button.operator-card.selected .op-check { display: block; }
+
 .op-logo {
     width: 48px;
     height: 38px;
@@ -661,6 +694,7 @@ const submitOrder = () => {
 .t-row { display: flex; justify-content: space-between; gap: 12px; font-size: 0.9rem; color: #5a6b5c; }
 .t-row.grand { padding-top: 10px; border-top: 2px solid #e5ece2; font-weight: 900; color: #1a3a1a; font-size: 1rem; }
 .t-row.cod-row { color: #b8860b; background: #fffde7; padding: 6px 10px; border-radius: 6px; font-weight: 700; }
+.t-row.discount-row { color: #e53935; font-weight: 700; }
 .cod-amount { color: #b8860b; font-weight: 900; }
 
 .submit-btn {

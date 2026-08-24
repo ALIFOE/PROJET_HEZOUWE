@@ -2,6 +2,7 @@
     <div class="admin-layout">
         <aside class="admin-sidebar">
             <div class="sidebar-header">
+                <img src="/assets/img/logo/logo_hezouwe.jpeg" alt="Hézouwè" class="sidebar-logo">
                 <h2>HEZOUWE</h2>
                 <span>Admin Panel</span>
             </div>
@@ -25,6 +26,14 @@
                 <Link href="/admin/news" class="nav-item" :class="{ active: $page.url.startsWith('/admin/news') }">
                     <i class="far fa-newspaper"></i>
                     <span>Actualités</span>
+                </Link>
+                <Link href="/admin/partners" class="nav-item" :class="{ active: $page.url.startsWith('/admin/partners') }">
+                    <i class="far fa-handshake"></i>
+                    <span>Partenaires</span>
+                </Link>
+                <Link href="/admin/coupons" class="nav-item" :class="{ active: $page.url.startsWith('/admin/coupons') }">
+                    <i class="far fa-tags"></i>
+                    <span>Codes Promo</span>
                 </Link>
 
                 <div class="nav-separator"></div>
@@ -63,12 +72,15 @@
                 <slot />
             </div>
         </main>
+
+        <GlobalLoader />
     </div>
 </template>
 
 <script setup>
 import { Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
+import GlobalLoader from '@/Components/GlobalLoader.vue';
 
 const page = usePage();
 const title = computed(() => page.props.title || 'Dashboard');
@@ -96,6 +108,16 @@ const title = computed(() => page.props.title || 'Dashboard');
 .sidebar-header {
     padding: 28px 24px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sidebar-logo {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    margin-bottom: 14px;
+    display: block;
 }
 
 .sidebar-header h2 {

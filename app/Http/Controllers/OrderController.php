@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\NewOrderAdminMail;
 use App\Mail\OrderConfirmationMail;
+use App\Models\Coupon;
 use App\Models\Order;
 use App\Services\WhatsAppService;
 use App\Support\ProductCatalog;
@@ -30,7 +31,7 @@ class OrderController extends Controller
 
         return Inertia::render('Checkout', [
             'cartItems' => $items->all(),
-            'summary'   => $this->summary($items),
+            'summary'   => $this->summary($items, $request->user()->id),
         ]);
     }
 
@@ -58,7 +59,7 @@ class OrderController extends Controller
             return redirect()->route('shop-cart')->with('error', 'Votre panier est vide.');
         }
 
-        $summary = $this->summary($items);
+        $summary = $this->summary($items, $request->user()->id);
 
         $proofPath = null;
         if ($request->hasFile('payment_proof')) {
@@ -75,7 +76,8 @@ class OrderController extends Controller
                 'payment_proof'  => $proofPath,
                 'subtotal'       => $summary['subtotal'],
                 'delivery_cost'  => $summary['delivery_cost'],
-                'discount'       => 0,
+                'discount'       => $summary['discount'],
+                'coupon_code'    => $summary['coupon_code'],
                 'total'          => $summary['total'],
             ]));
 
@@ -92,8 +94,14 @@ class OrderController extends Controller
 
             $request->user()->cartItems()->delete();
 
+            if ($summary['coupon_code']) {
+                Coupon::where('code', $summary['coupon_code'])->increment('used_count');
+            }
+
             return $order;
         });
+
+        session()->forget('applied_coupon_code');
 
         $order->load('items');
 
@@ -256,15 +264,29 @@ class OrderController extends Controller
         return view('receipt', compact('order'));
     }
 
-    private function summary($items): array
+    private function summary($items, int $userId): array
     {
         $subtotal     = (int) $items->sum('line_total');
         $deliveryCost = $subtotal >= 10000 ? 0 : 1500;
 
+        $discount   = 0;
+        $couponCode = null;
+
+        $code = session('applied_coupon_code');
+        if ($code) {
+            $coupon = Coupon::findActiveByCode($code);
+            if ($coupon && $coupon->validateFor($subtotal, $userId)['valid']) {
+                $discount   = $coupon->discountFor($subtotal);
+                $couponCode = $coupon->code;
+            }
+        }
+
         return [
             'subtotal'      => $subtotal,
             'delivery_cost' => $deliveryCost,
-            'total'         => $subtotal + $deliveryCost,
+            'discount'      => $discount,
+            'coupon_code'   => $couponCode,
+            'total'         => max(0, $subtotal + $deliveryCost - $discount),
         ];
     }
 }

@@ -1,0 +1,275 @@
+<script setup>
+import AdminLayout from '@/Layouts/AdminLayout.vue';
+import { Head, Link, router } from '@inertiajs/vue3';
+
+const props = defineProps({
+    coupons: Object,
+});
+
+const formatPrice = (n) => n?.toLocaleString('fr-FR') ?? '0';
+
+const formatValue = (coupon) => coupon.type === 'percent' ? `${coupon.value}%` : `${formatPrice(coupon.value)} FCFA`;
+
+const formatDate = (d) => d ? new Date(d).toLocaleDateString('fr-FR') : '—';
+
+const statusOf = (coupon) => {
+    if (!coupon.is_active) return { label: 'Inactif', cls: 'off' };
+    const now = new Date();
+    if (coupon.starts_at && new Date(coupon.starts_at) > now) return { label: 'À venir', cls: 'soon' };
+    if (coupon.expires_at && new Date(coupon.expires_at) < now) return { label: 'Expiré', cls: 'off' };
+    if (coupon.max_uses && coupon.used_count >= coupon.max_uses) return { label: 'Épuisé', cls: 'off' };
+    return { label: 'Actif', cls: 'on' };
+};
+
+const deleteCoupon = (id) => {
+    if (confirm('Êtes-vous sûr de vouloir supprimer ce code promo ?')) {
+        router.delete(`/admin/coupons/${id}`);
+    }
+};
+</script>
+
+<template>
+    <Head title="Gestion des Codes Promo" />
+
+    <AdminLayout title="Gestion des Codes Promo">
+        <div class="admin-page">
+            <div class="page-header">
+                <div>
+                    <p class="eyebrow">Administration</p>
+                    <h1>Codes Promo</h1>
+                </div>
+                <Link href="/admin/coupons/create" class="btn-primary">
+                    <i class="far fa-plus"></i>
+                    Ajouter un code promo
+                </Link>
+            </div>
+
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Réduction</th>
+                            <th>Utilisations</th>
+                            <th>Validité</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="coupon in coupons.data" :key="coupon.id">
+                            <td><span class="code-tag">{{ coupon.code }}</span></td>
+                            <td>{{ formatValue(coupon) }}</td>
+                            <td>{{ coupon.used_count }}{{ coupon.max_uses ? ` / ${coupon.max_uses}` : '' }}</td>
+                            <td class="date-col">
+                                {{ formatDate(coupon.starts_at) }} → {{ formatDate(coupon.expires_at) }}
+                            </td>
+                            <td>
+                                <span class="status-badge" :class="statusOf(coupon).cls">{{ statusOf(coupon).label }}</span>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <Link :href="`/admin/coupons/${coupon.id}/edit`" class="btn-edit" title="Modifier">
+                                        <i class="far fa-edit"></i>
+                                    </Link>
+                                    <button @click="deleteCoupon(coupon.id)" class="btn-delete" title="Supprimer">
+                                        <i class="far fa-trash"></i>
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div v-if="coupons.data.length === 0" class="empty-state">
+                    <i class="far fa-tags"></i>
+                    <h3>Aucun code promo</h3>
+                    <p>Commencez par créer votre premier code promo.</p>
+                    <Link href="/admin/coupons/create" class="btn-primary">Ajouter un code promo</Link>
+                </div>
+            </div>
+
+            <div v-if="coupons.links && coupons.links.length > 3" class="pagination">
+                <template v-for="(link, index) in coupons.links" :key="index">
+                    <Link
+                        v-if="link.url"
+                        :href="link.url"
+                        class="page-link"
+                        :class="{ active: link.active }"
+                        v-html="link.label"
+                    />
+                    <span v-else class="page-link disabled" v-html="link.label" />
+                </template>
+            </div>
+        </div>
+    </AdminLayout>
+</template>
+
+<style scoped>
+.admin-page {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.page-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.eyebrow {
+    margin: 0 0 4px;
+    color: #5cb85c;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 0.78rem;
+}
+
+.page-header h1 {
+    margin: 0;
+    color: #17351a;
+    font-size: 1.85rem;
+    font-weight: 900;
+}
+
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: #5cb85c;
+    color: #fff;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 700;
+    transition: background 0.2s;
+    white-space: nowrap;
+}
+
+.btn-primary:hover { background: #4a9e4a; }
+
+.table-container {
+    background: #fff;
+    border: 1px solid #e5ece2;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 16px 42px rgba(23, 53, 26, 0.06);
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table th {
+    text-align: left;
+    padding: 14px 16px;
+    color: #68746a;
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    border-bottom: 2px solid #e5ece2;
+    background: #f8faf7;
+}
+
+.data-table td {
+    padding: 14px 16px;
+    color: #17351a;
+    font-weight: 500;
+    border-bottom: 1px solid #e5ece2;
+    vertical-align: middle;
+}
+
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: #fafcf9; }
+
+.code-tag {
+    display: inline-block;
+    padding: 4px 10px;
+    background: #f0f7f0;
+    border: 1px solid #d4e8d4;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    color: #2d6a2d;
+    font-family: monospace;
+    font-weight: 700;
+}
+
+.date-col { font-size: 0.85rem; color: #68746a; white-space: nowrap; }
+
+.status-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+.status-badge.on { background: #e0f2e0; color: #24782b; }
+.status-badge.off { background: #fee2e2; color: #dc2626; }
+.status-badge.soon { background: #fff8e1; color: #b8860b; }
+
+.action-buttons {
+    display: flex;
+    gap: 6px;
+}
+
+.btn-edit,
+.btn-delete {
+    width: 34px;
+    height: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+}
+
+.btn-edit { background: #e8f4ff; color: #245ea8; }
+.btn-edit:hover { background: #d1e9ff; }
+.btn-delete { background: #fee2e2; color: #dc2626; }
+.btn-delete:hover { background: #fecaca; }
+
+.empty-state {
+    padding: 64px 24px;
+    text-align: center;
+    color: #68746a;
+}
+
+.empty-state i { font-size: 3rem; color: #c8d9c4; margin-bottom: 16px; display: block; }
+.empty-state h3 { margin: 0 0 8px; color: #17351a; font-weight: 900; }
+.empty-state p { margin: 0 0 16px; }
+
+.pagination {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    padding: 16px;
+}
+
+.page-link {
+    padding: 7px 14px;
+    border: 1px solid #e5ece2;
+    border-radius: 6px;
+    color: #17351a;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.page-link:hover { background: #f8faf7; border-color: #5cb85c; }
+.page-link.active { background: #5cb85c; color: #fff; border-color: #5cb85c; }
+.page-link.disabled { color: #9ca3af; cursor: default; }
+
+@media (max-width: 768px) {
+    .page-header { flex-direction: column; align-items: flex-start; }
+    .data-table th, .data-table td { padding: 10px 8px; }
+    .date-col { display: none; }
+}
+</style>

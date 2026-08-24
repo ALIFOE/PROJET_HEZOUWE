@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\CartAddedMail;
 use App\Models\CartItem;
+use App\Models\Coupon;
 use App\Support\ProductCatalog;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -20,10 +21,71 @@ class CartController extends Controller
             ->latest()
             ->get();
 
+        $items = ProductCatalog::hydrateCartItems($cartItems);
+        $subtotal = (int) $items->sum('line_total');
+
         return Inertia::render('ShopCart', [
             'products' => ProductCatalog::all()->values()->all(),
-            'cartItems' => ProductCatalog::hydrateCartItems($cartItems)->all(),
+            'cartItems' => $items->all(),
+            'coupon' => $this->appliedCoupon($request, $subtotal),
         ]);
+    }
+
+    public function applyCoupon(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'code' => ['required', 'string', 'max:50'],
+        ]);
+
+        $cartItems = $request->user()->cartItems()->latest()->get();
+        $items = ProductCatalog::hydrateCartItems($cartItems);
+        $subtotal = (int) $items->sum('line_total');
+
+        $coupon = Coupon::findActiveByCode($validated['code']);
+
+        if (! $coupon) {
+            return back()->with('error', 'Code promo invalide.');
+        }
+
+        $result = $coupon->validateFor($subtotal, $request->user()->id);
+
+        if (! $result['valid']) {
+            return back()->with('error', $result['message']);
+        }
+
+        session(['applied_coupon_code' => $coupon->code]);
+
+        return back()->with('success', 'Code promo appliqué avec succès.');
+    }
+
+    public function removeCoupon(Request $request): RedirectResponse
+    {
+        session()->forget('applied_coupon_code');
+
+        return back();
+    }
+
+    private function appliedCoupon(Request $request, int $subtotal): ?array
+    {
+        $code = session('applied_coupon_code');
+
+        if (! $code) {
+            return null;
+        }
+
+        $coupon = Coupon::findActiveByCode($code);
+
+        if (! $coupon || ! $coupon->validateFor($subtotal, $request->user()->id)['valid']) {
+            session()->forget('applied_coupon_code');
+            return null;
+        }
+
+        return [
+            'code' => $coupon->code,
+            'type' => $coupon->type,
+            'value' => $coupon->value,
+            'discount' => $coupon->discountFor($subtotal),
+        ];
     }
 
     public function store(Request $request): RedirectResponse

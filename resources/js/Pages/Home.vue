@@ -393,7 +393,7 @@
         </section>
 
         <!-- Partners Section -->
-        <section class="partners-section section-padding fix">
+        <section v-if="props.partners.length" class="partners-section section-padding fix">
             <div class="container">
                 <div class="section-title text-center partners-header">
                     <span class="wow fadeInUp"><img src="/assets/img/sub-title.svg" alt="img">Nos Partenaires</span>
@@ -403,20 +403,11 @@
                     </p>
                 </div>
                 <div class="partners-grid">
-                    <div class="partner-item wow fadeInUp" data-wow-delay=".1s">
-                        <img src="/assets/img/brand/brand-01.png" alt="Partenaire">
-                    </div>
-                    <div class="partner-item wow fadeInUp" data-wow-delay=".2s">
-                        <img src="/assets/img/brand/brand-02.png" alt="Partenaire">
-                    </div>
-                    <div class="partner-item wow fadeInUp" data-wow-delay=".3s">
-                        <img src="/assets/img/brand/brand-03.png" alt="Partenaire">
-                    </div>
-                    <div class="partner-item wow fadeInUp" data-wow-delay=".4s">
-                        <img src="/assets/img/brand/brand-04.png" alt="Partenaire">
-                    </div>
-                    <div class="partner-item wow fadeInUp" data-wow-delay=".5s">
-                        <img src="/assets/img/brand/brand-05.png" alt="Partenaire">
+                    <div v-for="(partner, index) in props.partners" :key="partner.id ?? index" class="partner-item wow fadeInUp" :data-wow-delay="`.${Math.min(index + 1, 5)}s`">
+                        <a v-if="partner.link" :href="partner.link" target="_blank" rel="noopener noreferrer">
+                            <img :src="resolvePartnerImage(partner.image)" :alt="partner.name || 'Partenaire'">
+                        </a>
+                        <img v-else :src="resolvePartnerImage(partner.image)" :alt="partner.name || 'Partenaire'">
                     </div>
                 </div>
             </div>
@@ -493,7 +484,18 @@ import { onMounted, computed } from 'vue';
 const props = defineProps({
     products: { type: Array, default: () => [] },
     services: { type: Array, default: () => [] },
+    partners: { type: Array, default: () => [] },
 });
+
+const resolvePartnerImage = (path) => {
+    if (!path) return '';
+    if (path.startsWith('/assets/') || path.startsWith('/storage/')) return path;
+    if ((path.startsWith('http://') || path.startsWith('https://')) && path.includes('/storage/')) {
+        return path.slice(path.indexOf('/storage/'));
+    }
+    if (path.startsWith('http://') || path.startsWith('https://')) return path;
+    return `/storage/${path}`;
+};
 
 const featuredProducts = computed(() => {
     const cats = [

@@ -84,7 +84,16 @@
                                             <td class="text-center">
                                                 <div class="sc-qty-ctrl">
                                                     <button @click="updateQuantity(item, item.qty - 1)" :disabled="item.qty <= 1" class="sc-qty-btn">−</button>
-                                                    <span class="sc-qty-num">{{ item.qty }}</span>
+                                                    <input
+                                                        type="text"
+                                                        inputmode="numeric"
+                                                        pattern="[0-9]*"
+                                                        class="sc-qty-num sc-qty-input"
+                                                        :value="item.qty"
+                                                        @input="onQtyInput"
+                                                        @keydown.enter.prevent="commitQtyInput(item, $event)"
+                                                        @blur="commitQtyInput(item, $event)"
+                                                    >
                                                     <button @click="updateQuantity(item, item.qty + 1)" class="sc-qty-btn">+</button>
                                                 </div>
                                             </td>
@@ -114,10 +123,24 @@
                         <!-- Coupon -->
                         <div class="sc-coupon wow fadeInUp" data-wow-delay=".2s">
                             <h5>Avez-vous un code promo?</h5>
-                            <div class="sc-coupon-form">
-                                <input v-model="couponCode" type="text" placeholder="Entrez votre code promo">
-                                <button @click="applyCoupon" class="sc-btn-primary">Appliquer</button>
+
+                            <div v-if="props.coupon" class="sc-coupon-applied">
+                                <div class="sc-coupon-applied-info">
+                                    <i class="fas fa-tag"></i>
+                                    <span>Code <strong>{{ props.coupon.code }}</strong> appliqué — {{ couponValueLabel }}</span>
+                                </div>
+                                <button @click="removeCoupon" class="sc-coupon-remove" title="Retirer le code">
+                                    <i class="far fa-times"></i>
+                                </button>
                             </div>
+
+                            <div v-else class="sc-coupon-form">
+                                <input v-model="couponCode" type="text" placeholder="Entrez votre code promo" @keydown.enter="applyCoupon">
+                                <button @click="applyCoupon" class="sc-btn-primary" :disabled="applyingCoupon">
+                                    {{ applyingCoupon ? 'Vérification...' : 'Appliquer' }}
+                                </button>
+                            </div>
+
                             <p v-if="couponMsg" class="sc-coupon-msg" :class="couponValid ? 'success' : 'error'">
                                 <i :class="couponValid ? 'fas fa-check-circle' : 'fas fa-times-circle'"></i>
                                 {{ couponMsg }}
@@ -135,8 +158,8 @@
                                     <span>Sous-total</span>
                                     <span>{{ formatPrice(subtotal) }} FCFA</span>
                                 </div>
-                                <div v-if="couponDiscount > 0" class="sc-sum-row discount">
-                                    <span>Remise promo ({{ couponDiscount }}%)</span>
+                                <div v-if="props.coupon" class="sc-sum-row discount">
+                                    <span>Remise promo ({{ props.coupon.code }})</span>
                                     <span>−{{ formatPrice(discountAmount) }} FCFA</span>
                                 </div>
                                 <div class="sc-sum-row">
@@ -236,26 +259,37 @@
 
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { Link, router } from '@inertiajs/vue3';
+import { Link, router, usePage } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 
 const props = defineProps({
     products: Array,
     cartItems: Array,
+    coupon: Object,
 });
+
+const page = usePage();
 
 const cartItems = computed(() => props.cartItems || []);
 
 const couponCode = ref('');
-const couponMsg = ref('');
-const couponValid = ref(false);
-const couponDiscount = ref(0);
+const applyingCoupon = ref(false);
 const deliveryCost = 1500;
+
+const couponMsg = computed(() => page.props.flash?.success || page.props.flash?.error || '');
+const couponValid = computed(() => !!page.props.flash?.success);
+
+const couponValueLabel = computed(() => {
+    if (!props.coupon) return '';
+    return props.coupon.type === 'percent'
+        ? `-${props.coupon.value}%`
+        : `-${formatPrice(props.coupon.value)} FCFA`;
+});
 
 const subtotal = computed(() => cartItems.value.reduce((sum, i) => sum + i.price * i.qty, 0));
 const deliveryFree = computed(() => subtotal.value >= 10000);
-const discountAmount = computed(() => Math.round(subtotal.value * couponDiscount.value / 100));
-const total = computed(() => subtotal.value - discountAmount.value + (deliveryFree.value ? 0 : deliveryCost));
+const discountAmount = computed(() => props.coupon?.discount ?? 0);
+const total = computed(() => Math.max(0, subtotal.value - discountAmount.value + (deliveryFree.value ? 0 : deliveryCost)));
 
 const suggested = computed(() =>
     props.products.filter(p => !cartItems.value.find(c => c.slug === p.slug)).slice(0, 4)
@@ -285,18 +319,36 @@ const updateQuantity = (item, quantity) => {
     router.patch(route('cart.update', item.cart_item_id), { quantity }, { preserveScroll: true });
 };
 
-const applyCoupon = () => {
-    const validCodes = { 'HEZOUWE10': 10, 'TOGO20': 20, 'RIZ15': 15 };
-    const code = couponCode.value.trim().toUpperCase();
-    if (validCodes[code]) {
-        couponDiscount.value = validCodes[code];
-        couponValid.value = true;
-        couponMsg.value = `Code appliqué ! Réduction de ${validCodes[code]}%`;
-    } else {
-        couponDiscount.value = 0;
-        couponValid.value = false;
-        couponMsg.value = 'Code promo invalide ou expiré.';
+const onQtyInput = (e) => {
+    e.target.value = e.target.value.replace(/\D/g, '');
+};
+
+const commitQtyInput = (item, e) => {
+    const quantity = parseInt(e.target.value, 10);
+
+    if (!quantity || quantity < 1) {
+        e.target.value = item.qty;
+        return;
     }
+
+    if (quantity === item.qty) return;
+
+    updateQuantity(item, quantity);
+};
+
+const applyCoupon = () => {
+    if (!couponCode.value.trim()) return;
+
+    applyingCoupon.value = true;
+    router.post(route('cart.coupon.apply'), { code: couponCode.value.trim() }, {
+        preserveScroll: true,
+        onFinish: () => { applyingCoupon.value = false; },
+        onSuccess: () => { couponCode.value = ''; },
+    });
+};
+
+const removeCoupon = () => {
+    router.delete(route('cart.coupon.remove'), { preserveScroll: true });
 };
 </script>
 
@@ -346,6 +398,18 @@ const applyCoupon = () => {
 .sc-qty-btn { width: 34px; height: 34px; background: #f5f5f5; border: none; font-size: 1rem; cursor: pointer; transition: all .2s; color: #1a3a1a; }
 .sc-qty-btn:hover { background: #5cb85c; color: #fff; }
 .sc-qty-num { padding: 0 14px; font-weight: 700; font-size: .9rem; color: #1a3a1a; }
+.sc-qty-input {
+    width: 46px;
+    height: 34px;
+    border: none;
+    background: transparent;
+    text-align: center;
+    outline: none;
+    -moz-appearance: textfield;
+}
+.sc-qty-input::-webkit-outer-spin-button,
+.sc-qty-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.sc-qty-input:focus { background: #f5f5f5; }
 
 .sc-line-total { font-weight: 800; color: #1a3a1a; font-size: 1rem; }
 
@@ -360,9 +424,17 @@ const applyCoupon = () => {
 .sc-coupon-form { display: flex; gap: 10px; }
 .sc-coupon-form input { flex: 1; border: 2px solid #e0e0e0; border-radius: 8px; padding: 10px 14px; font-size: .9rem; outline: none; transition: border-color .3s; }
 .sc-coupon-form input:focus { border-color: #5cb85c; }
+.sc-btn-primary:disabled { opacity: .6; cursor: not-allowed; }
 .sc-coupon-msg { margin-top: 10px; font-size: .85rem; font-weight: 600; display: flex; align-items: center; gap: 6px; }
 .sc-coupon-msg.success { color: #2d7a2d; }
 .sc-coupon-msg.error { color: #e53935; }
+
+.sc-coupon-applied { display: flex; align-items: center; justify-content: space-between; gap: 10px; background: #e8f5e9; border: 1.5px solid #c8e6c9; border-radius: 8px; padding: 12px 14px; }
+.sc-coupon-applied-info { display: flex; align-items: center; gap: 8px; font-size: .88rem; color: #2d7a2d; }
+.sc-coupon-applied-info i { font-size: 1rem; }
+.sc-coupon-applied-info strong { font-family: monospace; }
+.sc-coupon-remove { width: 30px; height: 30px; border-radius: 50%; border: 1.5px solid #ffcdd2; background: #fff; color: #e53935; cursor: pointer; transition: all .25s; flex-shrink: 0; }
+.sc-coupon-remove:hover { background: #e53935; color: #fff; }
 
 /* Summary */
 .sc-summary { background: #fff; border-radius: 16px; padding: 28px; box-shadow: 0 4px 24px rgba(0,0,0,.08); margin-bottom: 20px; }

@@ -76,10 +76,22 @@
 
                             <!-- Quantity + add -->
                             <div class="spd-actions">
-                                <div class="spd-qty">
-                                    <button @click="qty > 1 && qty--" class="spd-qty-btn">−</button>
-                                    <span class="spd-qty-val">{{ qty }}</span>
-                                    <button @click="qty++" class="spd-qty-btn">+</button>
+                                <div class="spd-qty-wrap">
+                                    <div class="spd-qty">
+                                        <button @click="qty > 1 && qty--" class="spd-qty-btn">−</button>
+                                        <input
+                                            type="text"
+                                            inputmode="numeric"
+                                            pattern="[0-9]*"
+                                            class="spd-qty-val spd-qty-input"
+                                            :value="qty"
+                                            @input="onQtyInput"
+                                            @keydown.enter.prevent="commitQtyInput($event)"
+                                            @blur="commitQtyInput($event)"
+                                        >
+                                        <button @click="qty < 99 && qty++" class="spd-qty-btn">+</button>
+                                    </div>
+                                    <span v-if="qtyError" class="spd-qty-error">Quantité maximale : 99</span>
                                 </div>
                                 <button type="button" @click="addToCart" class="spd-btn-cart">
                                     <i class="far fa-shopping-cart"></i> Ajouter au Panier
@@ -224,7 +236,31 @@ const props = defineProps({
 
 const activeImage = ref(props.product.images?.[0] || props.product.image);
 const qty = ref(1);
+const qtyError = ref(false);
 const activeTab = ref('description');
+
+const onQtyInput = (e) => {
+    e.target.value = e.target.value.replace(/\D/g, '');
+};
+
+const commitQtyInput = (e) => {
+    const value = parseInt(e.target.value, 10);
+
+    if (!value || value < 1) {
+        e.target.value = qty.value;
+        return;
+    }
+
+    if (value > 99) {
+        qty.value = 99;
+        qtyError.value = true;
+        e.target.value = 99;
+        return;
+    }
+
+    qtyError.value = false;
+    qty.value = value;
+};
 
 const tabs = [
     { key: 'description', label: 'Description' },
@@ -294,6 +330,16 @@ const sampleReviews = [
 .spd-qty-btn { width: 40px; height: 44px; background: #f5f5f5; border: none; font-size: 1.2rem; cursor: pointer; transition: background .25s; }
 .spd-qty-btn:hover { background: #5cb85c; color: #fff; }
 .spd-qty-val { padding: 0 18px; font-weight: 700; font-size: 1rem; color: #1a3a1a; }
+.spd-qty-input {
+    width: 56px; height: 44px; text-align: center; border: none; background: #fff;
+    appearance: textfield;
+    -moz-appearance: textfield;
+}
+.spd-qty-input::-webkit-outer-spin-button,
+.spd-qty-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.spd-qty-input:focus { outline: none; background: #f5f5f5; }
+.spd-qty-wrap { display: flex; flex-direction: column; gap: 6px; }
+.spd-qty-error { font-size: .78rem; color: #d32f2f; font-weight: 600; }
 .spd-btn-cart { display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; background: #1a3a1a; color: #fff; border: none; border-radius: 10px; text-decoration: none; font-size: .9rem; font-weight: 600; cursor: pointer; transition: background .3s; }
 .spd-btn-cart:hover { background: #5cb85c; color: #fff; }
 .spd-btn-buy { display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; background: #5cb85c; color: #fff; border: none; border-radius: 10px; text-decoration: none; font-size: .9rem; font-weight: 600; cursor: pointer; transition: background .3s; }

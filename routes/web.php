@@ -27,6 +27,7 @@ Route::get('/', function () {
     return Inertia::render('Home', [
         'products' => ProductCatalog::all(),
         'services' => ServiceCatalog::all(),
+        'partners' => \App\Support\PartnerCatalog::all(),
     ]);
 })->name('home');
 
@@ -173,6 +174,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/cart/{cartItem}', [CartController::class, 'update'])->name('cart.update');
     Route::delete('/cart/{cartItem}', [CartController::class, 'destroy'])->name('cart.destroy');
     Route::delete('/cart', [CartController::class, 'clear'])->name('cart.clear');
+    Route::post('/cart/coupon', [CartController::class, 'applyCoupon'])->name('cart.coupon.apply');
+    Route::delete('/cart/coupon', [CartController::class, 'removeCoupon'])->name('cart.coupon.remove');
 
     Route::get('/checkout', [OrderController::class, 'checkout'])->name('checkout');
     Route::post('/orders', [OrderController::class, 'store'])->middleware('throttle:5,1')->name('orders.store');
@@ -230,6 +233,9 @@ Route::middleware(['auth', 'verified', 'is.admin'])->prefix('admin')->name('admi
     Route::post('news/upload-image', [\App\Http\Controllers\Admin\NewsController::class, 'uploadImage'])->name('news.upload-image');
     Route::post('news/{news}/toggle-visibility', [\App\Http\Controllers\Admin\NewsController::class, 'toggleVisibility'])->name('news.toggle-visibility');
     Route::resource('news', \App\Http\Controllers\Admin\NewsController::class);
+    Route::post('partners/upload-image', [\App\Http\Controllers\Admin\PartnerController::class, 'uploadImage'])->name('partners.upload-image');
+    Route::resource('partners', \App\Http\Controllers\Admin\PartnerController::class);
+    Route::resource('coupons', \App\Http\Controllers\Admin\CouponController::class);
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class)->only(['index', 'show', 'edit', 'update', 'destroy']);
 });
 

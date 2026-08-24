@@ -245,6 +245,10 @@ const copyDeliveryUrl = async () => {
                                 <span>Ouvrir le document PDF</span>
                             </a>
                         </template>
+                        <a :href="`/storage/${order.payment_proof}`" download class="proof-admin-download">
+                            <i class="fas fa-download"></i>
+                            <span>Télécharger la preuve</span>
+                        </a>
                     </div>
                 </div>
                 <div v-else-if="order.payment_method !== 'mobile_money'" class="proof-admin-missing">
@@ -308,7 +312,7 @@ const copyDeliveryUrl = async () => {
                 <div class="totals-box">
                     <div><span>Sous-total</span><strong>{{ formatPrice(order.subtotal) }}</strong></div>
                     <div><span>Livraison</span><strong>{{ order.delivery_cost == 0 ? 'Gratuite' : formatPrice(order.delivery_cost) }}</strong></div>
-                    <div><span>Remise</span><strong>{{ formatPrice(order.discount) }}</strong></div>
+                    <div><span>Remise{{ order.coupon_code ? ` (${order.coupon_code})` : '' }}</span><strong>{{ formatPrice(order.discount) }}</strong></div>
                     <div class="grand-total"><span>Total commande</span><strong>{{ formatPrice(order.total) }}</strong></div>
                 </div>
             </section>
@@ -676,6 +680,13 @@ const copyDeliveryUrl = async () => {
     font-size: 0.88rem; transition: background .15s;
 }
 .proof-admin-pdf:hover { background: #ffe0e0; }
+.proof-admin-download {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 14px; background: #eaf5ea; border: 1.5px solid #b5dbb5;
+    border-radius: 8px; color: #2c6b2c; font-weight: 700; text-decoration: none;
+    font-size: 0.82rem; transition: background .15s;
+}
+.proof-admin-download:hover { background: #d9ecd9; }
 .proof-admin-missing {
     margin-top: 12px; padding: 10px 14px;
     background: #fff8e1; border: 1px solid #ffd54f;
