@@ -119,11 +119,11 @@
                                 <div class="operator-cards">
                                     <div class="operator-card yas">
                                         <div class="op-logo"><img src="/assets/img/mixx-by-yas.png" alt="Mixx by YAS" class="op-img"></div>
-                                        <div><strong>Mixx by YAS</strong><span class="op-num">+228 70 XX XX XX</span></div>
+                                        <div><strong>Mixx by YAS</strong><span class="op-num">+228 90 68 18 43</span></div>
                                     </div>
                                     <div class="operator-card moov">
                                         <div class="op-logo"><img src="/assets/img/flooz logo.png" alt="Flooz" class="op-img"></div>
-                                        <div><strong>Flooz — Moov Africa</strong><span class="op-num">+228 79 XX XX XX</span></div>
+                                        <div><strong>Flooz — Moov Africa</strong><span class="op-num">+228 96 22 50 37</span></div>
                                     </div>
                                 </div>
                                 <div class="txn-field">
