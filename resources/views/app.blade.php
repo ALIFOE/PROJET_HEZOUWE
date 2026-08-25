@@ -58,10 +58,20 @@
     </script>
 
     @if (config('seo.ga4_id'))
-        <script async src="https://www.googletagmanager.com/gtag/js?id={{ config('seo.ga4_id') }}"></script>
         <script>
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
+            // Consent Mode v2 : rien n'est autorisé tant que le visiteur n'a pas répondu au bandeau.
+            gtag('consent', 'default', {
+                'ad_storage': 'denied',
+                'ad_user_data': 'denied',
+                'ad_personalization': 'denied',
+                'analytics_storage': 'denied',
+                'wait_for_update': 500
+            });
+        </script>
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{ config('seo.ga4_id') }}"></script>
+        <script>
             gtag('js', new Date());
             gtag('config', '{{ config('seo.ga4_id') }}', { anonymize_ip: true });
         </script>
@@ -73,7 +83,114 @@
 </head>
 <body>
     @inertia
-    
+
+    @if (config('seo.ga4_id'))
+        <div id="cookie-consent-banner" class="cookie-consent-banner" hidden>
+            <p class="cookie-consent-text">
+                Nous utilisons des cookies de mesure d'audience (Google Analytics) pour comprendre comment le site est utilisé et l'améliorer. Vous pouvez accepter ou refuser ce suivi à tout moment.
+            </p>
+            <div class="cookie-consent-actions">
+                <button type="button" id="cookie-consent-reject" class="cookie-consent-btn cookie-consent-btn-reject">Refuser</button>
+                <button type="button" id="cookie-consent-accept" class="cookie-consent-btn cookie-consent-btn-accept">Accepter</button>
+            </div>
+        </div>
+        <style>
+            .cookie-consent-banner {
+                position: fixed;
+                left: 16px;
+                right: 16px;
+                bottom: 16px;
+                z-index: 99999;
+                max-width: 720px;
+                margin: 0 auto;
+                display: flex;
+                flex-wrap: wrap;
+                align-items: center;
+                gap: 16px;
+                background: #ffffff;
+                border: 1px solid #e2e6df;
+                border-radius: 10px;
+                padding: 18px 20px;
+                box-shadow: 0 12px 40px rgba(20, 30, 15, .18);
+                font-family: inherit;
+            }
+            .cookie-consent-banner[hidden] { display: none; }
+            .cookie-consent-text {
+                flex: 1 1 320px;
+                margin: 0;
+                font-size: .92rem;
+                line-height: 1.5;
+                color: #33402c;
+            }
+            .cookie-consent-actions {
+                display: flex;
+                gap: 10px;
+                flex: 0 0 auto;
+            }
+            .cookie-consent-btn {
+                cursor: pointer;
+                border-radius: 6px;
+                padding: 10px 18px;
+                font-size: .88rem;
+                font-weight: 600;
+                border: 1px solid var(--theme-color, #5B8C51);
+                transition: opacity .2s ease;
+            }
+            .cookie-consent-btn:hover { opacity: .85; }
+            .cookie-consent-btn-reject {
+                background: #ffffff;
+                color: var(--theme-color, #5B8C51);
+            }
+            .cookie-consent-btn-accept {
+                background: var(--theme-color, #5B8C51);
+                color: #ffffff;
+            }
+        </style>
+        <script>
+            (function () {
+                var STORAGE_KEY = 'hezouwe_cookie_consent';
+
+                function applyConsent(status) {
+                    if (typeof gtag !== 'function') return;
+                    gtag('consent', 'update', {
+                        'analytics_storage': status === 'accepted' ? 'granted' : 'denied',
+                        'ad_storage': 'denied',
+                        'ad_user_data': 'denied',
+                        'ad_personalization': 'denied'
+                    });
+                }
+
+                function saveChoice(status) {
+                    try { localStorage.setItem(STORAGE_KEY, status); } catch (e) {}
+                    applyConsent(status);
+                    var banner = document.getElementById('cookie-consent-banner');
+                    if (banner) banner.hidden = true;
+                }
+
+                document.addEventListener('DOMContentLoaded', function () {
+                    var stored = null;
+                    try { stored = localStorage.getItem(STORAGE_KEY); } catch (e) {}
+
+                    if (stored === 'accepted' || stored === 'rejected') {
+                        applyConsent(stored);
+                        return;
+                    }
+
+                    var banner = document.getElementById('cookie-consent-banner');
+                    if (!banner) return;
+                    banner.hidden = false;
+
+                    document.getElementById('cookie-consent-accept').addEventListener('click', function () {
+                        saveChoice('accepted');
+                    });
+                    document.getElementById('cookie-consent-reject').addEventListener('click', function () {
+                        saveChoice('rejected');
+                    });
+                });
+            })();
+        </script>
+    @endif
+
     <!-- jQuery and Scripts - loaded after Inertia -->
     <script src="{{ asset('assets/js/jquery-3.7.1.min.js') }}"></script>
     <script src="{{ asset('assets/js/bootstrap.bundle.min.js') }}"></script>
