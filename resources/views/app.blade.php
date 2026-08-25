@@ -87,7 +87,7 @@
     @if (config('seo.ga4_id'))
         <div id="cookie-consent-banner" class="cookie-consent-banner" hidden>
             <p class="cookie-consent-text">
-                Nous utilisons des cookies de mesure d'audience (Google Analytics) pour comprendre comment le site est utilisé et l'améliorer. Vous pouvez accepter ou refuser ce suivi à tout moment.
+                Nous utilisons des cookies de mesure d'audience pour comprendre comment le site est utilisé et l'améliorer. Vous pouvez accepter ou refuser ce suivi à tout moment.
             </p>
             <div class="cookie-consent-actions">
                 <button type="button" id="cookie-consent-reject" class="cookie-consent-btn cookie-consent-btn-reject">Refuser</button>
