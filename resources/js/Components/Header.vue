@@ -26,9 +26,9 @@
 
                     <!-- Infos de contact -->
                     <div class="top-contacts">
-                        <a href="mailto:contact@hezouwe.tg" class="top-contact-item">
+                        <a href="mailto:contact@hezouwe.com" class="top-contact-item">
                             <i class="far fa-envelope"></i>
-                            <span>contact@hezouwe.tg</span>
+                            <span>contact@hezouwe.com</span>
                         </a>
                         <div class="top-divider"></div>
                         <a href="tel:+22870679448" class="top-contact-item">

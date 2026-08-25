@@ -143,7 +143,7 @@ class OrderController extends Controller
             "Bonjour {$order->customer_name}, votre paiement pour la commande *{$order->order_number}* n'a pas pu être validé.\n\n" .
             "❌ Motif : {$request->rejection_reason}\n\n" .
             "📎 Corrigez et soumettez à nouveau ici :\n{$clientProofUrl}\n\n" .
-            "Pour toute question : contact@hezouwe.tg | +228 70 67 94 48"
+            "Pour toute question : contact@hezouwe.com | +228 70 67 94 48"
         );
         $wa->sendToAdmin(
             "❌ *Paiement rejeté*\n" .

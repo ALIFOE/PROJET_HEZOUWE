@@ -47,7 +47,7 @@
     <a href="{{ url('/shop-cart') }}" style="color:#5cb85c;font-size:13px;text-decoration:none;font-weight:700;">Voir mon panier complet</a>
   </td></tr>
   <tr><td style="background:#0f2810;border-radius:0 0 12px 12px;padding:22px 40px;text-align:center;">
-    <p style="margin:0 0 4px;color:rgba(255,255,255,0.5);font-size:12px;">contact@hezouwe.tg | +228 70 67 94 48</p>
+    <p style="margin:0 0 4px;color:rgba(255,255,255,0.5);font-size:12px;">contact@hezouwe.com | +228 70 67 94 48</p>
     <p style="margin:0;color:rgba(255,255,255,0.3);font-size:11px;">&copy; {{ date('Y') }} COOP CA HEZOUWE</p>
   </td></tr>
 </table>

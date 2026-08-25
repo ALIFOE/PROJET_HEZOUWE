@@ -68,7 +68,7 @@
       </table>
       <p style="margin:12px 0 0;color:#5a6b5c;font-size:12px;">
         Indiquez la référence <strong>{{ $order->order_number }}</strong> dans l'intitulé du virement.
-        Envoyez votre preuve à <a href="mailto:contact@hezouwe.tg" style="color:#1565c0;">contact@hezouwe.tg</a>
+        Envoyez votre preuve à <a href="mailto:contact@hezouwe.com" style="color:#1565c0;">contact@hezouwe.com</a>
       </p>
     </div>
   </td></tr>
@@ -157,7 +157,7 @@
   <!-- Contact -->
   <tr><td style="background:#f8faf7;padding:16px 40px;text-align:center;">
     <p style="margin:0;color:#68746a;font-size:12px;">
-      Des questions ? <a href="mailto:contact@hezouwe.tg" style="color:#2d6a4f;font-weight:700;">contact@hezouwe.tg</a>
+      Des questions ? <a href="mailto:contact@hezouwe.com" style="color:#2d6a4f;font-weight:700;">contact@hezouwe.com</a>
       &nbsp;|&nbsp; <strong>+228 70 67 94 48</strong>
     </p>
   </td></tr>

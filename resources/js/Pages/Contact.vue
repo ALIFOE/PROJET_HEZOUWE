@@ -36,7 +36,7 @@
                                 <h3>Email 24/7</h3>
                             </div>
                             <p>
-                                <a href="mailto:contact@hezouwe.tg">contact@hezouwe.tg</a>
+                                <a href="mailto:contact@hezouwe.com">contact@hezouwe.com</a>
                             </p>
                             <p>
                                 <a href="mailto:info@hezouwe.tg">info@hezouwe.tg</a>

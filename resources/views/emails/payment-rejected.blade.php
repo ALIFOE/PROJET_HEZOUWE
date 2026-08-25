@@ -68,7 +68,7 @@
           <p style="margin:0 0 3px;color:#17351a;font-size:13px;font-weight:900;">Envoyez une capture d'écran</p>
           <p style="margin:0;color:#68746a;font-size:12px;line-height:1.6;">
             Si vous êtes certain(e) d'avoir effectué le paiement, envoyez une capture d'écran de votre transaction à
-            <a href="mailto:contact@hezouwe.tg" style="color:#2d6a4f;font-weight:700;">contact@hezouwe.tg</a>.
+            <a href="mailto:contact@hezouwe.com" style="color:#2d6a4f;font-weight:700;">contact@hezouwe.com</a>.
           </p>
         </td>
       </tr>
@@ -129,7 +129,7 @@
   <!-- Contact -->
   <tr><td style="background:#f8faf7;padding:16px 40px;text-align:center;border-top:1px solid #e8eee3;">
     <p style="margin:0;color:#68746a;font-size:12px;">
-      📧 <a href="mailto:contact@hezouwe.tg" style="color:#2d6a4f;font-weight:700;">contact@hezouwe.tg</a>
+      📧 <a href="mailto:contact@hezouwe.com" style="color:#2d6a4f;font-weight:700;">contact@hezouwe.com</a>
       &nbsp;|&nbsp; 📞 <strong>+228 70 67 94 48</strong>
       &nbsp;|&nbsp; 📱 <strong>+228 90 45 27 73</strong>
     </p>

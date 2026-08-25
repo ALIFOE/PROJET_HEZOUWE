@@ -9,14 +9,15 @@ class NewsCatalog
 {
     public static function all(): Collection
     {
-        // Récupère les actualités visibles de la base de données, avec fallback sur le config
-        $news = News::where('is_visible', true)->orderBy('date', 'desc')->get();
-        
-        if ($news->isEmpty()) {
+        // Fallback sur le config uniquement si la table est totalement vide (pas si tout est masqué)
+        if (News::count() === 0) {
             return collect(config('news_hezouwe', []));
         }
 
-        return $news->map(fn($n) => $n->toArray());
+        return News::where('is_visible', true)
+            ->orderBy('date', 'desc')
+            ->get()
+            ->map(fn($n) => $n->toArray());
     }
 
     public static function find(string $slug): ?array

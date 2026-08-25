@@ -190,7 +190,7 @@
   <!-- Contact -->
   <tr><td style="background:#f8faf7;padding:16px 40px;text-align:center;border-top:1px solid #e8eee3;">
     <p style="margin:0;color:#68746a;font-size:12px;">
-      Des questions ? <a href="mailto:contact@hezouwe.tg" style="color:#2d6a4f;font-weight:700;">contact@hezouwe.tg</a>
+      Des questions ? <a href="mailto:contact@hezouwe.com" style="color:#2d6a4f;font-weight:700;">contact@hezouwe.com</a>
       &nbsp;|&nbsp; <strong>+228 70 67 94 48</strong>
     </p>
   </td></tr>

@@ -93,7 +93,7 @@
                 <td style="padding:0 0 0 12px;" width="33%">
                   <p style="margin:0;color:#9aaa95;font-size:11px;font-weight:900;text-transform:uppercase;letter-spacing:1px;">Email</p>
                   <p style="margin:4px 0 0;font-size:12px;">
-                    <a href="mailto:contact@hezouwe.tg" style="color:#5cb85c;text-decoration:none;">contact@hezouwe.tg</a>
+                    <a href="mailto:contact@hezouwe.com" style="color:#5cb85c;text-decoration:none;">contact@hezouwe.com</a>
                   </p>
                 </td>
               </tr>

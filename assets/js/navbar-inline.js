@@ -23,7 +23,7 @@
                      <div class="top-line"></div>
                      <div class="list-item">
                         <img src="assets/img/icon/icon22.svg" alt="img">
-                        <a href="mailto:contact@hezouwe.tg">contact@hezouwe.tg</a>
+                        <a href="mailto:contact@hezouwe.com">contact@hezouwe.com</a>
                     </div>
                      <div class="top-line"></div>
                     <div class="list-item">

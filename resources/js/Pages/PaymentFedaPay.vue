@@ -59,7 +59,7 @@
                         <div class="help-text">
                             <i class="fas fa-info-circle"></i>
                             Un problème ? Contactez-nous au <strong>+228 70 67 94 48</strong> ou à
-                            <a href="mailto:contact@hezouwe.tg">contact@hezouwe.tg</a>
+                            <a href="mailto:contact@hezouwe.com">contact@hezouwe.com</a>
                         </div>
                     </div>
 

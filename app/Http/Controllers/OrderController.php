@@ -145,7 +145,7 @@ class OrderController extends Controller
         }
 
         $message = $validated['payment_method'] === 'bank_transfer'
-            ? 'Commande ' . $order->order_number . ' enregistrée. Effectuez votre virement et envoyez le justificatif à contact@hezouwe.tg.'
+            ? 'Commande ' . $order->order_number . ' enregistrée. Effectuez votre virement et envoyez le justificatif à contact@hezouwe.com.'
             : 'Commande ' . $order->order_number . ' enregistrée. Vous recevrez les instructions de paiement par email.';
 
         return redirect()->route('dashboard')->with('success', $message);

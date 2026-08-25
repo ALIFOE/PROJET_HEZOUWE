@@ -214,7 +214,7 @@ const deliveryZones = [
 
 const pricingFaqs = [
     { q:'Y a-t-il un minimum de commande pour les tarifs Pro?',      a:'Oui, les tarifs professionnels s\'appliquent à partir de 25kg par commande. Pour les contrats annuels, un volume minimum de 200kg/mois est requis.' },
-    { q:'Comment obtenir un devis pour une commande groupée?',        a:'Contactez-nous par téléphone (+228 70 67 94 48) ou par email (contact@hezouwe.tg) en précisant les quantités, la fréquence et la zone de livraison.' },
+    { q:'Comment obtenir un devis pour une commande groupée?',        a:'Contactez-nous par téléphone (+228 70 67 94 48) ou par email (contact@hezouwe.com) en précisant les quantités, la fréquence et la zone de livraison.' },
     { q:'Les prix incluent-ils les frais de livraison?',              a:'Non, les prix affichés sont hors livraison. La livraison est gratuite pour toute commande supérieure à 10 000 FCFA en zone Lomé et Plateaux.' },
     { q:'Proposez-vous des abonnements mensuels?',                    a:'Oui, pour les professionnels et institutions qui commandent régulièrement, nous proposons des contrats d\'approvisionnement mensuel avec des tarifs préférentiels.' },
 ];

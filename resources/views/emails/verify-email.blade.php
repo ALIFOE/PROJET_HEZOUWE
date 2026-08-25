@@ -72,7 +72,7 @@
 
       <!-- Footer -->
       <tr><td style="background:#0f2810;border-radius:0 0 12px 12px;padding:24px 40px;text-align:center;">
-        <p style="margin:0 0 8px;color:rgba(255,255,255,0.5);font-size:12px;">Tagbega, Wahala — Région Plateaux, TOGO | contact@hezouwe.tg</p>
+        <p style="margin:0 0 8px;color:rgba(255,255,255,0.5);font-size:12px;">Tagbega, Wahala — Région Plateaux, TOGO | contact@hezouwe.com</p>
         <p style="margin:0;color:rgba(255,255,255,0.3);font-size:11px;">&copy; {{ date('Y') }} COOP CA HEZOUWE — Tous droits réservés</p>
       </td></tr>
 

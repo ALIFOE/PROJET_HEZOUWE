@@ -30,6 +30,12 @@
                         <div class="col-12 col-lg-8">
                             <div class="blog-posts">
 
+                                <div v-if="!allNews.length" class="no-news-message">
+                                    <i class="fal fa-newspaper"></i>
+                                    <h3>Aucun article pour le moment</h3>
+                                    <p>Revenez bientôt pour découvrir nos prochaines actualités.</p>
+                                </div>
+
                                 <div
                                     v-for="(article, i) in allNews"
                                     :key="article.slug"
@@ -238,6 +244,23 @@ const allTags = computed(() => {
 </script>
 
 <style scoped>
+/* Message quand aucun article visible */
+.no-news-message {
+    text-align: center;
+    padding: 60px 20px;
+    background: #f8faf7;
+    border: 1px solid #e8eee3;
+    border-radius: 12px;
+}
+.no-news-message i {
+    font-size: 2.5rem;
+    color: var(--theme-color, #5cb85c);
+    margin-bottom: 16px;
+    display: block;
+}
+.no-news-message h3 { font-size: 1.2rem; font-weight: 700; color: #17351a; margin-bottom: 8px; }
+.no-news-message p { color: #68746a; margin: 0; }
+
 /* Category badge sur l'image */
 .post-featured-thumb { position: relative; }
 .nd-category-badge {

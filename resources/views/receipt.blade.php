@@ -274,7 +274,7 @@ body {
                         <td style="padding:14px 20px; vertical-align:top;">
                             <div style="color:#68746a; font-size:10px; margin-bottom:3px;">Document émis par</div>
                             <div style="font-weight:800; color:#1a3a1a; font-size:13px;">COOP CA HEZOUWE — Tagbega, Wahala, TOGO</div>
-                            <div style="color:#68746a; font-size:10px; margin-top:3px;">Email : contact@hezouwe.tg &nbsp;|&nbsp; Tél : +228 70 67 94 48</div>
+                            <div style="color:#68746a; font-size:10px; margin-top:3px;">Email : contact@hezouwe.com &nbsp;|&nbsp; Tél : +228 70 67 94 48</div>
                         </td>
                         <td style="padding:14px 20px; text-align:right; vertical-align:top;">
                             <div style="color:#9aaa95; font-size:10px;">Reçu généré le {{ now()->format('d/m/Y à H:i') }}</div>

@@ -119,7 +119,7 @@
                                 <div class="contact-icon"><i class="fas fa-envelope"></i></div>
                                 <div>
                                     <span class="contact-label">Email</span>
-                                    <a href="mailto:contact@hezouwe.tg" class="contact-value contact-link">contact@hezouwe.tg</a>
+                                    <a href="mailto:contact@hezouwe.com" class="contact-value contact-link">contact@hezouwe.com</a>
                                 </div>
                             </li>
                             <li>

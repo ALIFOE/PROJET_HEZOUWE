@@ -90,9 +90,9 @@
                                     <i class="fas fa-phone-alt"></i>
                                     <span>+228 70 67 94 48</span>
                                 </a>
-                                <a href="mailto:contact@hezouwe.tg" class="faq-contact-item">
+                                <a href="mailto:contact@hezouwe.com" class="faq-contact-item">
                                     <i class="fas fa-envelope"></i>
-                                    <span>contact@hezouwe.tg</span>
+                                    <span>contact@hezouwe.com</span>
                                 </a>
                             </div>
                             <Link href="/contact" class="faq-cta-btn">
@@ -160,7 +160,7 @@ const faqs = [
     { id:2,  cat:'Produits',   q:"Qu'est-ce que la certification ITRA?",                                            a:"L'ITRA (Institut Togolais de Recherche Agronomique) est l'organisme officiel qui certifie la qualité, la variété et la traçabilité des semences et productions agricoles au Togo. Cette certification garantit que notre riz est produit selon les standards agronomiques les plus stricts." },
     { id:3,  cat:'Produits',   q:"Vos produits contiennent-ils des additifs ou conservateurs?",                     a:"Non. Tous nos produits sont 100% naturels, sans OGM, sans colorants ni conservateurs. Notre riz est transformé mécaniquement dans nos installations à Tagbega et conditionné hermétiquement pour conserver sa fraîcheur." },
     { id:4,  cat:'Produits',   q:"Quelle est la durée de conservation de votre riz?",                              a:"Nos produits se conservent 6 à 12 mois selon le type : 6 mois pour le riz blanc, 12 mois pour le riz étuvé. Conservez dans un endroit frais, sec et à l'abri de la lumière. Une fois ouvert, fermez hermétiquement le sac." },
-    { id:5,  cat:'Commandes',  q:"Comment puis-je passer une commande?",                                           a:"Vous pouvez commander directement sur notre site dans la section 'Nos Produits', par téléphone au +228 70 67 94 48, par email à contact@hezouwe.tg, ou en visitant notre siège à Tagbega, Région des Plateaux, TOGO. Pour les commandes groupées (>50kg), contactez-nous pour un devis personnalisé." },
+    { id:5,  cat:'Commandes',  q:"Comment puis-je passer une commande?",                                           a:"Vous pouvez commander directement sur notre site dans la section 'Nos Produits', par téléphone au +228 70 67 94 48, par email à contact@hezouwe.com, ou en visitant notre siège à Tagbega, Région des Plateaux, TOGO. Pour les commandes groupées (>50kg), contactez-nous pour un devis personnalisé." },
     { id:6,  cat:'Commandes',  q:"Y a-t-il un minimum de commande?",                                               a:"Il n'y a pas de minimum pour les particuliers. Pour les commandes groupées professionnelles (restaurants, revendeurs, ONG), un minimum de 25kg est requis pour bénéficier des tarifs Pro. Contactez-nous pour les conditions." },
     { id:7,  cat:'Commandes',  q:"Acceptez-vous les commandes groupées pour les entreprises?",                      a:"Oui, nous avons une offre spéciale pour les entreprises, restaurants, cantines, épiceries et ONG. Nous proposons des tarifs dégressifs selon le volume, ainsi qu'un service de livraison dédié. Contactez notre équipe commerciale pour un devis." },
     { id:8,  cat:'Livraison',  q:"Quelle est la zone de livraison et les délais?",                                 a:"Nous livrons dans tout le TOGO sous 24 à 48h. Pour les livraisons à Lomé et environs : 24h. Pour les régions éloignées : 48h. La livraison est gratuite pour toute commande supérieure à 10 000 FCFA. Un suivi par SMS vous est envoyé." },

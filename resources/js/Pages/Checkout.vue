@@ -241,7 +241,7 @@
                                     <div class="bank-notice">
                                         <i class="fas fa-clock"></i>
                                         Votre commande sera traitée dans les <strong>premiers jours ouvrables</strong> après réception du virement.
-                                        Envoyez votre justificatif à <a href="mailto:contact@hezouwe.tg">contact@hezouwe.tg</a>
+                                        Envoyez votre justificatif à <a href="mailto:contact@hezouwe.com">contact@hezouwe.com</a>
                                     </div>
 
                                     <!-- Preuve de virement -->

@@ -479,40 +479,14 @@
                                     </li>
                                 </ul>
                                 <h3 class="about-news-title"><Link :href="`/news-details/${article.slug}`">{{ article.title }}</Link></h3>
-                                <Link :href="`/news-details/${article.slug}`" class="link-btn about-news-link">Plus de DÃ©tails
-                                    <i class="far fa-arrow-right"></i>
-                                </Link>
-                                <h3><Link href="/news-details">HEZOUWE atteint 5000 clients satisfaits en Afrique de l'Ouest</Link></h3>
-                                <Link href="/news-details" class="link-btn">Plus de Détails
+                                <Link :href="`/news-details/${article.slug}`" class="link-btn about-news-link">Plus de Détails
                                     <i class="far fa-arrow-right"></i>
                                 </Link>
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-6 col-md-6 wow fadeInUp" data-wow-delay=".5s">
-                        <div class="news-image-box-items-4">
-                            <div class="news-image">
-                                <img src="/assets/img/home-4/news/news-02.jpg" alt="img">
-                                <div class="post-date">
-                                    <h4>10</h4>
-                                    <p>MARS 2026</p>
-                                </div>
-                            </div>
-                            <div class="content">
-                                <ul class="post-date">
-                                    <li>
-                                        Coopérative
-                                    </li>
-                                    <li>
-                                        03 Commentaires
-                                    </li>
-                                </ul>
-                                <h3><Link href="/news-details">Nouvelle certification ITRA pour nos produits riz étuvé</Link></h3>
-                                <Link href="/news-details" class="link-btn">Plus de Détails
-                                    <i class="far fa-arrow-right"></i>
-                                </Link>
-                            </div>
-                        </div>
+                    <div v-if="!latestNews.length" class="col-12">
+                        <p class="about-news-empty">Aucun article pour le moment. Revenez bientôt.</p>
                     </div>
                 </div>
             </div>
@@ -593,11 +567,6 @@ const fallbackProducts = [
     { slug: 'balles-son-riz-5kg', title: 'Balles & Son de Riz 5kg', category: 'Sous-Produits', image: '/assets/img/riz5.jpeg', price: 2000, price_promo: 2500, short: 'Sous-produits naturels de riz.' },
 ];
 
-const fallbackNews = [
-    { slug: '5000-clients-satisfaits', title: 'HEZOUWE atteint 5 000 clients satisfaits en Afrique de l Ouest', category: 'Croissance', comments: 5, date: '15 Mars 2026', image: '/assets/img/inner-page/news/news-01.jpg' },
-    { slug: 'certification-itra-riz-etuve', title: 'Nouvelle certification ITRA pour notre riz etuve', category: 'Certification', comments: 3, date: '10 Mars 2026', image: '/assets/img/inner-page/news/news-02.jpg' },
-];
-
 const visibleProducts = computed(() => {
     return (props.products.length ? props.products : fallbackProducts).slice(0, 8);
 });
@@ -672,7 +641,7 @@ const formatNewsDate = (article) => {
 };
 
 const latestNews = computed(() => {
-    return (props.news.length ? props.news : fallbackNews).slice(0, 2).map((article) => {
+    return props.news.slice(0, 2).map((article) => {
         const date = formatNewsDate(article);
 
         return {
@@ -888,13 +857,16 @@ onMounted(() => {
 }
 
 .about-testi-section .row.g-4 > .col-lg-4:nth-child(n+4),
-.news-section-4 .row > .col-lg-6:nth-child(n+3),
 .at-card > p:not(.at-dynamic-text),
 .at-author > .at-avatar:not(.at-dynamic-avatar),
-.at-author > div:not(.at-avatar):not(.at-dynamic-author),
-.news-image-box-items-4 .about-news-title ~ h3,
-.news-image-box-items-4 .about-news-link ~ .link-btn {
+.at-author > div:not(.at-avatar):not(.at-dynamic-author) {
     display: none;
+}
+
+.about-news-empty {
+    text-align: center;
+    color: #68746a;
+    padding: 40px 20px;
 }
 
 .at-card {

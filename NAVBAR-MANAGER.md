@@ -77,7 +77,7 @@ updateNavbar([
 ```javascript
 updateContactInfo({
     phone: '+228 70 67 94 48',
-    email: 'contact@hezouwe.tg',
+    email: 'contact@hezouwe.com',
     location: 'Tagbega, Wahala, Région Plateaux'
 });
 ```
@@ -123,7 +123,7 @@ document.addEventListener('DOMContentLoaded', function() {
 Dans `navbar.html`, cherchez:
 ```html
 <a href="tel:+22870679448">+228 70 67 94 48</a>
-<a href="mailto:contact@hezouwe.tg">contact@hezouwe.tg</a>
+<a href="mailto:contact@hezouwe.com">contact@hezouwe.com</a>
 ```
 
 ### Ajouter du CSS personnalisé
