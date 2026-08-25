@@ -99,31 +99,31 @@
                                     <span class="wow fadeInUp"><img src="/assets/img/sub-title.svg" alt="img">Nous Contacter</span>
                                     <h2>Envoyez-nous un Message<br> Pour Vos Questions sur le Riz</h2>
                                 </div>
-                                <form action="#" class="contact-form-box">
+                                <form class="contact-form-box" @submit.prevent="sendMessage">
                                     <div class="row g-4 align-items-center justify-content-center">
                                         <div class="col-lg-6 col-md-6 wow fadeInUp" data-wow-delay=".2s">
                                             <div class="form-clt">
-                                                <input type="text" name="name" id="name" placeholder="Votre Nom Complet" required>
+                                                <input v-model="form.name" type="text" name="name" id="name" placeholder="Votre Nom Complet" required :disabled="status === 'loading'">
                                             </div>
                                         </div>
                                         <div class="col-lg-6 col-md-6 wow fadeInUp" data-wow-delay=".4s">
                                             <div class="form-clt">
-                                                <input type="email" name="email" id="email2" placeholder="Votre Email" required>
+                                                <input v-model="form.email" type="email" name="email" id="email2" placeholder="Votre Email" required :disabled="status === 'loading'">
                                             </div>
                                         </div>
                                         <div class="col-lg-6 col-md-6 wow fadeInUp" data-wow-delay=".6s">
                                             <div class="form-clt">
-                                                <input type="tel" name="phone" id="phone" placeholder="Votre Téléphone">
+                                                <input v-model="form.phone" type="tel" name="phone" id="phone" placeholder="Votre Téléphone" :disabled="status === 'loading'">
                                             </div>
                                         </div>
                                         <div class="col-lg-6 col-md-6 wow fadeInUp" data-wow-delay=".7s">
                                             <div class="form-clt">
-                                                <input type="text" name="subject" id="subject" placeholder="Sujet du Message" required>
+                                                <input v-model="form.subject" type="text" name="subject" id="subject" placeholder="Sujet du Message" required :disabled="status === 'loading'">
                                             </div>
                                         </div>
                                         <div class="col-lg-12 wow fadeInUp" data-wow-delay=".8s">
                                             <div class="form-clt">
-                                                <select name="inquiry-type" id="inquiry-type" class="nice-select wide" required>
+                                                <select v-model="form.inquiryType" name="inquiry-type" id="inquiry-type" class="nice-select wide" required :disabled="status === 'loading'">
                                                     <option value="">Sélectionner le type de demande</option>
                                                     <option value="product-info">Information Produit</option>
                                                     <option value="bulk-order">Commande Groupée</option>
@@ -136,11 +136,15 @@
                                         </div>
                                         <div class="col-lg-12 wow fadeInUp" data-wow-delay=".9s">
                                             <div class="form-clt">
-                                                <textarea name="message" id="message" placeholder="Votre Message..." required></textarea>
+                                                <textarea v-model="form.message" name="message" id="message" placeholder="Votre Message..." required :disabled="status === 'loading'"></textarea>
                                             </div>
                                         </div>
                                         <div class="col-lg-12 wow fadeInUp" data-wow-delay=".9s">
-                                            <button type="submit" class="theme-btn">Envoyer le Message <i class="far fa-arrow-right"></i></button>
+                                            <button type="submit" class="theme-btn" :disabled="status === 'loading'">
+                                                <span v-if="status === 'loading'">Envoi…</span>
+                                                <span v-else>Envoyer le Message <i class="far fa-arrow-right"></i></span>
+                                            </button>
+                                            <p v-if="statusMsg" class="contact-feedback" :class="status">{{ statusMsg }}</p>
                                         </div>
                                     </div>
                                 </form>
@@ -206,7 +210,47 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Link } from '@inertiajs/vue3';
-import { onMounted } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
+
+const form = reactive({
+    name: '',
+    email: '',
+    phone: '',
+    subject: '',
+    inquiryType: '',
+    message: '',
+});
+
+const status    = ref(''); // 'loading' | 'success' | 'error'
+const statusMsg = ref('');
+
+const sendMessage = async () => {
+    if (status.value === 'loading') return;
+    status.value = 'loading';
+    statusMsg.value = '';
+
+    try {
+        const res = await window.axios.post('/contact', {
+            name:         form.name,
+            email:        form.email,
+            phone:        form.phone,
+            subject:      form.subject,
+            inquiry_type: form.inquiryType,
+            message:      form.message,
+        });
+        status.value = 'success';
+        statusMsg.value = res.data.message;
+        form.name = '';
+        form.email = '';
+        form.phone = '';
+        form.subject = '';
+        form.inquiryType = '';
+        form.message = '';
+    } catch (err) {
+        status.value = 'error';
+        statusMsg.value = err?.response?.data?.message || 'Une erreur est survenue. Veuillez réessayer.';
+    }
+};
 
 onMounted(() => {
     if (typeof Swiper !== 'undefined') {
@@ -239,3 +283,27 @@ onMounted(() => {
     }
 });
 </script>
+
+<style scoped>
+.contact-feedback {
+    margin: 14px 0 0;
+    font-size: 0.88rem;
+    font-weight: 700;
+    padding: 8px 14px;
+    border-radius: 6px;
+}
+
+.contact-feedback.success { background: rgba(45,106,79,0.12); color: #1a3a1a; }
+.contact-feedback.error   { background: rgba(180,35,35,0.1); color: #7a1010; }
+
+.contact-form-box input:disabled,
+.contact-form-box textarea:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.contact-form-box .theme-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+</style>

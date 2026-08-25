@@ -96,6 +96,9 @@ Route::get('/service-details/{slug}', function ($slug) {
 Route::get('/contact', function () {
     return Inertia::render('Contact');
 })->name('contact');
+Route::post('/contact', [App\Http\Controllers\ContactController::class, 'send'])
+    ->middleware('throttle:5,1')
+    ->name('contact.send');
 
 // Page Projets
 Route::get('/project', function () {
