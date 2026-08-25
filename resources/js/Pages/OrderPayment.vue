@@ -83,17 +83,17 @@
                                 <input v-model="form.payment_method" type="radio" value="mobile_money">
                                 <div class="method-icon mm"><i class="fas fa-mobile-alt"></i></div>
                                 <div>
-                                    <strong>Mobile Money — FedaPay</strong>
-                                    <span>T-Money · Flooz · Wave — paiement en ligne sécurisé</span>
+                                    <strong>Mobile Money</strong>
+                                    <span>Mixx by YAS · Flooz — paiement sécurisé</span>
                                 </div>
                             </label>
 
-                            <!-- Bank transfer -->
-                            <label class="method-card" :class="{ selected: form.payment_method === 'bank_transfer' }">
-                                <input v-model="form.payment_method" type="radio" value="bank_transfer">
+                            <!-- Bank transfer (not yet available) -->
+                            <label class="method-card disabled">
+                                <input type="radio" value="bank_transfer" disabled>
                                 <div class="method-icon bank"><i class="fas fa-university"></i></div>
                                 <div>
-                                    <strong>Virement bancaire</strong>
+                                    <strong>Virement bancaire <span class="soon-badge">Bientôt disponible</span></strong>
                                     <span>BANQUE ATLANTIQUE TOGO</span>
                                 </div>
                             </label>
@@ -169,23 +169,31 @@
                         <!-- Mobile Money panel -->
                         <div v-if="form.payment_method === 'mobile_money'" class="pay-panel mm-panel">
                             <div class="panel-header mm-header">
-                                <i class="fas fa-mobile-alt"></i> Paiement Mobile Money — FedaPay
+                                <i class="fas fa-mobile-alt"></i> Paiement Mobile Money
                             </div>
                             <div class="panel-body">
-                                <p class="panel-desc">Après confirmation, vous serez redirigé(e) vers la page de paiement sécurisée FedaPay. Vous pourrez payer avec :</p>
+                                <p class="panel-desc">Choisissez votre opérateur, puis continuez pour finaliser le paiement.</p>
                                 <div class="operator-cards">
-                                    <div class="operator-card tmoney">
-                                        <div class="op-logo op-text">T₿</div>
-                                        <div><strong>T-Money</strong><span class="op-num">Togocel</span></div>
-                                    </div>
-                                    <div class="operator-card moov">
+                                    <button
+                                        type="button"
+                                        class="operator-card yas"
+                                        :class="{ selected: mobileOperator === 'mixx_yas' }"
+                                        @click="mobileOperator = 'mixx_yas'"
+                                    >
+                                        <div class="op-logo"><img src="/assets/img/mixx-by-yas.png" alt="Mixx by YAS" class="op-img"></div>
+                                        <div><strong>Mixx by YAS</strong><span class="op-num">Togocel</span></div>
+                                        <i class="fas fa-check-circle op-check"></i>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        class="operator-card moov"
+                                        :class="{ selected: mobileOperator === 'flooz' }"
+                                        @click="mobileOperator = 'flooz'"
+                                    >
                                         <div class="op-logo"><img src="/assets/img/flooz logo.png" alt="Flooz" class="op-img"></div>
                                         <div><strong>Flooz</strong><span class="op-num">Moov Africa</span></div>
-                                    </div>
-                                    <div class="operator-card wave">
-                                        <div class="op-logo op-text">W</div>
-                                        <div><strong>Wave</strong><span class="op-num">Wave Mobile</span></div>
-                                    </div>
+                                        <i class="fas fa-check-circle op-check"></i>
+                                    </button>
                                 </div>
                                 <div class="secure-note">
                                     <i class="fas fa-shield-alt"></i>
@@ -286,6 +294,9 @@ const form = useForm({
     transaction_id: '',
     payment_proof:  null,
 });
+
+// Selected Mobile Money operator (visual only)
+const mobileOperator = ref(null);
 
 // COD proof state
 const codProofPreview  = ref(null);
@@ -423,8 +434,24 @@ const submit = () => {
 .method-card input[type="radio"] { display: none; }
 .method-card.selected { border-color: #2d6a4f; background: #f0faf0; }
 .method-card:hover { border-color: #9ec99e; }
+.method-card.disabled { opacity: 0.52; cursor: not-allowed; }
+.method-card.disabled:hover { border-color: #dfe8db; }
 .method-card strong { display: block; color: #1a3a1a; font-weight: 800; font-size: 0.92rem; }
 .method-card span { color: #6c757d; font-size: 0.8rem; }
+
+.soon-badge {
+    display: inline-block;
+    background: #fff3e0;
+    color: #e65100;
+    font-size: 0.68rem;
+    font-weight: 900;
+    padding: 1px 7px;
+    border-radius: 999px;
+    border: 1px solid #ffcc80;
+    margin-left: 6px;
+    vertical-align: middle;
+}
+
 .method-icon {
     width: 40px; height: 40px; border-radius: 8px;
     background: #1a3a1a; color: #d5a741;
@@ -474,6 +501,24 @@ const submit = () => {
 .operator-card.wave { border-color: #f3e5f5; background: #fdf5ff; }
 .operator-card strong { display: block; color: #17351a; font-size: 0.84rem; font-weight: 900; }
 .op-num { display: block; color: #5cb85c; font-size: 0.82rem; font-weight: 700; margin-top: 2px; }
+
+button.operator-card {
+    width: 100%;
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+    position: relative;
+    transition: border-color .15s, transform .1s;
+}
+button.operator-card:hover { border-color: #5cb85c; }
+button.operator-card.selected { border-color: #5cb85c; box-shadow: 0 0 0 2px rgba(92,184,92,0.18); }
+.op-check {
+    display: none;
+    margin-left: auto;
+    color: #5cb85c;
+    font-size: 1.1rem;
+}
+button.operator-card.selected .op-check { display: block; }
 
 .op-logo {
     width: 44px; height: 36px; border-radius: 6px;
