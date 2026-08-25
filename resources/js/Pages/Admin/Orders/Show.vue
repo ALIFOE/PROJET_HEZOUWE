@@ -221,7 +221,7 @@ const copyDeliveryUrl = async () => {
                     </template>
                     <template v-else-if="order.payment_method === 'mobile_money'">
                         <div class="pay-row" :class="order.transaction_id ? 'highlight-id' : 'missing-id'">
-                            <span>ID transaction FedaPay</span>
+                            <span>ID transaction Mobile Money</span>
                             <strong class="txn-id">{{ order.transaction_id || 'En attente' }}</strong>
                         </div>
                     </template>

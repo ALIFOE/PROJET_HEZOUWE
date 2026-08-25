@@ -45,7 +45,7 @@
   @php
     $pm = $order->payment_method;
     $pmLabel = match($pm) {
-      'mobile_money'    => 'Mobile Money (FedaPay)',
+      'mobile_money'    => 'Mobile Money',
       'bank_transfer'   => 'Virement bancaire',
       default           => 'Paiement à la livraison',
     };

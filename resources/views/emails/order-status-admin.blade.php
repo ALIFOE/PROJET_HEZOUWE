@@ -107,7 +107,7 @@
       <tr>
         <td style="padding:5px 0;color:#7f8c8d;font-weight:700;width:36%;">Mode de paiement</td>
         <td style="padding:5px 0;font-weight:700;">
-          @if($order->payment_method === 'mobile_money') 📱 Mobile Money (FedaPay)
+          @if($order->payment_method === 'mobile_money') 📱 Mobile Money
           @elseif($order->payment_method === 'bank_transfer') 🏦 Virement bancaire
           @else 🤝 Paiement à la livraison
           @endif

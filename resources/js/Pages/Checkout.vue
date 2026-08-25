@@ -94,7 +94,7 @@
                                     </div>
                                 </label>
 
-                                <!-- Mobile money — FedaPay -->
+                                <!-- Mobile money -->
                                 <label class="pay-card" :class="{ selected: form.payment_method === 'mobile_money' }">
                                     <input v-model="form.payment_method" type="radio" value="mobile_money">
                                     <div class="pay-card-inner">

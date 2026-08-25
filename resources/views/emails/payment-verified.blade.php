@@ -101,7 +101,7 @@
     </table>
     <div style="background:#f0faf0;border-radius:6px;padding:10px 14px;margin-top:10px;font-size:12px;color:#5a6b5c;">
       <strong style="color:#1a3a1a;">Mode de paiement :</strong>
-      @if($order->payment_method === 'mobile_money') 📱 Mobile Money (FedaPay)
+      @if($order->payment_method === 'mobile_money') 📱 Mobile Money
       @elseif($order->payment_method === 'bank_transfer') 🏦 Virement bancaire
       @else 🏠 Paiement à la livraison
       @endif

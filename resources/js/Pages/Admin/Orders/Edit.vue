@@ -55,7 +55,7 @@ const paymentStatuses = [
 
 const paymentMethodLabel = {
     cash_on_delivery: '🏠 Paiement à la livraison',
-    mobile_money:     '📱 Mobile Money (FedaPay)',
+    mobile_money:     '📱 Mobile Money',
     bank_transfer:    '🏦 Virement bancaire',
 };
 </script>

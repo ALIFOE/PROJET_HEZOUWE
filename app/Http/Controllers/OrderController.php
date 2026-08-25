@@ -139,9 +139,9 @@ class OrderController extends Controller
             "🔍 Vérifier la commande :\n{$adminOrderUrl}"
         );
 
-        // Mobile Money → redirection vers la page de paiement FedaPay
+        // Mobile Money → redirection vers la page de paiement
         if ($validated['payment_method'] === 'mobile_money') {
-            return redirect()->route('payment.fedapay', ['order' => $order->id]);
+            return redirect()->route('payment.mobile-money', ['order' => $order->id]);
         }
 
         $message = $validated['payment_method'] === 'bank_transfer'
@@ -251,7 +251,7 @@ class OrderController extends Controller
         );
 
         if ($validated['payment_method'] === 'mobile_money') {
-            return redirect()->route('payment.fedapay', ['order' => $order->id]);
+            return redirect()->route('payment.mobile-money', ['order' => $order->id]);
         }
 
         return redirect()->route('dashboard')->with('success', 'Votre paiement a été soumis. Notre équipe va le vérifier.');

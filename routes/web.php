@@ -199,24 +199,24 @@ Route::post('/payment/create-session', [PaymentController::class, 'createCheckou
 Route::get('/payment/success', [PaymentController::class, 'success'])->middleware(['auth', 'verified'])->name('payment.success');
 Route::get('/payment/cancel', [PaymentController::class, 'cancel'])->middleware(['auth', 'verified'])->name('payment.cancel');
 
-// Routes FedaPay — Mobile Money
+// Routes KPRIMEPAY — Mobile Money (push USSD)
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/payment/mobile-money/{order}', function (\App\Models\Order $order) {
         abort_if($order->user_id !== request()->user()->id, 403);
-        return \Inertia\Inertia::render('PaymentFedaPay', [
-            'order'            => $order,
-            'fedapayPublicKey' => env('FEDAPAY_PUBLIC_KEY'),
+        return \Inertia\Inertia::render('PaymentMobileMoney', [
+            'order' => $order,
         ]);
-    })->name('payment.fedapay');
-    Route::post('/fedapay/initiate', [App\Http\Controllers\FedaPayController::class, 'initiate'])
+    })->name('payment.mobile-money');
+    Route::post('/kprimepay/initiate', [App\Http\Controllers\KPrimePayController::class, 'initiate'])
         ->middleware('throttle:10,1')
-        ->name('fedapay.initiate');
-    Route::get('/orders/{order}/fedapay-callback', [App\Http\Controllers\FedaPayController::class, 'callback'])->name('fedapay.callback');
+        ->name('kprimepay.initiate');
+    Route::get('/orders/{order}/payment-status', [App\Http\Controllers\KPrimePayController::class, 'status'])
+        ->name('kprimepay.status');
 });
-// Webhook FedaPay (pas de CSRF — serveur à serveur)
-Route::post('/fedapay/webhook', [App\Http\Controllers\FedaPayController::class, 'webhook'])
+// Webhook KPRIMEPAY (pas de CSRF — serveur à serveur)
+Route::post('/kprimepay/webhook', [App\Http\Controllers\KPrimePayController::class, 'webhook'])
     ->middleware('throttle:60,1')
-    ->name('fedapay.webhook');
+    ->name('kprimepay.webhook');
 
 // Lien livreur — public, sans authentification
 Route::get('/delivery/{token}', [App\Http\Controllers\DeliveryController::class, 'showQR'])->name('delivery.qr');
