@@ -1,5 +1,11 @@
 <template>
-    <AppLayout :title="article.title">
+    <AppLayout
+        :title="article.title"
+        :description="seoDescription"
+        :image="article.image"
+        type="article"
+        :jsonld="seoJsonld"
+    >
         <!-- Breadcrumb -->
         <section class="breadcrumb-wrapper bg-cover fix" style="background-image: url('/assets/img/inner-page/breadcroumb.jpg');">
             <div class="shape-1 float-bob-y">
@@ -297,6 +303,27 @@ const props = defineProps({
     allNews: { type: Array,  required: true },
     recent:  { type: Array,  required: true },
 });
+
+const seoDescription = computed(() => (
+    props.article.excerpt || props.article.intro || `${props.article.title} — actualité de la coopérative COOP CA HEZOUWE.`
+).slice(0, 160));
+
+const seoJsonld = computed(() => ({
+    '@context': 'https://schema.org',
+    '@type': 'NewsArticle',
+    headline: props.article.title,
+    description: seoDescription.value,
+    image: props.article.image,
+    datePublished: props.article.date,
+    author: {
+        '@type': 'Organization',
+        name: props.article.author || 'COOP CA HEZOUWE',
+    },
+    publisher: {
+        '@type': 'Organization',
+        name: 'COOP CA HEZOUWE',
+    },
+}));
 
 const currentIndex = computed(() =>
     props.allNews.findIndex(a => a.slug === props.article.slug)

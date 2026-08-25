@@ -1,5 +1,8 @@
 <template>
-    <AppLayout title="Nos Produits">
+    <AppLayout
+        title="Nos Produits"
+        description="Achetez du riz local togolais de qualité : riz blanc, riz étuvé et autres produits de la coopérative COOP CA HEZOUWE, directement des producteurs du Togo."
+    >
         <!-- Breadcrumb -->
         <section class="breadcrumb-wrapper bg-cover fix" style="background-image: url('/assets/img/inner-page/breadcroumb.jpg');">
             <div class="shape-1 float-bob-y"><img src="/assets/img/inner-page/shape-1.png" alt="img"></div>

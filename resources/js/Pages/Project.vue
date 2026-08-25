@@ -1,5 +1,8 @@
 <template>
-    <AppLayout title="Nos Projets">
+    <AppLayout
+        title="Nos Projets"
+        description="Découvrez les projets de COOP CA HEZOUWE pour développer la filière riz local au Togo, soutenir les producteurs et améliorer la commercialisation du riz togolais."
+    >
         <!-- Breadcrumb -->
         <section class="breadcrumb-wrapper bg-cover fix" style="background-image: url('/assets/img/inner-page/breadcroumb.jpg');">
             <div class="shape-1 float-bob-y"><img src="/assets/img/inner-page/shape-1.png" alt="img"></div>

@@ -1,5 +1,5 @@
 <template>
-    <AppLayout title="Paiement Réussi">
+    <AppLayout title="Paiement Réussi" :noindex="true">
         <section class="section-padding">
             <div class="container">
                 <div class="text-center">

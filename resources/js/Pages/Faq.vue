@@ -1,5 +1,8 @@
 <template>
-    <AppLayout title="FAQ">
+    <AppLayout
+        title="FAQ"
+        description="Questions fréquentes sur les produits, services, commandes et livraisons de COOP CA HEZOUWE, coopérative de riz local du Togo."
+    >
         <!-- Breadcrumb -->
         <section class="breadcrumb-wrapper bg-cover fix" style="background-image: url('/assets/img/inner-page/breadcroumb.jpg');">
             <div class="shape-1 float-bob-y"><img src="/assets/img/inner-page/shape-1.png" alt="img"></div>

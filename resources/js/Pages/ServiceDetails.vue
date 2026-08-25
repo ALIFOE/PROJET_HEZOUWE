@@ -1,5 +1,10 @@
 <template>
-    <AppLayout :title="service.title">
+    <AppLayout
+        :title="service.title"
+        :description="seoDescription"
+        :image="service.image"
+        :jsonld="seoJsonld"
+    >
 
         <!-- ══════════════════════════════════════════
              BREADCRUMB
@@ -294,6 +299,23 @@ const props = defineProps({
 const otherServices = computed(() =>
     props.allServices.filter(s => s.slug !== props.service.slug).slice(0, 4)
 );
+
+const seoDescription = computed(() => (
+    props.service.short || props.service.description || `${props.service.title} — un service de la coopérative COOP CA HEZOUWE, riz local du Togo.`
+).slice(0, 160));
+
+const seoJsonld = computed(() => ({
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: props.service.title,
+    description: seoDescription.value,
+    image: props.service.image,
+    provider: {
+        '@type': 'Organization',
+        name: 'COOP CA HEZOUWE',
+    },
+    areaServed: 'TG',
+}));
 
 onMounted(() => {
     if (typeof Swiper !== 'undefined') {

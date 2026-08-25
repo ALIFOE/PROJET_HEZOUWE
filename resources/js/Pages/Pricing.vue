@@ -1,5 +1,8 @@
 <template>
-    <AppLayout title="Nos Tarifs">
+    <AppLayout
+        title="Nos Tarifs"
+        description="Consultez les tarifs des produits et services de COOP CA HEZOUWE : riz local togolais de qualité à prix juste."
+    >
         <!-- Breadcrumb -->
         <section class="breadcrumb-wrapper bg-cover fix" style="background-image: url('/assets/img/inner-page/breadcroumb.jpg');">
             <div class="shape-1 float-bob-y"><img src="/assets/img/inner-page/shape-1.png" alt="img"></div>

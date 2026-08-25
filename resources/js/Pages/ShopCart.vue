@@ -1,5 +1,5 @@
 <template>
-    <AppLayout title="Mon Panier">
+    <AppLayout title="Mon Panier" :noindex="true">
         <!-- Breadcrumb -->
         <section class="breadcrumb-wrapper bg-cover fix" style="background-image: url('/assets/img/inner-page/breadcroumb.jpg');">
             <div class="shape-1 float-bob-y"><img src="/assets/img/inner-page/shape-1.png" alt="img"></div>

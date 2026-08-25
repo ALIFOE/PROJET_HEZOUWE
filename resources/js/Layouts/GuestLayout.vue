@@ -1,8 +1,11 @@
 <script setup>
-import { Link } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 </script>
 
 <template>
+    <Head>
+        <meta name="robots" content="noindex, nofollow" />
+    </Head>
     <div class="auth-shell">
         <div class="auth-media">
             <Link href="/" class="auth-brand">

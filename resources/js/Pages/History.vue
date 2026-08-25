@@ -1,5 +1,8 @@
 <template>
-    <AppLayout title="Notre Histoire">
+    <AppLayout
+        title="Notre Histoire"
+        description="L'histoire de COOP CA HEZOUWE, de sa création à aujourd'hui : une coopérative togolaise au service de la filière riz local."
+    >
         <!-- Breadcrumb -->
         <section class="breadcrumb-wrapper bg-cover fix" style="background-image: url('/assets/img/inner-page/breadcroumb.jpg');">
             <div class="shape-1 float-bob-y"><img src="/assets/img/inner-page/shape-1.png" alt="img"></div>

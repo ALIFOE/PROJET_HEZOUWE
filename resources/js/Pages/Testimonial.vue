@@ -1,5 +1,8 @@
 <template>
-    <AppLayout title="Témoignages">
+    <AppLayout
+        title="Témoignages"
+        description="Ce que disent les clients et partenaires de COOP CA HEZOUWE sur la qualité du riz local togolais et les services de la coopérative."
+    >
         <!-- Breadcrumb Section Start -->
         <section class="breadcrumb-wrapper bg-cover fix" style="background-image: url('/assets/img/inner-page/breadcroumb.jpg');">
             <div class="shape-1 float-bob-y">

@@ -1,5 +1,5 @@
 <template>
-    <AppLayout title="Reprendre le paiement">
+    <AppLayout title="Reprendre le paiement" :noindex="true">
         <section class="breadcrumb-wrapper bg-cover fix" style="background-image: url('/assets/img/inner-page/breadcroumb.jpg');">
             <div class="container">
                 <div class="page-heading">

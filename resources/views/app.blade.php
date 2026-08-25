@@ -4,12 +4,16 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="author" content="COOP CA HEZOUWE">
-    <meta name="description" content="COOP CA HEZOUWE - Coopérative de Transformation et Commercialisation du Riz Local du TOGO.">
-    <title inertia>{{ $page['title'] ?? 'COOP CA HEZOUWE' }}</title>
-    
+    <meta name="description" content="{{ config('seo.default_description') }}">
+    <title inertia>{{ $page['title'] ?? config('seo.default_title') }}</title>
+
+    @if (config('seo.google_site_verification'))
+        <meta name="google-site-verification" content="{{ config('seo.google_site_verification') }}">
+    @endif
+
     <!-- Favicon -->
     <link rel="shortcut icon" href="{{ asset('assets/img/logo/logo_hezouwe.jpeg') }}">
-    
+
     <!-- Bootstrap min.css -->
     <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
     <!-- Font Awesome.css -->
@@ -29,6 +33,40 @@
     <!-- Main.css -->
     <link rel="stylesheet" href="{{ asset('assets/css/main.css') }}">
     
+    <meta property="og:site_name" content="{{ config('seo.site_name') }}">
+    <meta property="og:locale" content="{{ config('seo.locale') }}">
+
+    <script type="application/ld+json">
+        {!! json_encode([
+            '@context' => 'https://schema.org',
+            '@type' => 'Organization',
+            'name' => config('seo.organization.name'),
+            'url' => config('app.url'),
+            'logo' => asset('assets/img/logo/logo_hezouwe.jpeg'),
+            'address' => [
+                '@type' => 'PostalAddress',
+                'streetAddress' => config('seo.organization.address'),
+                'addressCountry' => 'TG',
+            ],
+            'contactPoint' => [
+                '@type' => 'ContactPoint',
+                'telephone' => config('seo.organization.phone'),
+                'email' => config('seo.organization.email'),
+                'contactType' => 'customer service',
+            ],
+        ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}
+    </script>
+
+    @if (config('seo.ga4_id'))
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{ config('seo.ga4_id') }}"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '{{ config('seo.ga4_id') }}', { anonymize_ip: true });
+        </script>
+    @endif
+
     @routes
     @vite(['resources/js/app.js'])
     @inertiaHead

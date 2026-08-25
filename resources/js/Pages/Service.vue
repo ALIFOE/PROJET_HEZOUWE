@@ -1,5 +1,8 @@
 <template>
-    <AppLayout title="Nos Services">
+    <AppLayout
+        title="Nos Services"
+        description="Collecte, transformation, conditionnement et distribution de riz local : découvrez les services proposés par la coopérative COOP CA HEZOUWE aux producteurs et clients du Togo."
+    >
 
         <!-- ══════════════════════════════════════════
              BREADCRUMB

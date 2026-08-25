@@ -58,7 +58,7 @@ const retry = () => {
 </script>
 
 <template>
-    <AppLayout title="Scanner le bon de livraison">
+    <AppLayout title="Scanner le bon de livraison" :noindex="true">
         <div class="scan-page">
 
             <div class="scan-card">

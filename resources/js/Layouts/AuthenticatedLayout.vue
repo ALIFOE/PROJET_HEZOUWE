@@ -7,13 +7,17 @@ import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import Header from '@/Components/Header.vue';
 import Footer from '@/Components/Footer.vue';
-import { Link } from '@inertiajs/vue3';
+import { Head, Link } from '@inertiajs/vue3';
 
 const showingNavigationDropdown = ref(false);
 </script>
 
 <template>
     <div>
+        <Head>
+            <meta name="robots" content="noindex, nofollow" />
+        </Head>
+
         <!-- Back To Top Start -->
         <button id="back-top" class="back-to-top">
             <i class="far fa-arrow-up"></i>

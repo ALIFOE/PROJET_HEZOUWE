@@ -1,5 +1,5 @@
 <template>
-    <AppLayout title="Finaliser la commande">
+    <AppLayout title="Finaliser la commande" :noindex="true">
         <section class="breadcrumb-wrapper bg-cover fix" style="background-image: url('/assets/img/inner-page/breadcroumb.jpg');">
             <div class="container">
                 <div class="page-heading">

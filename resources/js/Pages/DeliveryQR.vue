@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue';
+import { Head } from '@inertiajs/vue3';
 import QRCode from 'qrcode';
 
 const props = defineProps({
@@ -23,6 +24,10 @@ onMounted(async () => {
 </script>
 
 <template>
+    <Head>
+        <title>Bon de Livraison | COOP CA HEZOUWE</title>
+        <meta name="robots" content="noindex, nofollow" />
+    </Head>
     <div class="delivery-page">
         <div class="delivery-card">
             <div class="delivery-header">

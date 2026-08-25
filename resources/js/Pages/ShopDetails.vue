@@ -1,5 +1,11 @@
 <template>
-    <AppLayout :title="product.title">
+    <AppLayout
+        :title="product.title"
+        :description="seoDescription"
+        :image="product.image"
+        type="product"
+        :jsonld="seoJsonld"
+    >
         <!-- Breadcrumb -->
         <section class="breadcrumb-wrapper bg-cover fix" style="background-image: url('/assets/img/inner-page/breadcroumb.jpg');">
             <div class="shape-1 float-bob-y"><img src="/assets/img/inner-page/shape-1.png" alt="img"></div>
@@ -233,6 +239,27 @@ const props = defineProps({
     allProducts: Array,
     related: Array,
 });
+
+const seoDescription = computed(() => (
+    props.product.short || props.product.description || `${props.product.title} — riz local togolais de qualité, vendu par COOP CA HEZOUWE.`
+).slice(0, 160));
+
+const seoJsonld = computed(() => ({
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: props.product.title,
+    description: seoDescription.value,
+    image: props.product.image,
+    sku: props.product.slug,
+    offers: {
+        '@type': 'Offer',
+        priceCurrency: 'XOF',
+        price: props.product.price_promo || props.product.price,
+        availability: props.product.in_stock
+            ? 'https://schema.org/InStock'
+            : 'https://schema.org/OutOfStock',
+    },
+}));
 
 const activeImage = ref(props.product.images?.[0] || props.product.image);
 const qty = ref(1);

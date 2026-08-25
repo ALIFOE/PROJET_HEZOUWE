@@ -1,5 +1,8 @@
 <template>
-    <AppLayout title="Équipe">
+    <AppLayout
+        title="Équipe"
+        description="Rencontrez l'équipe de COOP CA HEZOUWE, les femmes et les hommes qui font vivre la coopérative de transformation et commercialisation du riz local du Togo."
+    >
         <!-- Breadcrumb Section Start -->
         <section class="breadcrumb-wrapper bg-cover fix" style="background-image: url('/assets/img/inner-page/breadcroumb.jpg');">
             <div class="shape-1 float-bob-y">

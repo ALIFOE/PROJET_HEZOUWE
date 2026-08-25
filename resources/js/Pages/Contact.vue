@@ -1,5 +1,8 @@
 <template>
-    <AppLayout title="Contact">
+    <AppLayout
+        title="Contact"
+        description="Contactez COOP CA HEZOUWE : adresse, téléphone et email de la coopérative de riz local à Tagbega, Wahala, Région Plateaux, Togo. Une question ? Écrivez-nous."
+    >
         <!-- Breadcrumb Section Start -->
         <section class="breadcrumb-wrapper bg-cover fix" style="background-image: url('/assets/img/inner-page/breadcroumb.jpg');">
             <div class="shape-1 float-bob-y">

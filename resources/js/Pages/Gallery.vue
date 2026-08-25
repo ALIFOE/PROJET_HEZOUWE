@@ -1,5 +1,8 @@
 <template>
-    <AppLayout title="Galerie">
+    <AppLayout
+        title="Galerie"
+        description="Photos de la coopérative COOP CA HEZOUWE : collecte, transformation et commercialisation du riz local du Togo en images."
+    >
         <!-- Breadcrumb -->
         <section class="breadcrumb-wrapper bg-cover fix" style="background-image: url('/assets/img/inner-page/breadcroumb.jpg');">
             <div class="shape-1 float-bob-y"><img src="/assets/img/inner-page/shape-1.png" alt="img"></div>

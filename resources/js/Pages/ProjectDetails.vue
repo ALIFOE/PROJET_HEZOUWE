@@ -1,5 +1,8 @@
 <template>
-    <AppLayout title="Détails Projet">
+    <AppLayout
+        title="Détails Projet"
+        description="En savoir plus sur un projet de COOP CA HEZOUWE pour la transformation et la commercialisation du riz local au Togo."
+    >
         <!-- Breadcrumb -->
         <section class="breadcrumb-wrapper bg-cover fix" style="background-image: url('/assets/img/inner-page/breadcroumb.jpg');">
             <div class="shape-1 float-bob-y"><img src="/assets/img/inner-page/shape-1.png" alt="img"></div>

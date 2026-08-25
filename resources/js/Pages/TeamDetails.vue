@@ -1,5 +1,8 @@
 <template>
-    <AppLayout title="Détails Membre">
+    <AppLayout
+        title="Détails Membre"
+        description="Portrait d'un membre de l'équipe COOP CA HEZOUWE, la coopérative togolaise dédiée à la transformation et à la commercialisation du riz local."
+    >
         <section class="breadcrumb-wrapper bg-cover fix" style="background-image: url('/assets/img/inner-page/breadcroumb.jpg');">
             <div class="container">
                 <div class="page-heading">

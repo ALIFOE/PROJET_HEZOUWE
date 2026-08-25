@@ -3,7 +3,10 @@
 namespace App\Exceptions;
 
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Inertia\Inertia;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -62,5 +65,18 @@ class Handler extends ExceptionHandler
         }
 
         return parent::unauthenticated($request, $exception);
+    }
+
+    public function render($request, Throwable $e)
+    {
+        if ($e instanceof NotFoundHttpException || $e instanceof ModelNotFoundException) {
+            if (!$request->is('api/*') && !$request->expectsJson()) {
+                return Inertia::render('Error404')
+                    ->toResponse($request)
+                    ->setStatusCode(404);
+            }
+        }
+
+        return parent::render($request, $e);
     }
 }

@@ -22,6 +22,9 @@ use Inertia\Inertia;
 |
 */
 
+// Sitemap XML
+Route::get('/sitemap.xml', [App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
+
 // Page d'accueil
 Route::get('/', function () {
     return Inertia::render('Home', [

@@ -1,5 +1,8 @@
 <template>
-    <AppLayout title="À Propos">
+    <AppLayout
+        title="À Propos"
+        description="Découvrez l'histoire, la mission et les valeurs de COOP CA HEZOUWE, coopérative togolaise engagée pour la transformation et la commercialisation du riz local du Togo."
+    >
         <!-- Breadcrumb Section Start -->
         <section class="breadcrumb-wrapper bg-cover fix" style="background-image: url('/assets/img/inner-page/breadcroumb.jpg');">
             <div class="shape-1 float-bob-y">

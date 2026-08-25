@@ -1,2 +1,17 @@
 User-agent: *
-Disallow:
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /checkout
+Disallow: /shop-cart
+Disallow: /profile
+Disallow: /orders
+Disallow: /payment
+Disallow: /delivery
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /confirm-password
+Disallow: /verify-email
+
+Sitemap: https://hezouwe.com/sitemap.xml

@@ -1,4 +1,8 @@
 <template>
+    <Head>
+        <title>{{ title }} | Admin | COOP CA HEZOUWE</title>
+        <meta name="robots" content="noindex, nofollow" />
+    </Head>
     <div class="admin-layout">
         <aside class="admin-sidebar">
             <div class="sidebar-header">
@@ -78,7 +82,7 @@
 </template>
 
 <script setup>
-import { Link, usePage } from '@inertiajs/vue3';
+import { Head, Link, usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
 import GlobalLoader from '@/Components/GlobalLoader.vue';
 

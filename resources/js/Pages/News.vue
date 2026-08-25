@@ -1,5 +1,8 @@
 <template>
-    <AppLayout title="Actualités">
+    <AppLayout
+        title="Actualités"
+        description="Suivez les actualités de COOP CA HEZOUWE : événements, avancées de la coopérative et actualités de la filière riz local au Togo."
+    >
         <!-- Breadcrumb -->
         <section class="breadcrumb-wrapper bg-cover fix" style="background-image: url('/assets/img/inner-page/breadcroumb.jpg');">
             <div class="shape-1 float-bob-y">

@@ -1,5 +1,8 @@
 <template>
-    <AppLayout title="Accueil">
+    <AppLayout
+        title="Accueil"
+        description="COOP CA HEZOUWE : coopérative togolaise de transformation et vente de riz local de qualité. Découvrez nos produits, nos services et notre engagement auprès des producteurs du Togo."
+    >
         <!-- Hero Section Start -->
         <section class="hero-section hero-4 fix">
             <div class="shape-1">
