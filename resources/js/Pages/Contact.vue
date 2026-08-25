@@ -42,7 +42,7 @@
                                 <a href="mailto:contact@hezouwe.com">contact@hezouwe.com</a>
                             </p>
                             <p>
-                                <a href="mailto:info@hezouwe.tg">info@hezouwe.tg</a>
+                                <a href="mailto:support@hezouwe.com">support@hezouwe.com</a>
                             </p>
                         </div>
                     </div>
