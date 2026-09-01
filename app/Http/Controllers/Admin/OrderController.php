@@ -95,6 +95,11 @@ class OrderController extends Controller
                 'error',
                 'KPRIMEPAY indique que la transaction a échoué. Aucun montant n\'a été débité.',
             ],
+            KPrimePayService::STATUS_UNCONFIRMED => [
+                'error',
+                'KPRIMEPAY ne confirme pas ce paiement'
+                    . ($result['message'] ? ' : ' . $result['message'] : '.'),
+            ],
             default => [
                 'error',
                 'KPRIMEPAY est injoignable pour le moment. Réessayez dans un instant.',

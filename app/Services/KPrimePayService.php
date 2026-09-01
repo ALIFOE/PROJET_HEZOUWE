@@ -28,6 +28,9 @@ class KPrimePayService
     public const STATUS_PAID        = 'paid';
     public const STATUS_PENDING     = 'pending';
     public const STATUS_FAILED      = 'failed';
+    /** KPRIMEPAY a repondu mais ne confirme pas le paiement (transaction inconnue, refusee...). */
+    public const STATUS_UNCONFIRMED = 'unconfirmed';
+    /** KPRIMEPAY n'a pas pu etre contacte (reseau, SSL, timeout). */
     public const STATUS_UNAVAILABLE = 'unavailable';
     public const STATUS_SKIPPED     = 'skipped';
 
@@ -48,11 +51,14 @@ class KPrimePayService
             return ['status' => self::STATUS_UNAVAILABLE, 'raw' => null, 'message' => $e->getMessage()];
         }
 
+        // L'API a repondu : le paiement n'est pas confirme, mais KPRIMEPAY est
+        // bien joignable. La distinction compte pour l'admin, qui doit savoir
+        // s'il fait face a une panne ou a une transaction reellement inconnue.
         if (!$response->successful()) {
             Log::warning('KPRIMEPAY debit-status HTTP ' . $response->status() . ': ' . $response->body());
 
             return [
-                'status'  => self::STATUS_UNAVAILABLE,
+                'status'  => self::STATUS_UNCONFIRMED,
                 'raw'     => null,
                 'message' => $this->firstErrorMessage($response),
             ];

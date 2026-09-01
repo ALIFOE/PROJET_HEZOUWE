@@ -71,6 +71,7 @@ const kprimeStatusLabel = computed(() => ({
     paid:        'Paiement confirmé par KPRIMEPAY',
     pending:     'Transaction en attente — le client n\'a pas encore validé sur son téléphone',
     failed:      'Transaction échouée — aucun montant débité',
+    unconfirmed: 'KPRIMEPAY ne confirme pas ce paiement',
     unavailable: 'KPRIMEPAY injoignable — statut inconnu pour le moment',
     skipped:     'Aucune transaction KPRIMEPAY lancée',
 }[props.kprimepay?.status] || null));
@@ -79,9 +80,19 @@ const kprimeStatusTone = computed(() => ({
     paid:        'success',
     pending:     'warning',
     failed:      'danger',
+    unconfirmed: 'danger',
     unavailable: 'warning',
     skipped:     'warning',
 }[props.kprimepay?.status] || 'warning'));
+
+const kprimeStatusPill = computed(() => ({
+    paid:        'Payé',
+    pending:     'En attente',
+    failed:      'Échec',
+    unconfirmed: 'Non confirmé',
+    unavailable: 'Indisponible',
+    skipped:     'Aucun paiement',
+}[props.kprimepay?.status] || 'En attente'));
 
 const checkKprimepay = () => {
     checkingKprime.value = true;
@@ -290,7 +301,7 @@ const copyDeliveryUrl = async () => {
                             Statut KPRIMEPAY
                         </span>
                         <span :class="['status-pill', kprimeStatusTone]">
-                            {{ confirmedByKprimepay ? 'Payé' : (kprimepay?.status === 'paid' ? 'Payé' : kprimepay?.status === 'failed' ? 'Échec' : kprimepay?.status === 'unavailable' ? 'Indisponible' : 'En attente') }}
+                            {{ kprimeStatusPill }}
                         </span>
                     </div>
 
