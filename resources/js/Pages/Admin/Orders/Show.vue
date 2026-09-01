@@ -6,9 +6,11 @@ import axios from 'axios';
 
 const props = defineProps({
     order: Object,
+    kprimepay: { type: Object, default: null },
 });
 
 const verifying = ref(false);
+const checkingKprime = ref(false);
 const showRejectModal = ref(false);
 
 const rejectForm = useForm({ rejection_reason: '' });
@@ -51,6 +53,43 @@ const statusClass = (status) => ({
 const isCOD = computed(() => props.order.payment_method === 'cash_on_delivery');
 const upfrontAmount  = computed(() => Math.ceil((props.order.total || 0) / 2));
 const remainingAmount = computed(() => Math.floor((props.order.total || 0) / 2));
+
+// --- KPRIMEPAY -------------------------------------------------------------
+const gatewayLabels = {
+    'MIXX-YAS-TG':   'Mixx by YAS (Togocom)',
+    'MOOV-MONEY-TG': 'Flooz (Moov Africa)',
+};
+
+const isMobileMoney = computed(() => props.order.payment_method === 'mobile_money');
+
+// Vrai uniquement si c'est KPRIMEPAY qui a confirmé le débit, pas un admin.
+const confirmedByKprimepay = computed(
+    () => props.order.payment_status === 'paid' && props.order.payment_confirmed_via === 'kprimepay'
+);
+
+const kprimeStatusLabel = computed(() => ({
+    paid:        'Paiement confirmé par KPRIMEPAY',
+    pending:     'Transaction en attente — le client n\'a pas encore validé sur son téléphone',
+    failed:      'Transaction échouée — aucun montant débité',
+    unavailable: 'KPRIMEPAY injoignable — statut inconnu pour le moment',
+    skipped:     'Aucune transaction KPRIMEPAY lancée',
+}[props.kprimepay?.status] || null));
+
+const kprimeStatusTone = computed(() => ({
+    paid:        'success',
+    pending:     'warning',
+    failed:      'danger',
+    unavailable: 'warning',
+    skipped:     'warning',
+}[props.kprimepay?.status] || 'warning'));
+
+const checkKprimepay = () => {
+    checkingKprime.value = true;
+    router.post(`/admin/orders/${props.order.id}/check-kprimepay`, {}, {
+        preserveScroll: true,
+        onFinish: () => { checkingKprime.value = false; },
+    });
+};
 
 const verifyPayment = () => {
     if (!confirm('Confirmer la vérification du paiement ? Le client sera notifié par email.')) return;
@@ -219,12 +258,72 @@ const copyDeliveryUrl = async () => {
                             <strong class="txn-id">{{ order.transaction_id || 'En attente de virement' }}</strong>
                         </div>
                     </template>
-                    <template v-else-if="order.payment_method === 'mobile_money'">
+                    <template v-else-if="isMobileMoney">
+                        <div class="pay-row">
+                            <span>Montant débité</span>
+                            <strong class="money">{{ formatPrice(order.total) }}</strong>
+                        </div>
                         <div class="pay-row" :class="order.transaction_id ? 'highlight-id' : 'missing-id'">
-                            <span>ID transaction Mobile Money</span>
-                            <strong class="txn-id">{{ order.transaction_id || 'En attente' }}</strong>
+                            <span>ID transaction KPRIMEPAY</span>
+                            <strong class="txn-id">{{ order.transaction_id || 'Aucun paiement lancé' }}</strong>
+                        </div>
+                        <div class="pay-row" v-if="order.payment_gateway">
+                            <span>Opérateur</span>
+                            <strong>{{ gatewayLabels[order.payment_gateway] || order.payment_gateway }}</strong>
+                        </div>
+                        <div class="pay-row" v-if="order.payment_phone">
+                            <span>Numéro Mobile Money</span>
+                            <strong>{{ order.payment_phone }}</strong>
+                        </div>
+                        <div class="pay-row" v-if="order.paid_at">
+                            <span>Payée le</span>
+                            <strong>{{ formatDate(order.paid_at) }}</strong>
                         </div>
                     </template>
+                </div>
+
+                <!-- Etat KPRIMEPAY : source de verite du paiement Mobile Money -->
+                <div v-if="isMobileMoney" class="kprime-box" :class="`kprime-${kprimeStatusTone}`">
+                    <div class="kprime-head">
+                        <span class="kprime-title">
+                            <i class="fas fa-bolt"></i>
+                            Statut KPRIMEPAY
+                        </span>
+                        <span :class="['status-pill', kprimeStatusTone]">
+                            {{ confirmedByKprimepay ? 'Payé' : (kprimepay?.status === 'paid' ? 'Payé' : kprimepay?.status === 'failed' ? 'Échec' : kprimepay?.status === 'unavailable' ? 'Indisponible' : 'En attente') }}
+                        </span>
+                    </div>
+
+                    <p v-if="confirmedByKprimepay" class="kprime-text kprime-confirmed">
+                        <i class="far fa-check-circle"></i>
+                        Le paiement a bien été encaissé sur KPRIMEPAY. La commande a été confirmée
+                        automatiquement<template v-if="order.paid_at"> le {{ formatDate(order.paid_at) }}</template> —
+                        aucune validation manuelle n'est nécessaire.
+                    </p>
+                    <p v-else-if="order.payment_status === 'paid'" class="kprime-text">
+                        <i class="far fa-user-check"></i>
+                        Paiement validé manuellement par un administrateur<template v-if="order.paid_at"> le {{ formatDate(order.paid_at) }}</template>,
+                        et non par une confirmation KPRIMEPAY.
+                    </p>
+                    <p v-else-if="kprimeStatusLabel" class="kprime-text">
+                        <i class="far fa-info-circle"></i>
+                        {{ kprimeStatusLabel }}<template v-if="kprimepay?.raw"> (réponse KPRIMEPAY : « {{ kprimepay.raw }} »)</template><template v-else-if="kprimepay?.message"> — {{ kprimepay.message }}</template>.
+                    </p>
+                    <p v-else class="kprime-text">
+                        <i class="far fa-info-circle"></i>
+                        Le client n'a pas encore lancé de paiement Mobile Money pour cette commande.
+                    </p>
+
+                    <button
+                        v-if="order.payment_status !== 'paid' && order.transaction_id"
+                        type="button"
+                        class="btn-kprime-check"
+                        :disabled="checkingKprime"
+                        @click="checkKprimepay"
+                    >
+                        <i class="far" :class="checkingKprime ? 'fa-spinner fa-spin' : 'fa-sync'"></i>
+                        {{ checkingKprime ? 'Vérification…' : 'Revérifier auprès de KPRIMEPAY' }}
+                    </button>
                 </div>
 
                 <!-- Preuve de paiement -->
@@ -259,7 +358,12 @@ const copyDeliveryUrl = async () => {
                 <!-- Actions -->
                 <div v-if="order.payment_status === 'paid'" class="verified-badge">
                     <i class="far fa-check-circle"></i>
-                    Paiement confirmé — le client a été notifié par email.
+                    <template v-if="confirmedByKprimepay">
+                        Paiement encaissé et confirmé automatiquement par KPRIMEPAY — le client a été notifié.
+                    </template>
+                    <template v-else>
+                        Paiement confirmé — le client a été notifié par email.
+                    </template>
                 </div>
                 <div v-else class="verify-action">
                     <div v-if="isCOD" class="verify-hint">
@@ -269,6 +373,12 @@ const copyDeliveryUrl = async () => {
                     <div v-else-if="order.payment_method === 'bank_transfer'" class="verify-hint">
                         <i class="far fa-info-circle"></i>
                         Vérifiez que le virement de <strong>{{ formatPrice(order.total) }}</strong> a bien été reçu sur le compte bancaire HEZOUWE avant de valider.
+                    </div>
+                    <div v-else-if="isMobileMoney" class="verify-hint warn">
+                        <i class="far fa-exclamation-triangle"></i>
+                        KPRIMEPAY n'a pas confirmé cette transaction. Utilisez d'abord
+                        <strong>« Revérifier auprès de KPRIMEPAY »</strong> ci-dessus : ne validez manuellement
+                        que si vous avez la preuve que le montant a bien été encaissé.
                     </div>
                     <div class="action-buttons">
                         <button class="btn-verify" :disabled="verifying" @click="verifyPayment">
@@ -486,6 +596,44 @@ const copyDeliveryUrl = async () => {
     color:#7a5700; font-size:0.9rem; margin-bottom:14px; line-height:1.5;
 }
 .verify-hint i { margin-top:2px; flex-shrink:0; color:#c08000; }
+.verify-hint.warn { background:#fff0f0; border-color:#f0a0a0; color:#8a2020; }
+.verify-hint.warn i { color:#c04040; }
+
+/* Bloc statut KPRIMEPAY */
+.kprime-box {
+    border:1.5px solid #dfe7db; border-radius:8px;
+    padding:16px 18px; margin:16px 0; background:#fff;
+}
+.kprime-box.kprime-success { border-color:#a8d8a8; background:#f4fcf4; }
+.kprime-box.kprime-warning { border-color:#f0c060; background:#fffcf2; }
+.kprime-box.kprime-danger  { border-color:#f0a0a0; background:#fff7f7; }
+
+.kprime-head {
+    display:flex; align-items:center; justify-content:space-between;
+    gap:12px; flex-wrap:wrap; margin-bottom:10px;
+}
+.kprime-title {
+    display:inline-flex; align-items:center; gap:8px;
+    font-weight:900; color:#17351a; font-size:0.95rem;
+}
+.kprime-title i { color:#c08000; }
+
+.kprime-text {
+    display:flex; align-items:flex-start; gap:8px;
+    margin:0; color:#4a5a4c; font-size:0.92rem; line-height:1.55;
+}
+.kprime-text i { margin-top:3px; flex-shrink:0; }
+.kprime-text.kprime-confirmed { color:#1b5e20; font-weight:650; }
+.kprime-text.kprime-confirmed i { color:#24782b; }
+
+.btn-kprime-check {
+    display:inline-flex; align-items:center; gap:8px; margin-top:14px;
+    padding:10px 18px; background:#fff; color:#245ea8;
+    border:1.5px solid #b8d0f0; border-radius:8px;
+    font-weight:850; font-size:0.9rem; cursor:pointer; transition:all .18s;
+}
+.btn-kprime-check:hover:not(:disabled) { background:#e8f1ff; border-color:#245ea8; }
+.btn-kprime-check:disabled { opacity:.65; cursor:not-allowed; }
 
 .action-buttons { display:flex; gap:12px; flex-wrap:wrap; }
 

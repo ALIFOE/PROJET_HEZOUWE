@@ -191,6 +191,9 @@ const title = computed(() => page.props.title || 'Dashboard');
 
 .admin-main {
     flex: 1;
+    /* Sans min-width: 0, un tableau large fait gonfler ce flex-item au-dela
+       du viewport et pousse l'entete et les boutons hors de l'ecran. */
+    min-width: 0;
     margin-left: 260px;
     display: flex;
     flex-direction: column;
@@ -248,6 +251,7 @@ const title = computed(() => page.props.title || 'Dashboard');
 
 .admin-content {
     flex: 1;
+    min-width: 0;
     padding: 32px;
 }
 

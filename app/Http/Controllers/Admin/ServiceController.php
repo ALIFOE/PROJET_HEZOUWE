@@ -98,4 +98,12 @@ class ServiceController extends Controller
         $service->delete();
         return redirect()->route('admin.services.index')->with('success', 'Service supprimé avec succès');
     }
+
+    public function toggleVisibility(Service $service)
+    {
+        $service->update(['is_visible' => !$service->is_visible]);
+        return redirect()->route('admin.services.index')->with('success',
+            $service->is_visible ? 'Service rendu visible' : 'Service masqué'
+        );
+    }
 }

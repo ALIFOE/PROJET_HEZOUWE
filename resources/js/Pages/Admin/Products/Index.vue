@@ -17,6 +17,10 @@ const deleteProduct = (product) => {
         preserveScroll: true,
     });
 };
+
+const toggleVisibility = (product) => {
+    router.post(`/admin/products/${product.slug}/toggle-visibility`, {}, { preserveScroll: true });
+};
 </script>
 
 <template>
@@ -55,6 +59,7 @@ const deleteProduct = (product) => {
                                 <th>Promo</th>
                                 <th>Badge</th>
                                 <th>Stock</th>
+                                <th>Visibilite</th>
                                 <th class="actions-col">Actions</th>
                             </tr>
                         </thead>
@@ -90,14 +95,26 @@ const deleteProduct = (product) => {
                                     </span>
                                 </td>
                                 <td>
+                                    <div class="visibility-cell">
+                                        <button
+                                            type="button"
+                                            class="btn-visibility"
+                                            :class="{ 'is-visible': product.is_visible, 'is-hidden': !product.is_visible }"
+                                            @click="toggleVisibility(product)"
+                                            :title="product.is_visible ? 'Cliquez pour masquer ce produit' : 'Cliquez pour afficher ce produit'"
+                                        >
+                                            <i :class="product.is_visible ? 'far fa-eye' : 'far fa-eye-slash'"></i>
+                                            <span>{{ product.is_visible ? 'Visible' : 'Masque' }}</span>
+                                        </button>
+                                    </div>
+                                </td>
+                                <td>
                                     <div class="action-buttons">
-                                        <Link :href="`/admin/products/${product.slug}/edit`" class="btn-action btn-edit">
+                                        <Link :href="`/admin/products/${product.slug}/edit`" class="btn-action btn-edit" title="Modifier">
                                             <i class="far fa-edit"></i>
-                                            Modifier
                                         </Link>
-                                        <button type="button" class="btn-action btn-delete" @click="deleteProduct(product)">
+                                        <button type="button" class="btn-action btn-delete" @click="deleteProduct(product)" title="Supprimer">
                                             <i class="far fa-trash-alt"></i>
-                                            Supprimer
                                         </button>
                                     </div>
                                 </td>
@@ -164,8 +181,7 @@ const deleteProduct = (product) => {
     color: #68746a;
 }
 
-.btn-primary,
-.btn-action {
+.btn-primary {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -177,6 +193,23 @@ const deleteProduct = (product) => {
     font-weight: 850;
     border: 1px solid transparent;
     cursor: pointer;
+    white-space: nowrap;
+}
+
+/* Boutons icone seuls, comme sur la page Services : la colonne Actions
+   reste etroite et ne peut plus deborder de l'ecran. */
+.btn-action {
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s;
 }
 
 .btn-primary {
@@ -223,13 +256,16 @@ const deleteProduct = (product) => {
 
 .products-table {
     width: 100%;
-    min-width: 980px;
-    border-collapse: collapse;
+    min-width: 900px;
+    /* separate + spacing 0 : rendu identique a collapse, mais indispensable
+       pour que la colonne Actions collante garde ses bordures. */
+    border-collapse: separate;
+    border-spacing: 0;
 }
 
 .products-table th {
     text-align: left;
-    padding: 14px 16px;
+    padding: 14px 12px;
     color: #68746a;
     font-size: 0.78rem;
     font-weight: 900;
@@ -239,8 +275,9 @@ const deleteProduct = (product) => {
 }
 
 .products-table td {
-    padding: 16px;
+    padding: 14px 12px;
     color: #17351a;
+    background: #fff;
     border-bottom: 1px solid #edf2ea;
     vertical-align: middle;
 }
@@ -249,17 +286,27 @@ const deleteProduct = (product) => {
     background: #fbfcfa;
 }
 
+/* La colonne Actions reste visible meme quand le tableau defile horizontalement. */
+.products-table th:last-child,
+.products-table td:last-child {
+    position: sticky;
+    right: 0;
+    z-index: 1;
+    box-shadow: -10px 0 12px -10px rgba(23, 53, 26, 0.22);
+}
+
 .product-cell {
     display: flex;
     align-items: center;
-    gap: 14px;
-    min-width: 280px;
+    gap: 12px;
+    min-width: 210px;
 }
 
 .product-cell img,
 .thumb-placeholder {
-    width: 66px;
-    height: 66px;
+    width: 52px;
+    height: 52px;
+    flex: 0 0 auto;
     border-radius: 6px;
     border: 1px solid #e5ece2;
 }
@@ -327,14 +374,58 @@ const deleteProduct = (product) => {
     color: #b42323;
 }
 
+.visibility-cell {
+    display: flex;
+    align-items: center;
+}
+
+.btn-visibility {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 34px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-weight: 800;
+    font-size: 0.82rem;
+    border: 1px solid transparent;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.btn-visibility.is-visible {
+    background: #c8e6c9;
+    color: #1b5e20;
+    border-color: #81c784;
+}
+
+.btn-visibility.is-visible:hover {
+    background: #81c784;
+    color: #fff;
+    transform: translateY(-1px);
+}
+
+.btn-visibility.is-hidden {
+    background: #ffcdd2;
+    color: #b71c1c;
+    border-color: #ef9a9a;
+}
+
+.btn-visibility.is-hidden:hover {
+    background: #ef9a9a;
+    color: #fff;
+    transform: translateY(-1px);
+}
+
 .actions-col {
-    width: 230px;
+    width: 100px;
 }
 
 .action-buttons {
     display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
+    gap: 6px;
 }
 
 .btn-edit {

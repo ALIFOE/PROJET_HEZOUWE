@@ -9,6 +9,7 @@ use App\Mail\OrderStatusMail;
 use App\Mail\PaymentRejectedMail;
 use App\Mail\PaymentVerifiedMail;
 use App\Models\Order;
+use App\Services\KPrimePayService;
 use App\Services\WhatsAppService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -17,9 +18,35 @@ use Inertia\Inertia;
 
 class OrderController extends Controller
 {
+    public function __construct(private KPrimePayService $kprimepay)
+    {
+    }
+
     private function adminEmail(): string
     {
         return env('MAIL_FROM_ADDRESS', env('MAIL_USERNAME'));
+    }
+
+    /**
+     * Une commande Mobile Money peut avoir été réglée sur KPRIMEPAY sans que
+     * l'application l'ait su : client qui ferme l'onglet avant la fin du
+     * polling, ou webhook non délivré. On interroge donc KPRIMEPAY dès que
+     * l'admin ouvre la commande, pour que la page reflète le paiement réel.
+     */
+    private function syncKprimepay(Order $order): ?array
+    {
+        if ($order->payment_method !== 'mobile_money' || !$order->transaction_id) {
+            return null;
+        }
+
+        if ($order->payment_status === 'paid') {
+            return ['status' => KPrimePayService::STATUS_PAID, 'applied' => false, 'raw' => null, 'message' => null];
+        }
+
+        $result = $this->kprimepay->syncOrder($order);
+        $order->refresh();
+
+        return $result;
     }
 
     public function index()
@@ -30,8 +57,49 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
+        $kprimepay = $this->syncKprimepay($order);
+
         $order->load('user', 'items');
-        return Inertia::render('Admin/Orders/Show', ['order' => $order]);
+
+        return Inertia::render('Admin/Orders/Show', [
+            'order'     => $order,
+            'kprimepay' => $kprimepay,
+        ]);
+    }
+
+    /**
+     * Re-vérification KPRIMEPAY à la demande de l'admin.
+     */
+    public function checkKprimepay(Order $order)
+    {
+        if ($order->payment_method !== 'mobile_money' || !$order->transaction_id) {
+            return back()->with('error', 'Cette commande n\'a pas de transaction Mobile Money à vérifier.');
+        }
+
+        if ($order->payment_status === 'paid') {
+            return back()->with('success', 'Ce paiement est déjà confirmé.');
+        }
+
+        $result = $this->kprimepay->syncOrder($order);
+
+        return back()->with(...match ($result['status']) {
+            KPrimePayService::STATUS_PAID => [
+                'success',
+                'Paiement confirmé par KPRIMEPAY ✅ — commande passée en "Confirmée", client notifié.',
+            ],
+            KPrimePayService::STATUS_PENDING => [
+                'error',
+                'KPRIMEPAY indique que la transaction est toujours en attente : le client n\'a pas encore validé le paiement sur son téléphone.',
+            ],
+            KPrimePayService::STATUS_FAILED => [
+                'error',
+                'KPRIMEPAY indique que la transaction a échoué. Aucun montant n\'a été débité.',
+            ],
+            default => [
+                'error',
+                'KPRIMEPAY est injoignable pour le moment. Réessayez dans un instant.',
+            ],
+        });
     }
 
     public function edit(Order $order)
@@ -70,9 +138,11 @@ class OrderController extends Controller
         }
 
         $order->update([
-            'payment_status'   => 'paid',
-            'status'           => 'confirmed',
-            'rejection_reason' => null,
+            'payment_status'        => 'paid',
+            'status'                => 'confirmed',
+            'paid_at'               => now(),
+            'payment_confirmed_via' => 'manual',
+            'rejection_reason'      => null,
         ]);
 
         $order->load('items');

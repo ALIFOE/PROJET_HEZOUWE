@@ -9,21 +9,21 @@ class ServiceCatalog
 {
     public static function all(): Collection
     {
-        // Récupère les services de la base de données, avec fallback sur le config
-        $services = Service::all();
-        
-        if ($services->isEmpty()) {
+        // Fallback sur le config uniquement si la table est totalement vide (pas si tout est masqué)
+        if (Service::count() === 0) {
             return collect(config('services_hezouwe', []));
         }
 
-        return $services->map(fn($s) => $s->toArray());
+        return Service::where('is_visible', true)
+            ->get()
+            ->map(fn($s) => $s->toArray());
     }
 
     public static function find(string $slug): ?array
     {
         // Cherche en base de données en priorité
-        $service = Service::where('slug', $slug)->first();
-        
+        $service = Service::where('slug', $slug)->where('is_visible', true)->first();
+
         if ($service) {
             return $service->toArray();
         }

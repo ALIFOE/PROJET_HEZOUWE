@@ -22,12 +22,14 @@ class Service extends Model
         'steps',
         'benefits',
         'facts',
+        'is_visible',
     ];
 
     protected $casts = [
         'steps' => 'array',
         'benefits' => 'array',
         'facts' => 'array',
+        'is_visible' => 'boolean',
     ];
 
     public function getRouteKeyName(): string

@@ -9,21 +9,37 @@ class ProductCatalog
 {
     public static function all(): Collection
     {
-        // Récupère les produits de la base de données, avec fallback sur le config
-        $products = Product::all();
-        
-        if ($products->isEmpty()) {
+        // Fallback sur le config uniquement si la table est totalement vide (pas si tout est masqué)
+        if (Product::count() === 0) {
             return collect(config('products_hezouwe', []));
         }
 
-        return $products->map(fn($p) => $p->toArray());
+        return Product::where('is_visible', true)
+            ->get()
+            ->map(fn($p) => $p->toArray());
     }
 
     public static function find(string $slug): ?array
     {
         // Cherche en base de données en priorité
+        $product = Product::where('slug', $slug)->where('is_visible', true)->first();
+
+        if ($product) {
+            return $product->toArray();
+        }
+
+        // Fallback sur le fichier config
+        return self::all()->firstWhere('slug', $slug);
+    }
+
+    /**
+     * Recherche sans filtre de visibilité : un produit masqué après coup doit
+     * rester résolvable pour les paniers qui le contiennent déjà.
+     */
+    public static function findIncludingHidden(string $slug): ?array
+    {
         $product = Product::where('slug', $slug)->first();
-        
+
         if ($product) {
             return $product->toArray();
         }
@@ -36,7 +52,9 @@ class ProductCatalog
     {
         return $cartItems
             ->map(function ($item) {
-                $product = self::find($item->product_slug);
+                // Volontairement non filtré sur la visibilité : masquer un produit
+                // ne doit pas le faire disparaître des paniers déjà remplis.
+                $product = self::findIncludingHidden($item->product_slug);
 
                 if (!$product) {
                     return null;

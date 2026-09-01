@@ -232,9 +232,12 @@ Route::middleware(['auth', 'verified', 'is.admin'])->prefix('admin')->name('admi
     Route::post('orders/{order}/generate-delivery-token', [App\Http\Controllers\DeliveryController::class, 'generateToken'])->name('orders.generate-delivery-token');
     Route::post('orders/{order}/verify-payment', [\App\Http\Controllers\Admin\OrderController::class, 'verifyPayment'])->name('orders.verify-payment');
     Route::post('orders/{order}/reject-payment', [\App\Http\Controllers\Admin\OrderController::class, 'rejectPayment'])->name('orders.reject-payment');
+    Route::post('orders/{order}/check-kprimepay', [\App\Http\Controllers\Admin\OrderController::class, 'checkKprimepay'])->name('orders.check-kprimepay');
     Route::post('products/upload-image', [\App\Http\Controllers\Admin\ProductController::class, 'uploadImage'])->name('products.upload-image');
+    Route::post('products/{product}/toggle-visibility', [\App\Http\Controllers\Admin\ProductController::class, 'toggleVisibility'])->name('products.toggle-visibility');
     Route::resource('products', \App\Http\Controllers\Admin\ProductController::class);
     Route::post('services/upload-image', [\App\Http\Controllers\Admin\ServiceController::class, 'uploadImage'])->name('services.upload-image');
+    Route::post('services/{service}/toggle-visibility', [\App\Http\Controllers\Admin\ServiceController::class, 'toggleVisibility'])->name('services.toggle-visibility');
     Route::resource('services', \App\Http\Controllers\Admin\ServiceController::class);
     Route::post('news/upload-image', [\App\Http\Controllers\Admin\NewsController::class, 'uploadImage'])->name('news.upload-image');
     Route::post('news/{news}/toggle-visibility', [\App\Http\Controllers\Admin\NewsController::class, 'toggleVisibility'])->name('news.toggle-visibility');

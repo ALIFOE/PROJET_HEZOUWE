@@ -21,6 +21,10 @@ const deleteService = (slug) => {
         router.delete(`/admin/services/${slug}`);
     }
 };
+
+const toggleVisibility = (service) => {
+    router.post(`/admin/services/${service.slug}/toggle-visibility`, {}, { preserveScroll: true });
+};
 </script>
 
 <template>
@@ -40,6 +44,7 @@ const deleteService = (slug) => {
             </div>
 
             <div class="table-container">
+                <div class="table-scroll">
                 <table class="data-table">
                     <thead>
                         <tr>
@@ -47,6 +52,7 @@ const deleteService = (slug) => {
                             <th>Titre</th>
                             <th>Icone</th>
                             <th>Description courte</th>
+                            <th>Visibilité</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -64,6 +70,18 @@ const deleteService = (slug) => {
                             </td>
                             <td class="short-col">{{ service.short }}</td>
                             <td>
+                                <button
+                                    type="button"
+                                    class="btn-visibility"
+                                    :class="{ 'is-visible': service.is_visible, 'is-hidden': !service.is_visible }"
+                                    @click="toggleVisibility(service)"
+                                    :title="service.is_visible ? 'Cliquez pour masquer ce service' : 'Cliquez pour afficher ce service'"
+                                >
+                                    <i :class="service.is_visible ? 'far fa-eye' : 'far fa-eye-slash'"></i>
+                                    <span>{{ service.is_visible ? 'Visible' : 'Masqué' }}</span>
+                                </button>
+                            </td>
+                            <td>
                                 <div class="action-buttons">
                                     <Link :href="`/admin/services/${service.slug}/edit`" class="btn-edit" title="Modifier">
                                         <i class="far fa-edit"></i>
@@ -76,6 +94,7 @@ const deleteService = (slug) => {
                         </tr>
                     </tbody>
                 </table>
+                </div>
 
                 <div v-if="services.data.length === 0" class="empty-state">
                     <i class="far fa-concierge-bell"></i>
@@ -154,9 +173,17 @@ const deleteService = (slug) => {
     box-shadow: 0 16px 42px rgba(23, 53, 26, 0.06);
 }
 
+.table-scroll {
+    overflow-x: auto;
+}
+
 .data-table {
     width: 100%;
-    border-collapse: collapse;
+    min-width: 860px;
+    /* separate + spacing 0 : rendu identique a collapse, mais indispensable
+       pour que la colonne Actions collante garde ses bordures. */
+    border-collapse: separate;
+    border-spacing: 0;
 }
 
 .data-table th {
@@ -175,12 +202,22 @@ const deleteService = (slug) => {
     padding: 14px 16px;
     color: #17351a;
     font-weight: 500;
+    background: #fff;
     border-bottom: 1px solid #e5ece2;
     vertical-align: middle;
 }
 
 .data-table tr:last-child td { border-bottom: none; }
 .data-table tr:hover td { background: #fafcf9; }
+
+/* La colonne Actions reste visible meme quand le tableau defile horizontalement. */
+.data-table th:last-child,
+.data-table td:last-child {
+    position: sticky;
+    right: 0;
+    z-index: 1;
+    box-shadow: -10px 0 12px -10px rgba(23, 53, 26, 0.22);
+}
 
 .thumb {
     width: 60px;
@@ -221,6 +258,44 @@ const deleteService = (slug) => {
 .action-buttons {
     display: flex;
     gap: 6px;
+}
+
+.btn-visibility {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 34px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-weight: 800;
+    font-size: 0.85rem;
+    border: 1px solid transparent;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+}
+
+.btn-visibility.is-visible {
+    background: #c8e6c9;
+    color: #1b5e20;
+    border-color: #81c784;
+}
+
+.btn-visibility.is-visible:hover {
+    background: #81c784;
+    color: #fff;
+}
+
+.btn-visibility.is-hidden {
+    background: #ffcdd2;
+    color: #b71c1c;
+    border-color: #ef9a9a;
+}
+
+.btn-visibility.is-hidden:hover {
+    background: #ef9a9a;
+    color: #fff;
 }
 
 .btn-edit,

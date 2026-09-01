@@ -106,4 +106,12 @@ class ProductController extends Controller
         $product->delete();
         return redirect()->route('admin.products.index')->with('success', 'Produit supprimé avec succès');
     }
+
+    public function toggleVisibility(Product $product)
+    {
+        $product->update(['is_visible' => !$product->is_visible]);
+        return redirect()->route('admin.products.index')->with('success',
+            $product->is_visible ? 'Produit rendu visible' : 'Produit masqué'
+        );
+    }
 }

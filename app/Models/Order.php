@@ -29,6 +29,10 @@ class Order extends Model
         'coupon_code',
         'total',
         'transaction_id',
+        'payment_gateway',
+        'payment_phone',
+        'paid_at',
+        'payment_confirmed_via',
         'payment_proof',
         'rejection_reason',
         'delivery_token',
@@ -40,6 +44,7 @@ class Order extends Model
         'delivery_cost' => 'integer',
         'discount' => 'integer',
         'total' => 'integer',
+        'paid_at' => 'datetime',
     ];
 
     public function user(): BelongsTo

@@ -26,6 +26,7 @@ class Product extends Model
         'in_stock',
         'details',
         'features',
+        'is_visible',
     ];
 
     protected $casts = [
@@ -38,6 +39,7 @@ class Product extends Model
         'stars' => 'integer',
         'reviews' => 'integer',
         'in_stock' => 'boolean',
+        'is_visible' => 'boolean',
     ];
 
     public function getRouteKeyName(): string
