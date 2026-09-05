@@ -105,6 +105,18 @@
                                         </div>
                                     </div>
                                 </label>
+
+                                <!-- Paiement en ligne (KPRIMEPAY hosted checkout) -->
+                                <label class="pay-card" :class="{ selected: form.payment_method === 'kprimepay_checkout' }">
+                                    <input v-model="form.payment_method" type="radio" value="kprimepay_checkout">
+                                    <div class="pay-card-inner">
+                                        <div class="pay-icon online-icon">💳</div>
+                                        <div>
+                                            <strong>Payer en ligne</strong>
+                                            <span>Carte bancaire ou Mobile Money via une page sécurisée KPRIMEPAY</span>
+                                        </div>
+                                    </div>
+                                </label>
                             </div>
 
                             <!-- COD instructions -->
@@ -283,6 +295,7 @@
                         <button type="submit" class="submit-btn mobile-submit" :disabled="form.processing">
                             <span v-if="form.processing">Traitement en cours…</span>
                             <span v-else-if="form.payment_method === 'mobile_money'">Continuer vers le paiement Mobile Money <i class="far fa-arrow-right"></i></span>
+                            <span v-else-if="form.payment_method === 'kprimepay_checkout'">Continuer vers le paiement en ligne <i class="far fa-arrow-right"></i></span>
                             <span v-else>Confirmer la commande <i class="far fa-arrow-right"></i></span>
                         </button>
                     </div>
@@ -327,6 +340,7 @@
                             <button type="submit" class="submit-btn" :disabled="form.processing">
                                 <span v-if="form.processing">Traitement en cours…</span>
                                 <span v-else-if="form.payment_method === 'mobile_money'">Continuer vers Mobile Money <i class="far fa-arrow-right"></i></span>
+                                <span v-else-if="form.payment_method === 'kprimepay_checkout'">Continuer vers le paiement en ligne <i class="far fa-arrow-right"></i></span>
                                 <span v-else>Confirmer la commande <i class="far fa-arrow-right"></i></span>
                             </button>
 

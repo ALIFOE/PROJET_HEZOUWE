@@ -216,6 +216,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/orders/{order}/payment-status', [App\Http\Controllers\KPrimePayController::class, 'status'])
         ->name('kprimepay.status');
 });
+
+// Routes KPRIMEPAY — Paiement hébergé (carte bancaire / Mobile Money au choix du client)
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/payment/online/{order}', function (\App\Models\Order $order) {
+        abort_if($order->user_id !== request()->user()->id, 403);
+        return \Inertia\Inertia::render('PaymentOnline', [
+            'order' => $order,
+        ]);
+    })->name('payment.online');
+    Route::post('/kprimepay/checkout', [App\Http\Controllers\KPrimePayController::class, 'checkout'])
+        ->middleware('throttle:10,1')
+        ->name('kprimepay.checkout');
+});
 // Webhook KPRIMEPAY (pas de CSRF — serveur à serveur)
 Route::post('/kprimepay/webhook', [App\Http\Controllers\KPrimePayController::class, 'webhook'])
     ->middleware('throttle:60,1')
@@ -228,6 +241,7 @@ Route::get('/delivery/{token}', [App\Http\Controllers\DeliveryController::class,
 Route::middleware(['auth', 'verified', 'is.admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [App\Http\Controllers\Admin\AdminDashboardController::class, 'index'])->name('dashboard');
     Route::resource('orders', \App\Http\Controllers\Admin\OrderController::class)->only(['index', 'show', 'edit', 'update', 'destroy']);
+    Route::get('payments', [\App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('payments.index');
     Route::post('orders/{order}/mark-delivered', [\App\Http\Controllers\Admin\OrderController::class, 'markAsDelivered'])->name('orders.mark-delivered');
     Route::post('orders/{order}/generate-delivery-token', [App\Http\Controllers\DeliveryController::class, 'generateToken'])->name('orders.generate-delivery-token');
     Route::post('orders/{order}/verify-payment', [\App\Http\Controllers\Admin\OrderController::class, 'verifyPayment'])->name('orders.verify-payment');

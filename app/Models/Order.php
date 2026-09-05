@@ -33,6 +33,7 @@ class Order extends Model
         'payment_phone',
         'paid_at',
         'payment_confirmed_via',
+        'payment_reference',
         'payment_proof',
         'rejection_reason',
         'delivery_token',

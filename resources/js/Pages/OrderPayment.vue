@@ -88,6 +88,16 @@
                                 </div>
                             </label>
 
+                            <!-- Paiement en ligne (KPRIMEPAY hosted checkout) -->
+                            <label class="method-card" :class="{ selected: form.payment_method === 'kprimepay_checkout' }">
+                                <input v-model="form.payment_method" type="radio" value="kprimepay_checkout">
+                                <div class="method-icon"><i class="fas fa-credit-card"></i></div>
+                                <div>
+                                    <strong>Payer en ligne</strong>
+                                    <span>Carte bancaire ou Mobile Money via page sécurisée KPRIMEPAY</span>
+                                </div>
+                            </label>
+
                             <!-- Bank transfer (not yet available) -->
                             <label class="method-card disabled">
                                 <input type="radio" value="bank_transfer" disabled>
@@ -266,9 +276,10 @@
                                 :disabled="form.processing || !form.payment_method"
                                 @click="submit"
                             >
-                                <i class="fas" :class="form.processing ? 'fa-spinner fa-spin' : (form.payment_method === 'mobile_money' ? 'fa-mobile-alt' : 'fa-check')"></i>
+                                <i class="fas" :class="form.processing ? 'fa-spinner fa-spin' : (form.payment_method === 'mobile_money' ? 'fa-mobile-alt' : form.payment_method === 'kprimepay_checkout' ? 'fa-credit-card' : 'fa-check')"></i>
                                 <span v-if="form.processing">Traitement…</span>
                                 <span v-else-if="form.payment_method === 'mobile_money'">Continuer vers Mobile Money</span>
+                                <span v-else-if="form.payment_method === 'kprimepay_checkout'">Continuer vers le paiement en ligne</span>
                                 <span v-else>Soumettre le paiement</span>
                             </button>
                         </div>

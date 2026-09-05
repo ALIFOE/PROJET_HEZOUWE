@@ -37,7 +37,7 @@ class KPrimePayService
     /**
      * Interroge KPRIMEPAY sur l'etat reel d'une transaction.
      *
-     * @return array{status: string, raw: ?string, message: ?string}
+     * @return array{status: string, raw: ?string, message: ?string, payment_reference: ?string}
      */
     public function debitStatus(string $transactionId): array
     {
@@ -48,7 +48,7 @@ class KPrimePayService
         } catch (\Exception $e) {
             Log::error('KPRIMEPAY status verification error: ' . $e->getMessage());
 
-            return ['status' => self::STATUS_UNAVAILABLE, 'raw' => null, 'message' => $e->getMessage()];
+            return ['status' => self::STATUS_UNAVAILABLE, 'raw' => null, 'message' => $e->getMessage(), 'payment_reference' => null];
         }
 
         // L'API a repondu : le paiement n'est pas confirme, mais KPRIMEPAY est
@@ -58,9 +58,10 @@ class KPrimePayService
             Log::warning('KPRIMEPAY debit-status HTTP ' . $response->status() . ': ' . $response->body());
 
             return [
-                'status'  => self::STATUS_UNCONFIRMED,
-                'raw'     => null,
-                'message' => $this->firstErrorMessage($response),
+                'status'            => self::STATUS_UNCONFIRMED,
+                'raw'               => null,
+                'message'           => $this->firstErrorMessage($response),
+                'payment_reference' => null,
             ];
         }
 
@@ -72,8 +73,12 @@ class KPrimePayService
                 'failed', 'cancelled', 'expired' => self::STATUS_FAILED,
                 default   => self::STATUS_PENDING,
             },
-            'raw'     => is_string($raw) ? $raw : null,
-            'message' => null,
+            'raw'               => is_string($raw) ? $raw : null,
+            'message'           => null,
+            // Reference operateur (ex: "TM-9981234"), fournie par KPRIMEPAY une
+            // fois le paiement effectivement encaisse. C'est la reference que
+            // l'admin doit pouvoir rapprocher d'un releve Mixx/Flooz.
+            'payment_reference' => $response->json('data.payment_reference'),
         ];
     }
 
@@ -105,6 +110,7 @@ class KPrimePayService
             'status'                => 'confirmed',
             'paid_at'               => now(),
             'payment_confirmed_via' => 'kprimepay',
+            'payment_reference'     => $result['payment_reference'] ?? null,
             'rejection_reason'      => null,
         ]);
 

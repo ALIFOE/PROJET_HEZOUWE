@@ -36,9 +36,10 @@ const paymentLabels = {
 };
 
 const paymentMethodLabels = {
-    cash_on_delivery: 'Paiement à la livraison',
-    bank_transfer:    'Virement bancaire',
-    mobile_money:     'Mobile Money',
+    cash_on_delivery:   'Paiement à la livraison',
+    bank_transfer:      'Virement bancaire',
+    mobile_money:       'Mobile Money',
+    kprimepay_checkout: 'Paiement en ligne',
 };
 
 const statusClass = (status) => ({
@@ -61,6 +62,9 @@ const gatewayLabels = {
 };
 
 const isMobileMoney = computed(() => props.order.payment_method === 'mobile_money');
+// Commandes réglées via KPRIMEPAY (push USSD ou paiement hébergé) : même source de vérité,
+// mêmes actions de revérification.
+const isKprimepay = computed(() => ['mobile_money', 'kprimepay_checkout'].includes(props.order.payment_method));
 
 // Vrai uniquement si c'est KPRIMEPAY qui a confirmé le débit, pas un admin.
 const confirmedByKprimepay = computed(
@@ -286,6 +290,28 @@ const copyDeliveryUrl = async () => {
                             <span>Numéro Mobile Money</span>
                             <strong>{{ order.payment_phone }}</strong>
                         </div>
+                        <div class="pay-row" v-if="order.payment_reference">
+                            <span>Référence opérateur</span>
+                            <strong class="txn-id">{{ order.payment_reference }}</strong>
+                        </div>
+                        <div class="pay-row" v-if="order.paid_at">
+                            <span>Payée le</span>
+                            <strong>{{ formatDate(order.paid_at) }}</strong>
+                        </div>
+                    </template>
+                    <template v-else-if="order.payment_method === 'kprimepay_checkout'">
+                        <div class="pay-row">
+                            <span>Montant à payer</span>
+                            <strong class="money">{{ formatPrice(order.total) }}</strong>
+                        </div>
+                        <div class="pay-row" :class="order.transaction_id ? 'highlight-id' : 'missing-id'">
+                            <span>ID transaction KPRIMEPAY</span>
+                            <strong class="txn-id">{{ order.transaction_id || 'Aucun paiement lancé' }}</strong>
+                        </div>
+                        <div class="pay-row" v-if="order.payment_reference">
+                            <span>Référence opérateur</span>
+                            <strong class="txn-id">{{ order.payment_reference }}</strong>
+                        </div>
                         <div class="pay-row" v-if="order.paid_at">
                             <span>Payée le</span>
                             <strong>{{ formatDate(order.paid_at) }}</strong>
@@ -293,8 +319,8 @@ const copyDeliveryUrl = async () => {
                     </template>
                 </div>
 
-                <!-- Etat KPRIMEPAY : source de verite du paiement Mobile Money -->
-                <div v-if="isMobileMoney" class="kprime-box" :class="`kprime-${kprimeStatusTone}`">
+                <!-- Etat KPRIMEPAY : source de verite du paiement Mobile Money / paiement en ligne -->
+                <div v-if="isKprimepay" class="kprime-box" :class="`kprime-${kprimeStatusTone}`">
                     <div class="kprime-head">
                         <span class="kprime-title">
                             <i class="fas fa-bolt"></i>
@@ -322,7 +348,7 @@ const copyDeliveryUrl = async () => {
                     </p>
                     <p v-else class="kprime-text">
                         <i class="far fa-info-circle"></i>
-                        Le client n'a pas encore lancé de paiement Mobile Money pour cette commande.
+                        Le client n'a pas encore finalisé de paiement KPRIMEPAY pour cette commande.
                     </p>
 
                     <button
@@ -361,7 +387,7 @@ const copyDeliveryUrl = async () => {
                         </a>
                     </div>
                 </div>
-                <div v-else-if="order.payment_method !== 'mobile_money'" class="proof-admin-missing">
+                <div v-else-if="!isKprimepay" class="proof-admin-missing">
                     <i class="fas fa-exclamation-triangle"></i>
                     Aucune preuve de paiement jointe par le client
                 </div>
@@ -385,7 +411,7 @@ const copyDeliveryUrl = async () => {
                         <i class="far fa-info-circle"></i>
                         Vérifiez que le virement de <strong>{{ formatPrice(order.total) }}</strong> a bien été reçu sur le compte bancaire HEZOUWE avant de valider.
                     </div>
-                    <div v-else-if="isMobileMoney" class="verify-hint warn">
+                    <div v-else-if="isKprimepay" class="verify-hint warn">
                         <i class="far fa-exclamation-triangle"></i>
                         KPRIMEPAY n'a pas confirmé cette transaction. Utilisez d'abord
                         <strong>« Revérifier auprès de KPRIMEPAY »</strong> ci-dessus : ne validez manuellement

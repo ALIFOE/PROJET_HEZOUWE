@@ -44,7 +44,7 @@ class OrderController extends Controller
             'city'           => ['required', 'string', 'max:255'],
             'address'        => ['required', 'string', 'max:255'],
             'notes'          => ['nullable', 'string', 'max:1000'],
-            'payment_method' => ['required', 'in:cash_on_delivery,mobile_money,bank_transfer'],
+            'payment_method' => ['required', 'in:cash_on_delivery,mobile_money,bank_transfer,kprimepay_checkout'],
             'transaction_id' => [
                 Rule::requiredIf($request->payment_method === 'cash_on_delivery'),
                 'nullable', 'string', 'max:100',
@@ -118,6 +118,13 @@ class OrderController extends Controller
             Log::warning('NewOrderAdminMail failed: ' . $e->getMessage());
         }
 
+        $paymentModeLabel = match ($validated['payment_method']) {
+            'cash_on_delivery'  => 'Paiement à la livraison',
+            'mobile_money'      => 'Mobile Money',
+            'kprimepay_checkout' => 'Paiement en ligne',
+            'bank_transfer'     => 'Virement bancaire',
+        };
+
         // WhatsApp
         $wa = new WhatsAppService();
         $adminOrderUrl  = url('/admin/orders/' . $order->id);
@@ -126,7 +133,7 @@ class OrderController extends Controller
             "✅ *COOP CA HEZOUWE*\n" .
             "Bonjour {$order->customer_name}, votre commande *{$order->order_number}* est bien enregistrée !\n\n" .
             "💰 Total : " . number_format($order->total, 0, ',', ' ') . " FCFA\n" .
-            "📦 Mode : " . ($validated['payment_method'] === 'cash_on_delivery' ? 'Paiement à la livraison' : 'Virement bancaire') . "\n\n" .
+            "📦 Mode : {$paymentModeLabel}\n\n" .
             "📎 Ajoutez votre preuve de paiement ici :\n{$clientProofUrl}\n\n" .
             "Merci pour votre confiance ! 🌾"
         );
@@ -135,13 +142,16 @@ class OrderController extends Controller
             "Client : {$order->customer_name}\n" .
             "Commande : *{$order->order_number}*\n" .
             "Montant : " . number_format($order->total, 0, ',', ' ') . " FCFA\n" .
-            "Mode : " . ($validated['payment_method'] === 'cash_on_delivery' ? 'Paiement livraison' : 'Virement') . "\n\n" .
+            "Mode : {$paymentModeLabel}\n\n" .
             "🔍 Vérifier la commande :\n{$adminOrderUrl}"
         );
 
-        // Mobile Money → redirection vers la page de paiement
+        // Mobile Money / Paiement en ligne → redirection vers la page de paiement
         if ($validated['payment_method'] === 'mobile_money') {
             return redirect()->route('payment.mobile-money', ['order' => $order->id]);
+        }
+        if ($validated['payment_method'] === 'kprimepay_checkout') {
+            return redirect()->route('payment.online', ['order' => $order->id]);
         }
 
         $message = $validated['payment_method'] === 'bank_transfer'
@@ -193,7 +203,7 @@ class OrderController extends Controller
         abort_if($order->payment_status === 'paid', 403, 'Ce paiement est déjà validé.');
 
         $validated = $request->validate([
-            'payment_method' => ['required', 'in:cash_on_delivery,mobile_money,bank_transfer'],
+            'payment_method' => ['required', 'in:cash_on_delivery,mobile_money,bank_transfer,kprimepay_checkout'],
             'transaction_id' => [
                 Rule::requiredIf(in_array($request->payment_method, ['cash_on_delivery', 'bank_transfer'])),
                 'nullable', 'string', 'max:100',
@@ -252,6 +262,9 @@ class OrderController extends Controller
 
         if ($validated['payment_method'] === 'mobile_money') {
             return redirect()->route('payment.mobile-money', ['order' => $order->id]);
+        }
+        if ($validated['payment_method'] === 'kprimepay_checkout') {
+            return redirect()->route('payment.online', ['order' => $order->id]);
         }
 
         return redirect()->route('dashboard')->with('success', 'Votre paiement a été soumis. Notre équipe va le vérifier.');

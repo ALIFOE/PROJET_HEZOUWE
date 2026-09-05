@@ -54,9 +54,10 @@ const paymentStatuses = [
 ];
 
 const paymentMethodLabel = {
-    cash_on_delivery: '🏠 Paiement à la livraison',
-    mobile_money:     '📱 Mobile Money',
-    bank_transfer:    '🏦 Virement bancaire',
+    cash_on_delivery:   '🏠 Paiement à la livraison',
+    mobile_money:       '📱 Mobile Money',
+    bank_transfer:      '🏦 Virement bancaire',
+    kprimepay_checkout: '💳 Paiement en ligne',
 };
 </script>
 

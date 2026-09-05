@@ -35,7 +35,7 @@ class OrderController extends Controller
      */
     private function syncKprimepay(Order $order): ?array
     {
-        if ($order->payment_method !== 'mobile_money' || !$order->transaction_id) {
+        if (!in_array($order->payment_method, ['mobile_money', 'kprimepay_checkout']) || !$order->transaction_id) {
             return null;
         }
 
@@ -72,7 +72,7 @@ class OrderController extends Controller
      */
     public function checkKprimepay(Order $order)
     {
-        if ($order->payment_method !== 'mobile_money' || !$order->transaction_id) {
+        if (!in_array($order->payment_method, ['mobile_money', 'kprimepay_checkout']) || !$order->transaction_id) {
             return back()->with('error', 'Cette commande n\'a pas de transaction Mobile Money à vérifier.');
         }
 

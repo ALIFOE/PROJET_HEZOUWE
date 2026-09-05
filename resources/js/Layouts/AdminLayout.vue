@@ -19,6 +19,10 @@
                     <i class="far fa-receipt"></i>
                     <span>Commandes</span>
                 </Link>
+                <Link href="/admin/payments" class="nav-item" :class="{ active: $page.url.startsWith('/admin/payments') }">
+                    <i class="far fa-credit-card"></i>
+                    <span>Paiements</span>
+                </Link>
                 <Link href="/admin/products" class="nav-item" :class="{ active: $page.url.startsWith('/admin/products') }">
                     <i class="far fa-box"></i>
                     <span>Produits</span>
